@@ -1,0 +1,220 @@
+.espia .card-body,
+.espia .card-header,
+.espia .card-footer {
+    filter: blur(4px);
+}
+
+.bulletAmplia {
+    width: 10px;
+}
+.bulletAmplia:hover {
+    -webkit-transition: width 0.5s ease-in-out;
+    -moz-transition: width 0.5s ease-in-out;
+    -o-transition: width 0.5s ease-in-out;
+    transition: width 0.5s ease-in-out;
+    width: 40px;
+    cursor: pointer;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.homeFicharDia {
+    font-size: 90px;
+}
+
+.lh-01 {
+    line-height: 0.1;
+}
+
+.nombreUsuarioCardThumb {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    --width: 100%;
+    width: calc(var(--width) - 50px);
+}
+.nombreUsuarioCardThumbInner {
+    background-color: rgba(128, 128, 128, 0.253);
+    width: 100%;
+    text-align: center;
+}
+.stepper.stepper-pills .stepper-item.current .stepper-label .stepper-title {
+    color: var(--bs-blue);
+}
+.stepper.stepper-pills .stepper-item.completed .stepper-label .stepper-title,
+.stepper.stepper-pills
+    .stepper-item.current:last-child
+    .stepper-label
+    .stepper-title {
+    color: unset;
+}
+
+:root {
+    --bg-fitfox: #000000;
+    --bg-fitfox-secondary: #181c32;
+}
+
+.bg-fitfox {
+    background-color: var(--bg-fitfox);
+}
+
+.bg-fitfox-light {
+    background-color: var(--bg-fitfox);
+}
+
+.bg-fitfox-secondary {
+    background-color: var(--bg-fitfox-secondary);
+}
+
+.text-fitfox {
+    color: var(--bg-fitfox);
+}
+.badge-precio {
+    position: absolute;
+    right: 5%;
+    bottom: 5%;
+}
+
+.logo-empresa-actividad {
+    position: absolute;
+    left: 5%;
+    bottom: 5%;
+}
+
+.left-5 {
+    left: 5%;
+}
+
+.top-5 {
+    top: 5%;
+}
+
+[data-kt-sticky-landing-header="on"] .landing-header .menu .menu-link.active {
+    color: #000;
+    background-color: unset;
+}
+
+.icono-rss {
+    filter: grayscale(100%);
+}
+
+.icono-rss:hover {
+    filter: none;
+}
+
+p,
+span,
+html,
+body {
+    font-size: 14px !important;
+}
+
+.w-10 {
+    width: 10%;
+}
+.w-5 {
+    width: 5%;
+}
+.h-10 {
+    height: 10%;
+}
+.h-5 {
+    height: 5%;
+}
+.menuMovil {
+    background-color: #f2f2f2;
+    position: fixed;
+    bottom: 25px;
+    z-index: 100;
+    font-size: 32px;
+    font-weight: bold;
+    color: #053e69;
+    padding: 3px;
+    -webkit-box-shadow: 0px 0px 5px 5px rgba(227, 227, 227, 0.5);
+    -moz-box-shadow: 0px 0px 5px 5px rgba(227, 227, 227, 0.5);
+    box-shadow: 0px 0px 5 5px rgba(227, 227, 227, 0.5);
+}
+.col-20 {
+    width: 20%;
+}
+.col-40 {
+    width: 40%;
+}
+
+@media (max-width: 991.98px) {
+    .footerP {
+        padding-bottom: 80px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .menuMovil {
+        margin-left: 25%;
+    }
+}
+
+.logoBarraMovil {
+    background-color: #f3f6f9;
+    border-radius: 50%;
+    padding: 5px;
+    border: 1px solid gray;
+}
+
+.h-100 {
+    max-height: 100%;
+}
+
+.w-100 {
+    max-width: 100%;
+}
+.nav-line-tabs .nav-item .nav-link {
+    margin: unset;
+}
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+
+.select2-selection:focus,
+.select2-selection,
+#idioma {
+    background-color: unset;
+    border: unset;
+}
+#goog-gt-tt {
+    display: none !important;
+}
+
+#qr img {
+    display: unset !important;
+}
+
+@media (min-width: 1200px) {
+    .modal-xl {
+        max-width: 98%;
+    }
+}
+
+.card .card-header {
+    align-items: center !important;
+}
+
+.symbol-100px {
+    width: 100px;
+    height: 100px;
+    max-width: 100px;
+    max-height: 100px;
+}
+
+iframe {
+    max-width: 100% !important;
+}
+
+.card {
+    border-radius: 15px !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+.menu-item .menu-link .menu-icon {
+    display: block;
+}
