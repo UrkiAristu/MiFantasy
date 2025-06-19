@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('equipo_jugador_torneo', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('jugador_id')->constrained()->onDelete('cascade');
-            $table->foreignId('equipo_id')->constrained()->onDelete('cascade');
-            $table->foreignId('torneo_id')->constrained()->onDelete('cascade');
+            $table->foreignId('jugador_id')->constrained('jugadores')->onDelete('cascade');
+            $table->foreignId('equipo_id')->constrained('equipos')->onDelete('cascade');
+            $table->foreignId('torneo_id')->constrained('torneos')->onDelete('cascade');
 
             $table->integer('goles')->default(0);
             $table->integer('asistencias')->default(0);
