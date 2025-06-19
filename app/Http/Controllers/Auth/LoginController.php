@@ -24,7 +24,7 @@ class LoginController extends Controller
         );
 
         if ($validator->fails()) {
-            return redirect('/login')->withErrors($validator);
+            return redirect('/login')->withErrors($validator)->withInput();;
         }
 
         $nombreUsuario = $request->nombreUsuario;
@@ -34,13 +34,13 @@ class LoginController extends Controller
         $cuenta = Cuenta::where('nombreUsuario', $nombreUsuario)->orWhere('email', $nombreUsuario)->first();
         if (!$cuenta) {
             //Devuelve los errores en json
-            return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.']);
+            return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.'])->withInput();
         }
 
         //Comprobamos la contraseña
         if (!password_verify($password, $cuenta->password)) {
             //Devuelve los errores en json
-            return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.']);
+            return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.'])->withInput();
         }
 
         //Si todo es correcto, iniciamos sesión
@@ -54,7 +54,7 @@ class LoginController extends Controller
             [
                 'nombreUsuario' => 'required|unique:cuentas',
                 'email' => 'required|unique:cuentas',
-                'password' => 'required|min:8',
+                'password' => 'required|confirmed|min:8',
             ],
             [
                 'nombreUsuario.required' => 'El nombre de usuario es obligatorio.',
@@ -63,11 +63,12 @@ class LoginController extends Controller
                 'email.unique' => 'El email ya existe.',
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.confirmed' => 'Las contraseñas no coinciden.'
             ]
         );
 
         if ($validator->fails()) {
-            return redirect('/registro')->withErrors($validator);
+            return redirect('/registro')->withErrors($validator)->withInput();
         }
 
         $nombreUsuario = $request->nombreUsuario;

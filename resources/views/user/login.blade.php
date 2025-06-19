@@ -50,7 +50,7 @@
                         <!-- Email -->
                         <div class="fv-row mb-10">
                             <label class="form-label fs-6 fw-bolder text-dark">Nombre de usuario/Correo electrónico</label>
-                            <input type="text" name="nombreUsuario" class="form-control form-control-lg form-control-solid" required autofocus>
+                            <input type="text" name="nombreUsuario" class="form-control form-control-lg form-control-solid" required autofocus value="{{ old('nombreUsuario') }}">
                         </div>
 
                         <!-- Contraseña -->
@@ -59,15 +59,22 @@
                                 <label class="form-label fs-6 fw-bolder text-dark mb-0">Contraseña</label>
                                 <a href="/recuperar" class="link-primary fs-6 fw-bolder">¿Olvidaste tu contraseña?</a>
                             </div>
-                            <input type="password" name="password" class="form-control form-control-lg form-control-solid" required>
+                            <input type="password" name="password" id="password" class="form-control form-control-lg form-control-solid" required value="{{ old('password') }}">
+                            <div class="form-check mt-5">
+                                <input type="checkbox" class="form-check-input" id="mostrar_contraseña" onclick="togglePassword()">
+                                <label class="form-check-label" for="mostrar_contraseña">Mostrar contraseñas</label>
+                            </div>
                         </div>
 
+
+
                         <!-- Mensajes -->
-                        @if(session('error'))
-                        <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
-                        @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
+                        @if ($errors->any())
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                            {{ $error }}<br>
+                            @endforeach
+                        </div>
                         @endif
 
                         <!-- Botón de login -->
@@ -97,6 +104,19 @@
                 }));
             } catch (e) {}
         };
+    </script>
+    <script>
+        //Funcion para alternar la visibilidad de la contraseña
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const isChecked = document.getElementById('mostrar_contraseña').checked;
+
+            if (isChecked) {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
     </script>
 </body>
 

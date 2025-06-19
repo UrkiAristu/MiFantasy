@@ -45,23 +45,23 @@
 
                                 <div class="col-md-12">
                                     <label class="form-label">Nombre de usuario</label>
-                                    <input type="text" name="nombreUsuario" class="form-control form-control-lg form-control-solid" required>
+                                    <input type="text" name="nombreUsuario" class="form-control form-control-lg form-control-solid" required value="{{ old('nombreUsuario') }}">
                                 </div>
                             </div>
 
                             <div class="mb-5">
                                 <label class="form-label">Correo electrónico</label>
-                                <input type="email" name="email" class="form-control form-control-lg form-control-solid" required>
+                                <input type="email" name="email" class="form-control form-control-lg form-control-solid" required value="{{ old('email') }}">
                             </div>
 
                             <div class="mb-5">
                                 <label class="form-label">Contraseña</label>
-                                <input type="password" name="password" id="password" class="form-control form-control-lg form-control-solid" required>
+                                <input type="password" name="password" id="password" class="form-control form-control-lg form-control-solid" required value="{{ old('password') }}">
                             </div>
 
                             <div class="mb-5">
                                 <label class="form-label">Confirmar contraseña</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control form-control-lg form-control-solid" required>
+                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control form-control-lg form-control-solid" required value="{{ old('password_confirmation') }}">
                             </div>
 
                             <div class="form-check mb-5">
@@ -69,13 +69,12 @@
                                 <label class="form-check-label" for="mostrar_contraseña">Mostrar contraseñas</label>
                             </div>
 
+                            <!-- Mensajes -->
                             @if ($errors->any())
                             <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
+                                @foreach ($errors->all() as $error)
+                                {{ $error }}<br>
+                                @endforeach
                             </div>
                             @endif
 
@@ -107,16 +106,6 @@
                 input.type = input.type === 'password' ? 'text' : 'password';
             });
         }
-
-        document.getElementById('formularioRegistro').addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const confirm = document.getElementById('password_confirmation').value;
-
-            if (password !== confirm) {
-                e.preventDefault(); // Evita el envío del formulario
-                alert('Las contraseñas no coinciden.');
-            }
-        });
     </script>
 </body>
 
