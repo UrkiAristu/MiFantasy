@@ -22,7 +22,7 @@
     <div class="d-flex flex-column flex-lg-row flex-column-fluid">
 
         <!-- Lado visual -->
-        <div class="d-flex flex-column flex-lg-row-auto w-lg-800px"
+        <div class="d-flex flex-column flex-lg-row-auto w-lg-900px"
             style="background-image: url('/assets/media/images/login-fantasy.jpg'); background-size: cover; background-position: center;">
             <div class="d-lg-none text-center w-100 p-5 bg-dark bg-opacity-75">
                 <img src="/assets/media/logos/logo-fantasy.png" class="w-50" alt="Logo Fantasy">
@@ -43,14 +43,14 @@
                             <!-- <img src="/assets/media/logos/logo-fantasy.png" class="mb-5" style="width: 120px;" alt="Logo Fantasy"> -->
                             <h1 class="text-dark mb-3">Iniciar sesión</h1>
                             <div class="text-gray-500 fw-bold fs-6">¿Aún no tienes cuenta?
-                                <a href="/register" class="link-primary fw-bolder">Regístrate aquí</a>
+                                <a href="/registro" class="link-primary fw-bolder">Regístrate aquí</a>
                             </div>
                         </div>
 
                         <!-- Email -->
                         <div class="fv-row mb-10">
-                            <label class="form-label fs-6 fw-bolder text-dark">Correo electrónico</label>
-                            <input type="email" name="email" class="form-control form-control-lg form-control-solid" required autofocus>
+                            <label class="form-label fs-6 fw-bolder text-dark">Nombre de usuario/Correo electrónico</label>
+                            <input type="text" name="nombreUsuario" class="form-control form-control-lg form-control-solid" required autofocus>
                         </div>
 
                         <!-- Contraseña -->

@@ -16,3 +16,10 @@ Route::get('/login', function () {
     return view('user/login');
 });
 Route::post('/login', [LoginController::class, 'login']);
+
+//REGISTER
+//Mostrar página de registro
+Route::get('/registro', function () {
+    return view('user/registro');
+});
+Route::post('/registro', [LoginController::class, 'registro']);
