@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Torneo extends Model
 {
+    protected $table = 'torneos';
+    public $timestamps = true;
     public function equipos()
     {
         return $this->belongsToMany(Equipo::class, 'equipo_torneo')
