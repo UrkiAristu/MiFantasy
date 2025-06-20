@@ -44,7 +44,7 @@ class LoginController extends Controller
         }
 
         //Si todo es correcto, iniciamos sesión
-        session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email]);
+        session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email, 'admin' => $cuenta->admin]);
         return redirect('/')->with('success', 'Inicio de sesión exitoso.');
     }
     public function registro(Request $request)
@@ -81,7 +81,7 @@ class LoginController extends Controller
         $cuenta->password = password_hash($password, PASSWORD_DEFAULT);
         $cuenta->save();
         //Iniciar sesión automáticamente después del registro
-        session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email]);
+        session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email, 'admin' => $cuenta->admin]);
         return redirect('/')->with('success', 'Registro exitoso. Bienvenido, ' . $nombreUsuario . '!');
     }
 }
