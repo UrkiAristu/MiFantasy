@@ -25,18 +25,18 @@ Route::middleware('redirigir.si.autenticado')->group(function () {
     });
     Route::post('/login', [LoginController::class, 'login']);
 });
-//LOGOUT
-Route::get('/logout', function () {
-    session()->flush(); // Borra todos los datos de la sesión
-    return redirect('/login')->with('success', 'Sesión cerrada correctamente.');
-})->middleware('verificar.sesion');
 
 ////////////MIDLEWARE VERIFICAR SESION/////////
 Route::middleware('verificar.sesion')->group(function () {
     Route::get('/', function () {
-        return view('welcome');
+        return view('user/home');
     });
     Route::get('/home', function () {
-        return view('welcome');
+        return view('user/home');
     });
+    //LOGOUT
+    Route::get('/logout', function () {
+        session()->flush(); // Borra todos los datos de la sesión
+        return redirect('/login')->with('success', 'Sesión cerrada correctamente.');
+    })->middleware('verificar.sesion');
 });
