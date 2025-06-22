@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function () {
@@ -39,4 +40,13 @@ Route::middleware('verificar.sesion')->group(function () {
         session()->flush(); // Borra todos los datos de la sesión
         return redirect('/login')->with('success', 'Sesión cerrada correctamente.');
     })->middleware('verificar.sesion');
+    ///////////////MIDLEWARE VERIFICAR ADMIN/////////
+    Route::middleware('verificar.admin')->group(function () {
+        Route::get('/zonaAdmin', function () {
+            return view('admin/home');
+        });
+        Route::get('/admin/usuarios', [UsuarioController::class, 'mostrarPaginaUsuarios']);
+        Route::get('/admin/usuarios/{id}', [UsuarioController::class, 'mostrarPaginaUsuario']);
+        Route::post('admin/usuarios/{id}/editar', [UsuarioController::class, 'editarUsuario']);
+    });
 });

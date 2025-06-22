@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RedirigirSiAutenticado;
+use App\Http\Middleware\VerificarAdmin;
 use App\Http\Middleware\VerificarSesion;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verificar.sesion' => VerificarSesion::class,
             'redirigir.si.autenticado' => RedirigirSiAutenticado::class,
+            'verificar.admin' => VerificarAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
