@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,8 +46,15 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::get('/zonaAdmin', function () {
             return view('admin/home');
         });
+        //USUARIOS
         Route::get('/admin/usuarios', [UsuarioController::class, 'mostrarPaginaUsuarios']);
         Route::get('/admin/usuarios/{id}', [UsuarioController::class, 'mostrarPaginaUsuario']);
         Route::post('admin/usuarios/{id}/editar', [UsuarioController::class, 'editarUsuario']);
+        Route::get('/admin/usuarios/{id}/inhabilitar', [UsuarioController::class, 'inhabilitarUsuario']);
+        Route::get('/admin/usuarios/{id}/habilitar', [UsuarioController::class, 'habilitarUsuario']);
+        //Torneos
+        Route::get('/admin/torneos', [TorneoController::class, 'mostrarPaginaTorneos']);
+        Route::post('/admin/torneos/crear', [TorneoController::class, 'crearTorneo']);
+        Route::get('/admin/torneos/{id}/eliminar', [TorneoController::class, 'eliminarTorneo']);
     });
 });

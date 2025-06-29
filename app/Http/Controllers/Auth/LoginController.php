@@ -43,6 +43,12 @@ class LoginController extends Controller
             return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.'])->withInput();
         }
 
+        //Comprobamos si la cuenta está activa
+        if (!$cuenta->activo) {
+            //Si la cuenta no está activa, redirigimos al login con un error
+            return redirect('/login')->withErrors(['Tu cuenta no está activa. Por favor, contacta con el administrador.'])->withInput();
+        }
+
         //Si todo es correcto, iniciamos sesión
         session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email, 'admin' => $cuenta->admin]);
         return redirect('/')->with('success', 'Inicio de sesión exitoso.');

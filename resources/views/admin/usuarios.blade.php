@@ -4,6 +4,14 @@
 
 @section('content')
 <div class="container mt-5">
+    <!-- Mensajes -->
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+        {{ $error }}<br>
+        @endforeach
+    </div>
+    @endif
     <h1 class="mb-4">Usuarios Registrados</h1>
 
     @if(session('success'))
@@ -45,13 +53,12 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
-                        {{-- <a href="#" class="btn btn-sm btn-outline-warning">Editar</a> --}}
-                        {{-- <form method="POST" action="{{ url('/admin/usuarios/'.$usuario->id) }}" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
-                        </form> --}}
+                        <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
+                        @if($usuario->activo)
+                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de inhabilitar este usuario?')">Inhabilitar</a>
+                        @else
+                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}" class="btn btn-sm btn-outline-success" onclick="return confirm('¿Estás seguro de habilitar este usuario?')">Habilitar</a>
+                        @endif
                     </td>
                 </tr>
                 @empty
