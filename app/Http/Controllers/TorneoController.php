@@ -16,7 +16,7 @@ class TorneoController extends Controller
             $torneos = Torneo::all(); // Reemplaza esto con la lógica para obtener los torneos
 
             // Retornar la vista con los datos de los torneos
-            return view('admin.torneos', ['torneos' => $torneos]);
+            return view('admin.torneos', compact('torneos')); // Asegúrate de tener una vista llamada 'admin.torneos'
         } else {
             // Si no es administrador, redirigir a la página de inicio o mostrar un error
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
@@ -95,6 +95,11 @@ class TorneoController extends Controller
         if (session('admin')) {
             $torneo = Torneo::find($id);
             if ($torneo) {
+                // Eliminar el logo del torneo si existe
+                if ($torneo->logo && file_exists(public_path($torneo->logo))) {
+                    unlink(public_path($torneo->logo));
+                }
+                // Eliminar el torneo de la base de datos
                 $torneo->delete();
                 return redirect('/admin/torneos')->with('success', 'Torneo eliminado correctamente.');
             } else {

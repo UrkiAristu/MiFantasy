@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -56,5 +58,13 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::get('/admin/torneos', [TorneoController::class, 'mostrarPaginaTorneos']);
         Route::post('/admin/torneos/crear', [TorneoController::class, 'crearTorneo']);
         Route::get('/admin/torneos/{id}/eliminar', [TorneoController::class, 'eliminarTorneo']);
+        //Equipos
+        Route::get('/admin/equipos', [EquipoController::class, 'mostrarPaginaEquipos']);
+        Route::post('/admin/equipos/crear', [EquipoController::class, 'crearEquipo']);
+        Route::get('/admin/equipos/{id}/eliminar', [EquipoController::class, 'eliminarEquipo']);
+        //Jugadores
+        Route::get('/admin/jugadores', [JugadorController::class, 'mostrarPaginaJugadores']);
+        Route::post('/admin/jugadores/crear', [JugadorController::class, 'crearJugador']);
+        Route::get('/admin/jugadores/{id}/eliminar', [JugadorController::class, 'eliminarJugador']);
     });
 });

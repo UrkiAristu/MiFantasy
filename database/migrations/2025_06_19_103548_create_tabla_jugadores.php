@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('apellido2')->nullable();
             $table->date('fecha_nacimiento')->nullable();
             $table->string('posicion')->nullable();
+            $table->longText('foto')->nullable();
             $table->timestamps();
         });
     }

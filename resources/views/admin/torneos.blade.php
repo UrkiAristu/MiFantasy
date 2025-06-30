@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Torneos Creados')
+@section('title', 'Torneos')
 
 @section('content')
 <div class="container mt-5">
@@ -13,7 +13,7 @@
     </div>
     @endif
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Torneos Creados</h1>
+        <h1 class="mb-0">Torneos</h1>
         <!-- Botón para abrir el modal -->
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearTorneoModal">
             Crear Torneo
@@ -25,42 +25,42 @@
     @endif
 
     <div class="table-responsive">
-        <table id="tablaTorneos" class="table table-striped table-hover align-middle mt-5">
+        <table id="tablaTorneos" class="table table-striped table-hover align-middle mt-5 text-center">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Logo</th>
-                    <th>Nombre del Torneo</th>
-                    <th>Descripción</th>
-                    <th>Fecha de Inicio</th>
-                    <th>Fecha de Fin</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Logo</th>
+                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Descripción</th>
+                    <th class="text-center">Fecha de Inicio</th>
+                    <th class="text-center">Fecha de Fin</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($torneos as $torneo)
                 <tr>
-                    <td>{{ $torneo->id }}</td>
-                    <td>
+                    <td class="text-center">{{ $torneo->id }}</td>
+                    <td class="text-center">
                         @if($torneo->logo)
                         <img src="{{ asset($torneo->logo) }}" alt="Logo" style="width: 50px; height: 50px; object-fit: contain;">
                         @else
                         <span class="text-muted">Sin logo</span>
                         @endif
                     </td>
-                    <td>{{ $torneo->nombre }}</td>
-                    <td>{{ $torneo->descripcion }}</td>
-                    <td>{{ $torneo->fecha_inicio }}</td>
-                    <td>{{ $torneo->fecha_fin }}</td>
-                    <td>
+                    <td class="text-center">{{ $torneo->nombre }}</td>
+                    <td class="text-center">{{ $torneo->descripcion }}</td>
+                    <td class="text-center">{{ $torneo->fecha_inicio }}</td>
+                    <td class="text-center">{{ $torneo->fecha_fin }}</td>
+                    <td class="text-center">
                         @if($torneo->estado)
                         <span class="badge bg-success">Activo</span>
                         @else
                         <span class="badge bg-secondary">Inactivo</span>
                         @endif
                     </td>
-                    <td>
+                    <td class="text-center">
                         <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
                         <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
                     </td>

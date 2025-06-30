@@ -19,40 +19,40 @@
     @endif
 
     <div class="table-responsive">
-        <table id="tablaUsuarios" class="table table-striped table-hover align-middle mt-5">
+        <table id="tablaUsuarios" class="table table-striped table-hover align-middle mt-5 text-center">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre de Usuario</th>
-                    <th>Email</th>
-                    <th>Admin</th>
-                    <th>Fecha de Registro</th>
-                    <th>Activo</th>
-                    <th>Acciones</th>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Nombre de Usuario</th>
+                    <th class="text-center">Email</th>
+                    <th class="text-center">Admin</th>
+                    <th class="text-center">Fecha de Registro</th>
+                    <th class="text-center">Activo</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($usuarios as $usuario)
                 <tr>
-                    <td>{{ $usuario->id }}</td>
-                    <td>{{ $usuario->nombreUsuario }}</td>
-                    <td>{{ $usuario->email }}</td>
-                    <td>
+                    <td class="text-center">{{ $usuario->id }}</td>
+                    <td class="text-center">{{ $usuario->nombreUsuario }}</td>
+                    <td class="text-center">{{ $usuario->email }}</td>
+                    <td class="text-center">
                         @if($usuario->admin)
                         <span class="badge bg-success">Sí</span>
                         @else
                         <span class="badge bg-secondary">No</span>
                         @endif
                     </td>
-                    <td>{{ $usuario->created_at->format('d/m/Y') }}</td>
-                    <td>
+                    <td class="text-center">{{ $usuario->created_at->format('d/m/Y') }}</td>
+                    <td class="text-center">
                         @if($usuario->activo)
                         <span class="badge bg-success">Sí</span>
                         @else
                         <span class="badge bg-secondary">No</span>
                         @endif
                     </td>
-                    <td>
+                    <td class="text-center">
                         <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
                         @if($usuario->activo)
                         <a href="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de inhabilitar este usuario?')">Inhabilitar</a>
@@ -63,7 +63,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center">No hay usuarios registrados.</td>
+                    <td colspan="7" class="text-center">No hay usuarios registrados.</td>
                 </tr>
                 @endforelse
             </tbody>
