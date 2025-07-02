@@ -53,15 +53,20 @@
                         @endif
                     </td>
                     <td class="text-center">
-                        <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
+                        <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Ver</a>
                         @if($usuario->activo)
                         <a href="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}"
-                            class="btn btn-sm btn-outline-danger btn-inhabilitar-usuario"
-                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}">Inhabilitar</a>
+                            class="btn btn-sm btn-danger btn-inhabilitar-usuario"
+                            title="Inhabilitar usuario"
+                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}">
+                            <i class="bi bi-x-circle"></i>Inhabilitar</a>
                         @else
                         <a href="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}"
-                            class="btn btn-sm btn-outline-success btn-habilitar-usuario"
-                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}">Habilitar</a>
+                            class="btn btn-sm btn-success btn-habilitar-usuario"
+                            title="Habilitar usuario"
+                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}">
+                            <i class="bi bi-check-circle"></i>Habilitar</a>
                         @endif
                     </td>
                 </tr>

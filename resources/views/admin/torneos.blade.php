@@ -61,10 +61,15 @@
                         @endif
                     </td>
                     <td class="text-center">
-                        <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
+                        <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-info" title="Ver torneo">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
                         <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}"
-                            class="btn btn-sm btn-outline-danger btn-eliminar-torneo"
-                            data-url="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}">Eliminar</a>
+                            class="btn btn-sm btn-danger btn-eliminar-torneo"
+                            title="Eliminar torneo"
+                            data-url="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
                     </td>
                 </tr>
                 @empty

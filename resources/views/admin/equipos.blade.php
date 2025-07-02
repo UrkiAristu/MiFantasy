@@ -49,10 +49,15 @@
                     <td class="text-center">{{ $equipo->nombre }}</td>
                     <td class="text-center">{{ $equipo->created_at }}</td>
                     <td class="text-center">
-                        <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
+                        <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
                         <a href="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}"
-                            class="btn btn-sm btn-outline-danger btn-eliminar-equipo"
-                            data-url="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}">Eliminar</a>
+                            class="btn btn-sm btn-danger btn-eliminar-equipo"
+                            title="Eliminar equipo"
+                            data-url="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
                     </td>
                 </tr>
                 @empty

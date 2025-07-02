@@ -53,10 +53,15 @@
                     <td class="text-center">{{ $jugador->fecha_nacimiento }}</td>
                     <td class="text-center"><span class="text-muted">{{ $jugador->posicion ?? 'Sin posición' }}</span></td>
                     <td class="text-center">
-                        <a href="{{ url('/admin/jugadores/'.$jugador->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
+                        <a href="{{ url('/admin/jugadores/'.$jugador->id) }}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
                         <a href="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}"
-                            class="btn btn-sm btn-outline-danger btn-eliminar-jugador"
-                            data-url="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}">Eliminar</a>
+                            class="btn btn-sm btn-danger btn-eliminar-jugador"
+                            title="Eliminar jugador"
+                            data-url="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
                     </td>
                 </tr>
                 @empty
