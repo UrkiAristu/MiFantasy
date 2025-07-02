@@ -34,19 +34,19 @@ class LoginController extends Controller
         $cuenta = Cuenta::where('nombreUsuario', $nombreUsuario)->orWhere('email', $nombreUsuario)->first();
         if (!$cuenta) {
             //Devuelve los errores en json
-            return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.'])->withInput();
+            return redirect('/login')->withErrors(['login' => 'El nombre de usuario o la contraseña son incorrectos.'])->withInput();
         }
 
         //Comprobamos la contraseña
         if (!password_verify($password, $cuenta->password)) {
             //Devuelve los errores en json
-            return redirect('/login')->withErrors(['El nombre de usuario o la contraseña son incorrectos.'])->withInput();
+            return redirect('/login')->withErrors(['login' => 'El nombre de usuario o la contraseña son incorrectos.'])->withInput();
         }
 
         //Comprobamos si la cuenta está activa
         if (!$cuenta->activo) {
             //Si la cuenta no está activa, redirigimos al login con un error
-            return redirect('/login')->withErrors(['Tu cuenta no está activa. Por favor, contacta con el administrador.'])->withInput();
+            return redirect('/login')->withErrors(['login' => 'La cuenta no está activa. Por favor, contacta con el administrador.'])->withInput();
         }
 
         //Si todo es correcto, iniciamos sesión

@@ -30,12 +30,12 @@
         </div>
 
         <!-- Contenido -->
-        <div class="d-flex flex-column flex-lg-row-fluid py-10">
+        <div class="d-flex flex-column flex-lg-row-fluid py-8">
             <div class="d-flex flex-center flex-column flex-column-fluid">
-                <div class="w-lg-500px p-10 p-lg-15 mx-auto card shadow">
+                <div class="w-lg-500px p-8 p-lg-10 mx-auto card shadow">
 
                     <!-- Formulario -->
-                    <form class="form w-100" method="POST" action="/login">
+                    <form class="form w-100" method="POST" action="{{ url('/login' ) }}" id="formularioLogin">
                         @csrf
 
                         <!-- Encabezado -->
@@ -47,10 +47,14 @@
                             </div>
                         </div>
 
-                        <!-- Email -->
+                        <!-- Nombre de usuario/Email -->
                         <div class="fv-row mb-10">
                             <label class="form-label fs-6 fw-bolder text-dark">Nombre de usuario/Correo electrónico</label>
-                            <input type="text" name="nombreUsuario" class="form-control form-control-lg form-control-solid" required autofocus value="{{ old('nombreUsuario') }}">
+                            <input type="text" name="nombreUsuario"
+                                class="form-control form-control-lg form-control-solid 
+                            {{ $errors->has('nombreUsuario') || $errors->has('login') ? 'is-invalid' : (old('nombreUsuario') ? 'is-valid' : '') }}"
+                                value="{{ old('nombreUsuario') }}"
+                                required autofocus>
                         </div>
 
                         <!-- Contraseña -->
@@ -59,7 +63,10 @@
                                 <label class="form-label fs-6 fw-bolder text-dark mb-0">Contraseña</label>
                                 <a href="/recuperar" class="link-primary fs-6 fw-bolder">¿Olvidaste tu contraseña?</a>
                             </div>
-                            <input type="password" name="password" id="password" class="form-control form-control-lg form-control-solid" required value="{{ old('password') }}">
+                            <input type="password" name="password" id="password"
+                                class="form-control form-control-lg form-control-solid 
+                                {{ ($errors->has('password') || $errors->has('login')) ? 'is-invalid' : '' }}"
+                                required>
                             <div class="form-check mt-5">
                                 <input type="checkbox" class="form-check-input" id="mostrar_contraseña" onclick="togglePassword()">
                                 <label class="form-check-label" for="mostrar_contraseña">Mostrar contraseñas</label>
