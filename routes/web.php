@@ -56,8 +56,13 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::get('/admin/usuarios/{id}/habilitar', [UsuarioController::class, 'habilitarUsuario']);
         //Torneos
         Route::get('/admin/torneos', [TorneoController::class, 'mostrarPaginaTorneos']);
+        Route::get('/admin/torneos/{id}', [TorneoController::class, 'mostrarPaginaTorneo']);
         Route::post('/admin/torneos/crear', [TorneoController::class, 'crearTorneo']);
         Route::get('/admin/torneos/{id}/eliminar', [TorneoController::class, 'eliminarTorneo']);
+        Route::post('/admin/torneos/{id}/editar', [TorneoController::class, 'editarTorneo']);
+        Route::post('/admin/torneos/{id}/equipos/agregar', [TorneoController::class, 'agregarEquipoATorneo']);
+        Route::get('/admin/torneos/{id}/equipos/{equipoId}/eliminar', [TorneoController::class, 'eliminarEquipoDeTorneo']);
+        Route::post('/admin/torneos/{id}/equipos/crear', [TorneoController::class, 'crearEquipoEnTorneo']);
         //Equipos
         Route::get('/admin/equipos', [EquipoController::class, 'mostrarPaginaEquipos']);
         Route::post('/admin/equipos/crear', [EquipoController::class, 'crearEquipo']);

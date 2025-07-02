@@ -12,6 +12,7 @@
     {{-- Bootstrap 5 --}}
     {{-- Estilos globales --}}
     <link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/fantasy.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}">
 
     {{-- DataTables + Bootstrap 5 --}}
