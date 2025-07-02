@@ -55,9 +55,13 @@
                     <td class="text-center">
                         <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
                         @if($usuario->activo)
-                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de inhabilitar este usuario?')">Inhabilitar</a>
+                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}"
+                            class="btn btn-sm btn-outline-danger btn-inhabilitar-usuario"
+                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}">Inhabilitar</a>
                         @else
-                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}" class="btn btn-sm btn-outline-success" onclick="return confirm('¿Estás seguro de habilitar este usuario?')">Habilitar</a>
+                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}"
+                            class="btn btn-sm btn-outline-success btn-habilitar-usuario"
+                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}">Habilitar</a>
                         @endif
                     </td>
                 </tr>
@@ -83,6 +87,56 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print',
             ]
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const botonesInhabilitar = document.querySelectorAll('.btn-inhabilitar-usuario');
+        const botonesHabilitar = document.querySelectorAll('.btn-habilitar-usuario');
+
+        botonesInhabilitar.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas inhabilitar este usuario?',
+                    text: "El usuario no podrá acceder al sistema.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, inhabilitar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+
+        botonesHabilitar.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas habilitar este usuario?',
+                    text: "El usuario podrá acceder nuevamente al sistema.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, habilitar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
         });
     });
 </script>

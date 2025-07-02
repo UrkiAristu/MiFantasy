@@ -62,7 +62,9 @@
                     </td>
                     <td class="text-center">
                         <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
-                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}"
+                            class="btn btn-sm btn-outline-danger btn-eliminar-torneo"
+                            data-url="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}">Eliminar</a>
                     </td>
                 </tr>
                 @empty
@@ -133,6 +135,33 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print',
             ]
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar-torneo');
+
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas eliminar este torneo?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
         });
     });
 </script>

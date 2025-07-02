@@ -139,9 +139,9 @@
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                             <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/eliminar') }}"
-                                class="btn btn-danger btn-sm"
+                                class="btn btn-danger btn-sm btn-desapuntar-equipo"
                                 title="Desapuntar del torneo"
-                                onclick="return confirm('¿Estás seguro de que deseas desapuntar este equipo del torneo?')">
+                                data-url="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/eliminar') }}">
                                 <i class="bi bi-x-circle"></i> Quitar
                             </a>
                         </td>
@@ -229,6 +229,33 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print',
             ]
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const botonesEliminar = document.querySelectorAll('.btn-desapuntar-equipo');
+
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas eliminar este equipo del torneo?',
+                    text: "El equipo no participará más en el torneo.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
         });
     });
 </script>

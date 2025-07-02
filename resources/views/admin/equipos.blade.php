@@ -50,12 +50,15 @@
                     <td class="text-center">{{ $equipo->created_at }}</td>
                     <td class="text-center">
                         <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-sm btn-outline-info">Ver</a>
-                        <a href="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                        <a href="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}"
+                            class="btn btn-sm btn-outline-danger btn-eliminar-equipo"
+                            data-url="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}">Eliminar</a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center">No hay equipos creados.</td>
+                    <td colspan="8" class="text-center">No hay equipos creados.
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
@@ -105,4 +108,33 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar-equipo');
+
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.dataset.url;
+
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas eliminar este equipo?',
+                    text: "¡Esta acción no se puede deshacer!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirige
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 @endpush
