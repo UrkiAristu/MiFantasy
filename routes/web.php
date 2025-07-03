@@ -78,7 +78,12 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::post('/admin/equipos/{id}/jugadores/crear', [EquipoController::class, 'crearJugadorEnEquipo']);
         //Jugadores
         Route::get('/admin/jugadores', [JugadorController::class, 'mostrarPaginaJugadores']);
+        Route::get('/admin/jugadores/{id}', [JugadorController::class, 'mostrarPaginaJugador']);
         Route::post('/admin/jugadores/crear', [JugadorController::class, 'crearJugador']);
         Route::get('/admin/jugadores/{id}/eliminar', [JugadorController::class, 'eliminarJugador']);
+        Route::post('/admin/jugadores/{id}/editar', [JugadorController::class, 'editarJugador']);
+        Route::post('/admin/jugadores/{id}/equipos/agregar', [JugadorController::class, 'agregarAEquipoJugador']);
+        Route::get('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
+        Route::post('/admin/jugadores/{id}/equipos/crear', [JugadorController::class, 'crearEquipoConJugador']);
     });
 });

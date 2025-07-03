@@ -191,7 +191,7 @@ class EquipoController extends Controller
         if (session('admin')) {
             $equipo = Equipo::find($id);
             if ($equipo) {
-                $torneoId = $request->input('torneo_id');
+                $torneoId = $request->torneo_id;
                 $torneo = Torneo::find($torneoId);
                 if ($torneo) {
                     // Inscribir el equipo al torneo
@@ -274,11 +274,24 @@ class EquipoController extends Controller
             if ($equipo) {
                 // Crear el torneo
                 $torneo = new Torneo();
-                $torneo->nombre = $request->input('nombre');
-                $torneo->descripcion = $request->input('descripcion');
-                $torneo->fecha_inicio = $request->input('fecha_inicio');
-                $torneo->fecha_fin = $request->input('fecha_fin');
-                $torneo->save();
+                $torneo->nombre = $request->nombre;
+                $torneo->descripcion = $request->descripcion;
+                $torneo->fecha_inicio = $request->fecha_inicio;
+                $torneo->fecha_fin = $request->fecha_fin;
+                $torneo->estado = $request->estado;
+                if ($request->hasFile('logo')) {
+                    $nombreTorneo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->nombre);
+                    $timestamp = time();
+                    $extension = $request->file('logo')->getClientOriginalExtension();
+                    $logoFileName = "logo_{$nombreTorneo}_{$timestamp}.{$extension}";
+                    // Guarda directo en /public/torneos_logos
+                    $request->file('logo')->move(public_path('torneos_logos'), $logoFileName);
+
+                    // Guarda solo la ruta relativa para mostrarla
+                    $torneo->logo = 'torneos_logos/' . $logoFileName;
+                } else {
+                    $torneo->logo = null; // Si no se subió un logo, establecerlo como nulo
+                }
 
                 // Inscribir el equipo al torneo
                 $equipo->torneos()->attach($torneo->id);
@@ -316,7 +329,7 @@ class EquipoController extends Controller
         if (session('admin')) {
             $equipo = Equipo::find($id);
             if ($equipo) {
-                $jugadorId = $request->input('jugador_id');
+                $jugadorId = $request->jugador_id;
                 $jugador = Jugador::find($jugadorId);
                 if ($jugador) {
                     // Agregar el jugador al equipo

@@ -93,7 +93,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="apellido2" class="form-label">Segundo Apellido</label>
-                        <input type="text" class="form-control" id="apellido2" name="apellido2">
+                        <input type="text" class="form-control" id="apellido2" name="apellido2" required>
                     </div>
                     <div class="mb-3">
                         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
