@@ -80,6 +80,12 @@
 
                     <div class="mt-4">
                         <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                        <a href="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}"
+                            class="btn btn-danger btn-eliminar-jugador"
+                            title="Eliminar el jugador"
+                            data-url="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}">
+                            Eliminar
+                        </a>
                         <a href="{{ url('/admin/equipos') }}" class="btn btn-secondary">Volver</a>
                     </div>
                 </div>
@@ -273,12 +279,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const botonesEliminar = document.querySelectorAll('.btn-dejar-equipo');
-
         botonesEliminar.forEach(boton => {
             boton.addEventListener('click', function(e) {
                 e.preventDefault();
                 const url = this.getAttribute('data-url');
-
                 Swal.fire({
                     title: '¿Estás seguro de que deseas expulsar este jugador del equipo?',
                     text: "El jugador no formará parte del equipo.",
@@ -293,6 +297,26 @@
                         window.location.href = url;
                     }
                 });
+            });
+        });
+
+        const botonEliminarJugador = document.querySelector('.btn-eliminar-jugador');
+        botonEliminarJugador.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+            Swal.fire({
+                title: '¿Estás seguro de que deseas eliminar este jugador?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
             });
         });
     });

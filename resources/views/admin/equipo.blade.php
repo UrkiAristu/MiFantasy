@@ -69,6 +69,12 @@
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                    <a href="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}"
+                        class="btn btn-danger btn-eliminar-equipo"
+                        title="Eliminar el equipo"
+                        data-url="{{ url('/admin/equipos/'.$equipo->id.'/eliminar') }}">
+                        Eliminar
+                    </a>
                     <a href="{{ url('/admin/equipos') }}" class="btn btn-secondary">Volver</a>
                 </div>
             </form>
@@ -377,12 +383,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const botonesEliminar = document.querySelectorAll('.btn-desapuntar-equipo');
-
         botonesEliminar.forEach(boton => {
             boton.addEventListener('click', function(e) {
                 e.preventDefault();
                 const url = this.getAttribute('data-url');
-
                 Swal.fire({
                     title: '¿Estás seguro de que deseas expulsar este equipo del torneo?',
                     text: "El equipo no participará más en el torneo.",
@@ -399,6 +403,7 @@
                 });
             });
         });
+
         const botonesExpulsarJugador = document.querySelectorAll('.btn-expulsar-jugador');
         botonesExpulsarJugador.forEach(boton => {
             boton.addEventListener('click', function(e) {
@@ -413,6 +418,28 @@
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Sí, expulsar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+
+        const botonesEliminarEquipo = document.querySelectorAll('.btn-eliminar-equipo');
+        botonesEliminarEquipo.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas eliminar este equipo?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {

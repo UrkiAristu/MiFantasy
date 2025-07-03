@@ -97,6 +97,12 @@
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                    <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}"
+                        class="btn btn-danger btn-eliminar-torneo"
+                        title="Eliminar el torneo"
+                        data-url="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}">
+                        Eliminar
+                    </a>
                     <a href="{{ url('/admin/torneos') }}" class="btn btn-secondary">Volver</a>
                 </div>
             </form>
@@ -238,12 +244,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const botonesEliminar = document.querySelectorAll('.btn-desapuntar-equipo');
-
         botonesEliminar.forEach(boton => {
             boton.addEventListener('click', function(e) {
                 e.preventDefault();
                 const url = this.getAttribute('data-url');
-
                 Swal.fire({
                     title: '¿Estás seguro de que deseas expulsar este equipo del torneo?',
                     text: "El equipo no participará más en el torneo.",
@@ -258,6 +262,26 @@
                         window.location.href = url;
                     }
                 });
+            });
+        });
+
+        const botonEliminarTorneo = document.querySelector('.btn-eliminar-torneo');
+        botonEliminarTorneo.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+            Swal.fire({
+                title: '¿Estás seguro de que deseas eliminar este torneo?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
             });
         });
     });
