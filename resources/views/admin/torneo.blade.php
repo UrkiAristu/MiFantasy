@@ -107,7 +107,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title mb-0">Equipos Inscritos</h5>
                 <!-- Botón para abrir modal -->
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#equipoModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal">
                     Añadir Equipo
                 </button>
             </div>
@@ -143,6 +143,9 @@
                                 title="Desapuntar del torneo"
                                 data-url="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/eliminar') }}">
                                 <i class="bi bi-x-circle"></i> Quitar
+                            </a>
+                            <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm" title="Ver jugadores del equipo">
+                                <i class="bi bi-person"></i> Jugadores
                             </a>
                         </td>
                     </tr>
@@ -242,13 +245,13 @@
                 const url = this.getAttribute('data-url');
 
                 Swal.fire({
-                    title: '¿Estás seguro de que deseas eliminar este equipo del torneo?',
+                    title: '¿Estás seguro de que deseas expulsar este equipo del torneo?',
                     text: "El equipo no participará más en el torneo.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, expulsar',
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {

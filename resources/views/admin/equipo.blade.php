@@ -169,10 +169,10 @@
                                     <a href="{{ url('/admin/jugadores/'.$jugador->id) }}" class="btn btn-info btn-sm" title="Ver jugador">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>
-                                    <a href="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}"
-                                        class="btn btn-danger btn-sm btn-desapuntar-equipo"
-                                        title="Desapuntar del torneo"
-                                        data-url="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}">
+                                    <a href="{{ url('/admin/equipos/'.$equipo->id.'/jugadores/'.$jugador->id.'/eliminar') }}"
+                                        class="btn btn-danger btn-sm btn-expulsar-jugador"
+                                        title="Expulsar del equipo"
+                                        data-url="{{ url('/admin/equipos/'.$equipo->id.'/jugadores/'.$jugador->id.'/eliminar') }}">
                                         <i class="bi bi-x-circle"></i> Quitar
                                     </a>
                                 </td>
@@ -240,7 +240,7 @@
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="descripcion" class="form-label">Descripción</label>
-                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="2" required></textarea>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
@@ -258,7 +258,7 @@
                                     <label for="estado" class="form-label">Estado</label>
                                     <select class="form-select" id="estado" name="estado" required>
                                         <option value="">Selecciona un estado</option>
-                                        <option value="1">Activo</option>
+                                        <option value="1" selected>Activo</option>
                                         <option value="0">Inactivo</option>
                                     </select>
                                 </div>
@@ -333,7 +333,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="posicion" class="form-label">Posición</label>
-                                    <input type="text" class="form-control" id="posicion" name="posicion" required>
+                                    <input type="text" class="form-control" id="posicion" name="posicion">
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="foto" class="form-label">Foto</label>
@@ -384,13 +384,35 @@
                 const url = this.getAttribute('data-url');
 
                 Swal.fire({
-                    title: '¿Estás seguro de que deseas eliminar este equipo del torneo?',
+                    title: '¿Estás seguro de que deseas expulsar este equipo del torneo?',
                     text: "El equipo no participará más en el torneo.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, expulsar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+        const botonesExpulsarJugador = document.querySelectorAll('.btn-expulsar-jugador');
+        botonesExpulsarJugador.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas expulsar a este jugador del equipo?',
+                    text: "El jugador no formará parte del equipo.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, expulsar',
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {

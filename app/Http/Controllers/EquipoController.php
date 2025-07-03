@@ -230,6 +230,68 @@ class EquipoController extends Controller
         }
     }
 
+    public function crearTorneoConEquipo(Request $request, $id)
+    {
+        // Validar los datos del formulario
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nombre' => 'required|string|max:255',
+                'descripcion' => 'nullable|string|max:1000',
+                'fecha_inicio' => 'required|date',
+                'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'estado' => 'required|boolean',
+            ],
+            [
+                'nombre.required' => 'El nombre del torneo es obligatorio.',
+                'nombre.string' => 'El nombre del torneo debe ser una cadena de texto.',
+                'nombre.max' => 'El nombre del torneo no puede tener más de 255 caracteres.',
+                'descripcion.string' => 'La descripción debe ser una cadena de texto.',
+                'descripcion.max' => 'La descripción no puede tener más de 1000 caracteres.',
+                'fecha_inicio.required' => 'La fecha de inicio es obligatoria.',
+                'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha válida.',
+                'fecha_fin.required' => 'La fecha de fin es obligatoria.',
+                'fecha_fin.date' => 'La fecha de fin debe ser una fecha válida.',
+                'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
+                'logo.image' => 'El logo debe ser una imagen válida (jpeg, png, jpg, gif).',
+                'logo.mimes' => 'El logo debe ser un archivo de imagen válido (jpeg, png, jpg, gif).',
+                'logo.max' => 'El logo no puede tener más de 2 MB.',
+                'estado.required' => 'El estado es obligatorio.',
+                'estado.boolean' => 'El estado debe ser verdadero o falso.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return redirect("/admin/equipos/{$id}")
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Verificar si el usuario es administrador
+        if (session('admin')) {
+            $equipo = Equipo::find($id);
+            if ($equipo) {
+                // Crear el torneo
+                $torneo = new Torneo();
+                $torneo->nombre = $request->input('nombre');
+                $torneo->descripcion = $request->input('descripcion');
+                $torneo->fecha_inicio = $request->input('fecha_inicio');
+                $torneo->fecha_fin = $request->input('fecha_fin');
+                $torneo->save();
+
+                // Inscribir el equipo al torneo
+                $equipo->torneos()->attach($torneo->id);
+
+                return redirect("/admin/equipos/{$id}")->with('success', 'Torneo creado e inscrito al equipo correctamente.');
+            } else {
+                return redirect('/admin/equipos')->withErrors(['Equipo no encontrado.']);
+            }
+        } else {
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
     public function agregarJugadorAEquipo(Request $request, $id)
     {
         // Validar los datos del formulario
@@ -265,6 +327,103 @@ class EquipoController extends Controller
                 }
             } else {
                 return redirect('/admin/equipos')->withErrors(['Equipo no encontrado.']);
+            }
+        } else {
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
+    public function eliminarJugadorDeEquipo($id, $jugadorId)
+    {
+        // Verificar si el usuario es administrador
+        if (session('admin')) {
+            $equipo = Equipo::find($id);
+            if ($equipo) {
+                $jugador = Jugador::find($jugadorId);
+                if ($jugador) {
+                    // Eliminar el jugador del equipo
+                    $equipo->jugadores()->detach($jugadorId);
+                    return redirect("/admin/equipos/{$id}")->with('success', 'Jugador eliminado del equipo correctamente.');
+                } else {
+                    return redirect("/admin/equipos/{$id}")->withErrors(['Jugador no encontrado.']);
+                }
+            } else {
+                return redirect('/admin/equipos')->withErrors(['Equipo no encontrado.']);
+            }
+        } else {
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
+    public function crearJugadorEnEquipo(Request $request, $id)
+    {
+        // Validar los datos del formulario
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nombre' => 'required|string|max:255',
+                'apellido1' => 'required|string|max:255',
+                'apellido2' => 'required|string|max:255',
+                'fecha_nacimiento' => 'required|date',
+                'posicion' => 'nullable|string|max:50',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ],
+            [
+                'nombre.required' => 'El nombre del jugador es obligatorio.',
+                'nombre.string' => 'El nombre del jugador debe ser una cadena de texto.',
+                'nombre.max' => 'El nombre del jugador no puede tener más de 255 caracteres.',
+                'apellido1.required' => 'El primer apellido del jugador es obligatorio.',
+                'apellido1.string' => 'El primer apellido del jugador debe ser una cadena de texto.',
+                'apellido1.max' => 'El primer apellido del jugador no puede tener más de 255 caracteres.',
+                'apellido2.required' => 'El segundo apellido del jugador es obligatorio.',
+                'apellido2.string' => 'El segundo apellido del jugador debe ser una cadena de texto.',
+                'apellido2.max' => 'El segundo apellido del jugador no puede tener más de 255 caracteres.',
+                'fecha_nacimiento.required' => 'La fecha de nacimiento del jugador es obligatoria.',
+                'fecha_nacimiento.date' => 'La fecha de nacimiento del jugador debe ser una fecha válida.',
+                'posicion.required' => 'La posición del jugador es obligatoria.',
+                'posicion.string' => 'La posición del jugador debe ser una cadena de texto.',
+                'posicion.max' => 'La posición del jugador no puede tener más de 50 caracteres.',
+                'foto.image' => 'La foto debe ser una imagen válida (jpeg, png, jpg, gif).',
+                'foto.mimes' => 'La foto debe ser un archivo de imagen válido (jpeg, png, jpg, gif).',
+                'foto.max' => 'La foto no puede tener más de 2 MB.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return redirect("/admin/equipos/{$id}")
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Verificar si el usuario es administrador
+        if (session('admin')) {
+            $equipo = Equipo::find($id);
+            if ($equipo) {
+                // Crear el jugador
+                $jugador = new Jugador();
+                $jugador->nombre = $request->nombre;
+                $jugador->apellido1 = $request->apellido1;
+                $jugador->apellido2 = $request->apellido2;
+                $jugador->fecha_nacimiento = $request->fecha_nacimiento;
+                $jugador->posicion = $request->posicion;
+                if ($request->hasFile('foto')) {
+                    $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->nombre . '_' . $request->apellido1 . '_' . $request->apellido2);
+                    $timestamp = time();
+                    $extension = $request->file('foto')->getClientOriginalExtension();
+                    $fotoFileName = "foto_{$nombreJugador}_{$timestamp}.{$extension}";
+                    // Guarda directo en /public/jugadores_fotos
+                    $request->file('foto')->move(public_path('jugadores_fotos'), $fotoFileName);
+                    $jugador->foto = "jugadores_fotos/{$fotoFileName}";
+                } else {
+                    $jugador->foto = null; // Si no se subió una foto, establecerlo como nulo
+                }
+                $jugador->save();
+
+                // Asignar el jugador al equipo
+                $equipo->jugadores()->attach($jugador->id);
+                return redirect("/admin/equipos/{$id}")->with('success', 'Jugador creado e inscrito en el equipo correctamente.');
+            } else {
+                return redirect("/admin/equipos/{$id}")->withErrors(['Equipo no encontrado.']);
             }
         } else {
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
