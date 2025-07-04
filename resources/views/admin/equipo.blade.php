@@ -116,11 +116,14 @@
                                 </td>
                                 <td class="text-center">{{ $torneo->nombre }}</td>
                                 <td class="text-center">
-                                    <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-info btn-sm" title="Ver torneo">
+                                    <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-info btn-sm m-1" title="Ver torneo">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>
+                                    <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm m-1" title="Ver jugadores del equipo en este torneo">
+                                        <i class="bi bi-people"></i> Jugadores
+                                    </a>
                                     <a href="{{ url('/admin/equipos/'.$equipo->id.'/torneos/'.$torneo->id.'/eliminar') }}"
-                                        class="btn btn-danger btn-sm btn-desapuntar-equipo"
+                                        class="btn btn-danger btn-sm btn-desapuntar-equipo m-1"
                                         title="Desapuntar del torneo"
                                         data-url="{{ url('/admin/equipos/'.$equipo->id.'/torneos/'.$torneo->id.'/eliminar') }}">
                                         <i class="bi bi-x-circle"></i> Quitar

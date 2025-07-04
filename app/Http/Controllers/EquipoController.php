@@ -292,6 +292,7 @@ class EquipoController extends Controller
                 } else {
                     $torneo->logo = null; // Si no se subió un logo, establecerlo como nulo
                 }
+                $torneo->save();
 
                 // Inscribir el equipo al torneo
                 $equipo->torneos()->attach($torneo->id);

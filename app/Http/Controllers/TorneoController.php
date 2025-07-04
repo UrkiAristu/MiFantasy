@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
+use App\Models\Jugador;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -325,6 +326,212 @@ class TorneoController extends Controller
             }
         } else {
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
+    public function mostrarPaginaJugadoresDeEquipoEnTorneo($id, $equipoId)
+    {
+        // Verificar si el usuario es administrador
+        if (session('admin')) {
+            // Buscar el torneo por ID
+            $torneo = Torneo::find($id);
+            if ($torneo) {
+                // Buscar el equipo por ID
+                $equipo = $torneo->equipos()->find($equipoId);
+                if ($equipo) {
+                    // Jugadores inscritos en este equipo en este torneo
+                    $jugadores = Jugador::whereHas('participaciones', function ($q) use ($id, $equipoId) {
+                        $q->where('torneo_id', $id)
+                            ->where('equipo_id', $equipoId);
+                    })->get();
+                    // Todos los jugadores del equipo (en general)
+                    $todosJugadoresDelEquipo = $equipo->jugadores;
+
+                    // Disponibles: los del equipo que NO están ya en este torneo
+                    $jugadoresDisponibles = $todosJugadoresDelEquipo->diff($jugadores);
+
+                    // Retornar la vista con los datos del torneo y del equipo
+                    return view('admin.jugadores_equipo_torneo', compact('torneo', 'equipo', 'jugadores', 'jugadoresDisponibles')); // Asegúrate de tener una vista llamada 'admin.jugadores_equipo_torneo'
+                } else {
+                    return redirect("/admin/torneos/{$id}")->withErrors(['Equipo no encontrado en este torneo.']);
+                }
+            } else {
+                return redirect('/admin/torneos')->withErrors(['Torneo no encontrado.']);
+            }
+        } else {
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
+    public function agregarJugadorAEquipoEnTorneo(Request $request, $id, $equipoId)
+    {
+        // Validar los datos del formulario
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'jugador_id' => 'required|exists:jugadores,id', // Asegurarse de que el jugador exista
+            ],
+            [
+                'jugador_id.required' => 'El jugador es obligatorio.',
+                'jugador_id.exists' => 'El jugador seleccionado no existe.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Verificar si el usuario es administrador
+        if (session('admin')) {
+            // Buscar el torneo por ID
+            $torneo = Torneo::find($id);
+            if ($torneo) {
+                // Buscar el equipo por ID
+                $equipo = $torneo->equipos()->find($equipoId);
+                if ($equipo) {
+                    // Buscar el jugador por ID
+                    $jugador = Jugador::find($request->jugador_id);
+                    if ($jugador) {
+                        // Inscribir el jugador al equipo en el torneo
+                        $equipo->jugadoresEnTorneos()->attach($jugador->id, ['torneo_id' => $torneo->id]);
+                        return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")->with('success', 'Jugador agregado al equipo en el torneo correctamente.');
+                    } else {
+                        return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")->withErrors(['Jugador no encontrado.']);
+                    }
+                } else {
+                    return redirect("/admin/torneos/{$id}")->withErrors(['Equipo no encontrado en este torneo.']);
+                }
+            } else {
+                return redirect('/admin/torneos')->withErrors(['Torneo no encontrado.']);
+            }
+        } else {
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
+    public function eliminarJugadorDeEquipoEnTorneo($id, $equipoId, $jugadorId)
+    {
+        if (session('admin')) {
+            $torneo = Torneo::find($id);
+            if ($torneo) {
+                $equipo = $torneo->equipos()->find($equipoId);
+                if ($equipo) {
+                    // Verificar si el jugador está inscrito en el equipo en el torneo
+                    if ($equipo->jugadoresEnTorneos()
+                        ->wherePivot('torneo_id', $torneo->id)
+                        ->wherePivot('jugador_id', $jugadorId)
+                        ->exists()
+                    ) {
+                        $equipo->jugadoresEnTorneos()
+                            ->wherePivot('torneo_id', $torneo->id)
+                            ->detach($jugadorId);
+
+                        return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                            ->with('success', 'Jugador eliminado del equipo en el torneo correctamente.');
+                    } else {
+                        return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                            ->withErrors(['El jugador no está inscrito en este equipo en el torneo.']);
+                    }
+                } else {
+                    return redirect("/admin/torneos/{$id}")
+                        ->withErrors(['Equipo no encontrado en este torneo.']);
+                }
+            } else {
+                return redirect('/admin/torneos')
+                    ->withErrors(['Torneo no encontrado.']);
+            }
+        } else {
+            return redirect('/')
+                ->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+
+    public function crearJugadorEnEquipoEnTorneo(Request $request, $id, $equipoId)
+    {
+        // Validar los datos del formulario
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nombre' => 'required|string|max:255',
+                'apellido1' => 'required|string|max:255',
+                'apellido2' => 'required|string|max:255',
+                'fecha_nacimiento' => 'required|date',
+                'posicion' => 'nullable|string|max:50',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ],
+            [
+                'nombre.required' => 'El nombre del jugador es obligatorio.',
+                'nombre.string' => 'El nombre del jugador debe ser una cadena de texto.',
+                'nombre.max' => 'El nombre del jugador no puede tener más de 255 caracteres.',
+                'apellido1.required' => 'El primer apellido del jugador es obligatorio.',
+                'apellido1.string' => 'El primer apellido del jugador debe ser una cadena de texto.',
+                'apellido1.max' => 'El primer apellido del jugador no puede tener más de 255 caracteres.',
+                'apellido2.required' => 'El segundo apellido del jugador es obligatorio.',
+                'apellido2.string' => 'El segundo apellido del jugador debe ser una cadena de texto.',
+                'apellido2.max' => 'El segundo apellido del jugador no puede tener más de 255 caracteres.',
+                'fecha_nacimiento.required' => 'La fecha de nacimiento del jugador es obligatoria.',
+                'fecha_nacimiento.date' => 'La fecha de nacimiento del jugador debe ser una fecha válida.',
+                'posicion.required' => 'La posición del jugador es obligatoria.',
+                'posicion.string' => 'La posición del jugador debe ser una cadena de texto.',
+                'posicion.max' => 'La posición del jugador no puede tener más de 50 caracteres.',
+                'foto.image' => 'La foto debe ser una imagen válida (jpeg, png, jpg, gif).',
+                'foto.mimes' => 'La foto debe ser un archivo de imagen válido (jpeg, png, jpg, gif).',
+                'foto.max' => 'La foto no puede tener más de 2 MB.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Verificar si el usuario es administrador
+        if (session('admin')) {
+            // Buscar el torneo por ID
+            $torneo = Torneo::find($id);
+            if ($torneo) {
+                // Buscar el equipo por ID
+                $equipo = $torneo->equipos()->find($equipoId);
+                if ($equipo) {
+                    //verificar que el equipo esta inscrito al torneo
+                    if ($torneo->equipos()->where('equipo_id', $equipoId)->exists()) {
+                        // Crear un nuevo jugador
+                        $jugador = new Jugador();
+                        $jugador->nombre = $request->nombre;
+                        $jugador->apellido1 = $request->apellido1;
+                        $jugador->apellido2 = $request->apellido2;
+                        $jugador->fecha_nacimiento = $request->fecha_nacimiento;
+                        $jugador->posicion = $request->posicion;
+                        if ($request->hasFile('foto')) {
+                            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->nombre . '_' . $request->apellido1 . '_' . $request->apellido2);
+                            $timestamp = time();
+                            $extension = $request->file('foto')->getClientOriginalExtension();
+                            $fotoFileName = "foto_{$nombreJugador}_{$timestamp}.{$extension}";
+                            // Guarda directo en /public/jugadores_fotos
+                            $request->file('foto')->move(public_path('jugadores_fotos'), $fotoFileName);
+                            $jugador->foto = 'jugadores_fotos/' . $fotoFileName;
+                        } else {
+                            $jugador->foto = null; // Si no se subió una foto, establecerlo como nulo
+                        }
+                        $jugador->save();
+                        //Inscribir jugador en equipo
+                        $equipo->jugadores()->attach($jugador->id);
+                        $equipo->jugadoresEnTorneos()->attach($jugador->id, ['torneo_id' => $torneo->id]);
+                        return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                            ->with('success', 'Jugador creado e inscrito en el equipo del torneo correctamente.');
+                    } else {
+                        return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                            ->withErrors(['El equipo no está inscrito en este torneo.']);
+                    }
+                } else {
+                    return redirect("/admin/torneos/{$id}")->withErrors(['Equipo no encontrado en este torneo.']);
+                }
+            } else {
+                return redirect('/admin/torneos')->withErrors(['Torneo no encontrado.']);
+            }
         }
     }
 }

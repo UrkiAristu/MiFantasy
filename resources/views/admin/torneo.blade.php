@@ -141,17 +141,17 @@
                         </td>
                         <td class="text-center">{{ $equipo->nombre }}</td>
                         <td class="text-center">
-                            <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-info btn-sm" title="Ver equipo">
+                            <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-info btn-sm m-1" title="Ver equipo">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
+                            <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm m-1" title="Ver jugadores del equipo en este torneo">
+                                <i class="bi bi-people"></i> Jugadores
+                            </a>
                             <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/eliminar') }}"
-                                class="btn btn-danger btn-sm btn-desapuntar-equipo"
+                                class="btn btn-danger btn-sm btn-desapuntar-equipo m-1"
                                 title="Desapuntar del torneo"
                                 data-url="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/eliminar') }}">
                                 <i class="bi bi-x-circle"></i> Quitar
-                            </a>
-                            <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm" title="Ver jugadores del equipo">
-                                <i class="bi bi-person"></i> Jugadores
                             </a>
                         </td>
                     </tr>
@@ -163,6 +163,51 @@
             @endif
         </div>
     </div>
+    <div class="card mt-5">
+        <div class="card-body">
+            <h5 class="card-title">Jugadores inscritos en el torneo</h5>
+
+            @if($torneo->jugadores->count())
+            <table id="tablaJugadoresTorneo" class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>Equipo</th>
+                        <th>Goles</th>
+                        <th>Asistencias</th>
+                        <th>Puntos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($torneo->jugadores as $index => $jugador)
+                    @php
+                    // Buscar equipo desde el equipo_id de la pivote
+                    $equipo = \App\Models\Equipo::find($jugador->pivot->equipo_id);
+                    @endphp
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}</td>
+                        <td>{{ $equipo ? $equipo->nombre : 'Sin equipo' }}</td>
+                        <td>{{ $jugador->pivot->goles }}</td>
+                        <td>{{ $jugador->pivot->asistencias }}</td>
+                        <td>{{ $jugador->pivot->puntos }}</td>
+                        <td>
+                            <a href="{{ url('/admin/jugadores/'.$jugador->id) }}" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @else
+            <p class="text-muted mb-0">No hay jugadores inscritos en este torneo todavía.</p>
+            @endif
+        </div>
+    </div>
+
 </div>
 <!-- Modal -->
 <div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
@@ -230,6 +275,16 @@
 <script>
     $(document).ready(function() {
         $('#tablaEquiposTorneo').DataTable({
+            order: false,
+            locale: "es",
+            colReorder: true,
+            dom: 'Bfrtip',
+            stateSave: true,
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print',
+            ]
+        });
+        $('#tablaJugadoresTorneo').DataTable({
             order: false,
             locale: "es",
             colReorder: true,

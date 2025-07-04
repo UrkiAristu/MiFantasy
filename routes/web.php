@@ -63,7 +63,10 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::post('/admin/torneos/{id}/equipos/agregar', [TorneoController::class, 'agregarEquipoATorneo']);
         Route::get('/admin/torneos/{id}/equipos/{equipoId}/eliminar', [TorneoController::class, 'eliminarEquipoDeTorneo']);
         Route::post('/admin/torneos/{id}/equipos/crear', [TorneoController::class, 'crearEquipoEnTorneo']);
-        Route::get('/admin/torneos/{id}/equipos/{equipoId}/jugadores', [TorneoController::class, 'mostrarJugadoresDeEquipoEnTorneo']);
+        Route::get('/admin/torneos/{id}/equipos/{equipoId}/jugadores', [TorneoController::class, 'mostrarPaginaJugadoresDeEquipoEnTorneo']);
+        Route::post('/admin/torneos/{id}/equipos/{equipoId}/jugadores/agregar', [TorneoController::class, 'agregarJugadorAEquipoEnTorneo']);
+        Route::get('/admin/torneos/{id}/equipos/{equipoId}/jugadores/{jugadorId}/eliminar', [TorneoController::class, 'eliminarJugadorDeEquipoEnTorneo']);
+        Route::post('/admin/torneos/{id}/equipos/{equipoId}/jugadores/crear', [TorneoController::class, 'crearJugadorEnEquipoEnTorneo']);
         //Equipos
         Route::get('/admin/equipos', [EquipoController::class, 'mostrarPaginaEquipos']);
         Route::get('/admin/equipos/{id}', [EquipoController::class, 'mostrarPaginaEquipo']);

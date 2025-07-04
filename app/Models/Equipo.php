@@ -20,4 +20,11 @@ class Equipo extends Model
         return $this->belongsToMany(Torneo::class, 'equipo_torneo')
             ->withTimestamps();
     }
+
+    public function jugadoresEnTorneos()
+    {
+        return $this->belongsToMany(Jugador::class, 'equipo_jugador_torneo')
+            ->withPivot(['torneo_id', 'goles', 'asistencias', 'puntos'])
+            ->withTimestamps();
+    }
 }

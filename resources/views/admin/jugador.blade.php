@@ -157,26 +157,59 @@
                 <thead>
                     <tr>
                         <th class="text-center">#</th>
-                        <th class="text-center">Logo</th>
-                        <th class="text-center">Nombre del Torneo</th>
+                        <th class="text-center">Torneo</th>
+                        <th class="text-center">Equipo</th>
+                        <th class="text-center">Goles</th>
+                        <th class="text-center">Asistencias</th>
+                        <th class="text-center">Puntos</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($jugador->participaciones as $index => $torneo)
+                    @php
+                    $equipo = \App\Models\Equipo::find($torneo->pivot->equipo_id);
+                    @endphp
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
+
+                        <!-- Torneo: Logo + Nombre -->
                         <td class="text-center">
-                            @if($torneo->foto)
-                            <img src="{{ asset($torneo->foto) }}" alt="Foto" style="width:40px; height:40px; object-fit:contain;">
-                            @else
-                            <span class="text-muted">Sin foto</span>
-                            @endif
+                            <div class="d-flex flex-column align-items-center">
+                                @if($torneo->logo)
+                                <img src="{{ asset($torneo->logo) }}" alt="Logo Torneo" style="width:40px; height:40px; object-fit:contain;">
+                                @else
+                                <span class="text-muted d-block">Sin logo</span>
+                                @endif
+                                <small class="mt-1">{{ $torneo->nombre }}</small>
+                            </div>
                         </td>
-                        <td class="text-center">{{ $torneo->nombre }}</td>
+
+                        <!-- Equipo: Logo + Nombre -->
+                        <td class="text-center">
+                            <div class="d-flex flex-column align-items-center">
+                                @if($equipo && $equipo->logo)
+                                <img src="{{ asset($equipo->logo) }}" alt="Logo Equipo" style="width:40px; height:40px; object-fit:contain;">
+                                @else
+                                <span class="text-muted d-block">Sin logo</span>
+                                @endif
+                                <small class="mt-1">{{ $equipo ? $equipo->nombre : 'Sin equipo' }}</small>
+                            </div>
+                        </td>
+
+                        <td class="text-center">{{ $torneo->pivot->goles }}</td>
+                        <td class="text-center">{{ $torneo->pivot->asistencias }}</td>
+                        <td class="text-center">{{ $torneo->pivot->puntos }}</td>
+
                         <td class="text-center">
                             <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-info btn-sm" title="Ver torneo">
-                                <i class="bi bi-eye"></i> Ver
+                                <i class="bi bi-trophy"></i> Torneo
+                            </a>
+                            <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-dark btn-sm" title="Ver equipo">
+                                <i class="bi bi-shield"></i> Equipo
+                            </a>
+                            <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm" title="Ver plantilla">
+                                <i class="bi bi-people"></i> Plantilla
                             </a>
                         </td>
                     </tr>
@@ -184,8 +217,9 @@
                 </tbody>
             </table>
             @else
-            <p class="text-muted mb-0">No ha participado en ningun torneo.</p>
+            <p class="text-muted mb-0">No ha participado en ningún torneo.</p>
             @endif
+
         </div>
     </div>
 </div>
