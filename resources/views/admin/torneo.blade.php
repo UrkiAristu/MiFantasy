@@ -108,6 +108,11 @@
             </form>
         </div>
     </div>
+    <div class="mt-5">
+        <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-primary w-100 btn-lg">
+            Ver Partidos
+        </a>
+    </div>
     <div class="card mt-5">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -207,6 +212,7 @@
             @endif
         </div>
     </div>
+
 
 </div>
 <!-- Modal -->

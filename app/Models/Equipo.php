@@ -27,4 +27,18 @@ class Equipo extends Model
             ->withPivot(['torneo_id', 'goles', 'asistencias', 'puntos'])
             ->withTimestamps();
     }
+
+    public function partidosLocal()
+    {
+        return $this->hasMany(Partido::class, 'equipo_local_id');
+    }
+
+    public function partidosVisitante()
+    {
+        return $this->hasMany(Partido::class, 'equipo_visitante_id');
+    }
+    public function partidos()
+    {
+        return $this->partidosLocal->merge($this->partidosVisitante);
+    }
 }

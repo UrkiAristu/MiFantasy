@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\JugadorController;
+use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -88,5 +89,12 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::post('/admin/jugadores/{id}/equipos/agregar', [JugadorController::class, 'agregarAEquipoJugador']);
         Route::get('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
         Route::post('/admin/jugadores/{id}/equipos/crear', [JugadorController::class, 'crearEquipoConJugador']);
+        //Partidos
+        Route::get('/admin/torneos/{id}/partidos', [PartidoController::class, 'mostrarPaginaPartidos']);
+        Route::get('/admin/partidos/{id}', [PartidoController::class, 'mostrarPaginaPartido']);
+        Route::post('/admin/torneos/{id}/partidos/crear', [PartidoController::class, 'crearPartido']);
+        Route::get('/admin/partidos/{id}/eliminar', [PartidoController::class, 'eliminarPartido']);
+        Route::post('/admin/partidos/{id}/editar', [PartidoController::class, 'editarPartido']);
+        Route::post('/admin/partidos/actualizar-resultado', [PartidoController::class, 'actualizarResultado']);
     });
 });
