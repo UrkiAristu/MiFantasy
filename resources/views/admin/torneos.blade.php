@@ -64,6 +64,9 @@
                         <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-info" title="Ver torneo">
                             <i class="bi bi-eye"></i> Ver
                         </a>
+                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-sm btn-primary" title="Ver partidos">
+                            <i class="bi bi-calendar-event"></i> Partidos
+                        </a>
                         <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}"
                             class="btn btn-sm btn-danger btn-eliminar-torneo"
                             title="Eliminar torneo"

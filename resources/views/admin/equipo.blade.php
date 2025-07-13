@@ -122,6 +122,9 @@
                                     <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm m-1" title="Ver jugadores del equipo en este torneo">
                                         <i class="bi bi-people"></i> Jugadores
                                     </a>
+                                    <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-sm btn-primary" title="Ver partidos">
+                                        <i class="bi bi-calendar-event"></i> Partidos
+                                    </a>
                                     <a href="{{ url('/admin/equipos/'.$equipo->id.'/torneos/'.$torneo->id.'/eliminar') }}"
                                         class="btn btn-danger btn-sm btn-desapuntar-equipo m-1"
                                         title="Desapuntar del torneo"

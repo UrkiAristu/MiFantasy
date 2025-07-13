@@ -28,7 +28,25 @@ class PartidoController extends Controller
             ->findOrFail($id);
         //Equipos del torneo del partido
         $equipos = $partido->torneo->equipos;
-        return view('admin.partido', compact('partido', 'equipos'));
+        // Jugadores del equipo local inscritos en el torneo, añadiendo el id del equipo con el que están inscritos
+        $jugadoresLocal = $partido->equipoLocal->jugadoresEnTorneos()
+            ->where('torneo_id', $partido->torneo->id)
+            ->get()
+            ->each(function ($jugador) use ($partido) {
+                $jugador->equipo_id = $partido->equipoLocal->id;
+            });
+
+        // Jugadores del equipo visitante inscritos en el torneo, añadiendo el id del equipo con el que están inscritos
+        $jugadoresVisitante = $partido->equipoVisitante->jugadoresEnTorneos()
+            ->where('torneo_id', $partido->torneo->id)
+            ->get()
+            ->each(function ($jugador) use ($partido) {
+                $jugador->equipo_id = $partido->equipoVisitante->id;
+            });
+
+        // Todos los jugadores del partido
+        $jugadores = $jugadoresLocal->merge($jugadoresVisitante);
+        return view('admin.partido', compact('partido', 'equipos', 'jugadoresLocal', 'jugadoresVisitante', 'jugadores'));
     }
 
     public function crearPartido(Request $request, $id)
@@ -70,6 +88,7 @@ class PartidoController extends Controller
                 //Comprobar que la fecha sea posterior a fecha_inicio y anterior a fecha_fin del torneo
                 $fecha_partido = Carbon::parse($request->fecha_partido);
                 if ($fecha_partido->lt($torneo->fecha_inicio) || $fecha_partido->gt($torneo->fecha_fin)) {
+                    dd($fecha_partido, $torneo->fecha_inicio, $torneo->fecha_fin);
                     return redirect('/admin/torneos/' . $id . '/partidos')
                         ->withErrors(['fecha_partido' => 'La fecha del partido debe estar dentro del rango del torneo.'])
                         ->withInput();
@@ -194,5 +213,32 @@ class PartidoController extends Controller
         $partido->save();
 
         return redirect()->back()->with('success', 'Resultado y eventos guardados correctamente.');
+    }
+
+    public function agregarEvento(Request $request, $id)
+    {
+        $partido = Partido::findOrFail($id);
+
+        $request->validate([
+            'eventos' => 'required|array',
+        ]);
+
+        $partido->eventos = json_encode($request->eventos);
+        $partido->save();
+
+        return response()->json(['status' => 'ok']);
+    }
+    public function eliminarEvento(Request $request, $id)
+    {
+        $partido = Partido::findOrFail($id);
+        $eventoId = $request->input('id');
+
+        $eventos = $partido->eventos ? json_decode($partido->eventos, true) : [];
+        $eventos = array_filter($eventos, fn($e) => $e['id'] != $eventoId);
+
+        $partido->eventos = json_encode(array_values($eventos));
+        $partido->save();
+
+        return response()->json(['success' => true]);
     }
 }

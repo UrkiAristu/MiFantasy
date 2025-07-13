@@ -96,5 +96,7 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::get('/admin/partidos/{id}/eliminar', [PartidoController::class, 'eliminarPartido']);
         Route::post('/admin/partidos/{id}/editar', [PartidoController::class, 'editarPartido']);
         Route::post('/admin/partidos/actualizar-resultado', [PartidoController::class, 'actualizarResultado']);
+        Route::post('/admin/partidos/{id}/eventos/agregar', [PartidoController::class, 'agregarEvento']);
+        Route::post('/admin/partidos/{id}/eventos/eliminar', [PartidoController::class, 'eliminarEvento']);
     });
 });

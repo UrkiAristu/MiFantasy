@@ -67,7 +67,7 @@
                             {{ $partido->goles_local ?? '-' }} - {{ $partido->goles_visitante ?? '-' }}
                         </td>
                         <td class="text-center">
-                            <a href="{{ url('/admin/partidos/'.$partido->id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ url('/admin/partidos/'.$partido->id) }}" class="btn btn-sm btn-info">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                             <button type="button" class="btn btn-sm btn-warning"
