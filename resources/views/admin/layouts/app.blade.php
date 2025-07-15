@@ -39,7 +39,6 @@
 
     {{-- Scripts globales --}}
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-    <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
 
     {{-- jQuery y DataTables --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

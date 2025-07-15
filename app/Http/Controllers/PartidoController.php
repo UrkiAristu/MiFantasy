@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Estadistica;
 use App\Models\Partido;
 use App\Models\Torneo;
 use Carbon\Carbon;
@@ -29,17 +30,13 @@ class PartidoController extends Controller
         //Equipos del torneo del partido
         $equipos = $partido->torneo->equipos;
         // Jugadores del equipo local inscritos en el torneo, añadiendo el id del equipo con el que están inscritos
-        $jugadoresLocal = $partido->equipoLocal->jugadoresEnTorneos()
-            ->where('torneo_id', $partido->torneo->id)
-            ->get()
+        $jugadoresLocal = $partido->equipoLocal->jugadoresEnTorneo($partido->torneo->id)
             ->each(function ($jugador) use ($partido) {
                 $jugador->equipo_id = $partido->equipoLocal->id;
             });
 
         // Jugadores del equipo visitante inscritos en el torneo, añadiendo el id del equipo con el que están inscritos
-        $jugadoresVisitante = $partido->equipoVisitante->jugadoresEnTorneos()
-            ->where('torneo_id', $partido->torneo->id)
-            ->get()
+        $jugadoresVisitante = $partido->equipoVisitante->jugadoresEnTorneo($partido->torneo->id)
             ->each(function ($jugador) use ($partido) {
                 $jugador->equipo_id = $partido->equipoVisitante->id;
             });
@@ -199,6 +196,8 @@ class PartidoController extends Controller
                 $partido->fecha_partido = $fecha_hora_partido;
                 $partido->estado = $request->estado;
                 $partido->save();
+                // Recalcula todo desde cero
+                $partido->actualizarEstadisticas();
 
                 return redirect("/admin/partidos/{$id}")->with('success', 'Partido actualizado correctamente.');
             }
@@ -209,8 +208,93 @@ class PartidoController extends Controller
         $partido = Partido::findOrFail($request->partido_id);
         $partido->goles_local = $request->goles_local;
         $partido->goles_visitante = $request->goles_visitante;
-        $partido->eventos = $request->eventos_json;
+        if (!is_null($request->goles_local) && !is_null($request->goles_visitante)) {
+            $partido->estado = 'jugado';
+        }
         $partido->save();
+        // 👉 Limpia estadísticas previas de este partido
+        Estadistica::where('partido_id', $partido->id)->delete();
+
+        // 👉 Determina resultado base y puntos por equipo
+        if ($partido->estado === 'jugado') {
+            if ($partido->goles_local > $partido->goles_visitante) {
+                $resultadoLocal = 'ganado';
+                $resultadoVisitante = 'perdido';
+                $puntosLocal = 3;
+                $puntosVisitante = 0;
+            } elseif ($partido->goles_local < $partido->goles_visitante) {
+                $resultadoLocal = 'perdido';
+                $resultadoVisitante = 'ganado';
+                $puntosLocal = 0;
+                $puntosVisitante = 3;
+            } else {
+                $resultadoLocal = $resultadoVisitante = 'empatado';
+                $puntosLocal = $puntosVisitante = 1;
+            }
+
+            // Crea stats para Local
+            foreach ($partido->equipoLocal->jugadoresEnTorneo($partido->torneo->id) as $jugador) {
+                Estadistica::create([
+                    'jugador_id' => $jugador->id,
+                    'partido_id' => $partido->id,
+                    'resultado' => $resultadoLocal,
+                    'puntos' => $puntosLocal,
+                ]);
+            }
+
+            //  Crea stats para Visitante
+            foreach ($partido->equipoVisitante->jugadoresEnTorneo($partido->torneo->id) as $jugador) {
+                Estadistica::create([
+                    'jugador_id' => $jugador->id,
+                    'partido_id' => $partido->id,
+                    'resultado' => $resultadoVisitante,
+                    'puntos' => $puntosVisitante,
+                ]);
+            }
+        }
+
+        // Sumar goles, asistencias y tarjetas a cada jugador a partir de los eventos JSON
+        $eventos = json_decode($partido->eventos, true);
+
+        if ($eventos && is_array($eventos)) {
+            foreach ($eventos as $evento) {
+                if (empty($evento['jugador_id'])) continue;
+
+                $stat = Estadistica::firstOrCreate([
+                    'jugador_id' => $evento['jugador_id'],
+                    'partido_id' => $partido->id,
+                ]);
+
+                switch ($evento['tipo']) {
+                    case 'Gol':
+                        $stat->goles += 1;
+                        $stat->puntos += 5; // Por gol
+                        break;
+
+                    case 'Asistencia':
+                        $stat->asistencias += 1;
+                        $stat->puntos += 3; // Por asistencia
+                        break;
+
+                    case 'Tarjeta Amarilla':
+                        $stat->tarjetas_amarillas += 1;
+                        $stat->puntos -= 3;
+                        break;
+
+                    case 'Tarjeta Roja':
+                        $stat->tarjetas_rojas += 1;
+                        $stat->puntos -= 5;
+                        break;
+
+                    case 'Falta':
+                        $stat->faltas += 1;
+                        $stat->puntos -= 1;
+                        break;
+                }
+
+                $stat->save();
+            }
+        }
 
         return redirect()->back()->with('success', 'Resultado y eventos guardados correctamente.');
     }
@@ -219,26 +303,89 @@ class PartidoController extends Controller
     {
         $partido = Partido::findOrFail($id);
 
-        $request->validate([
-            'eventos' => 'required|array',
-        ]);
+        $request->validate([],);
+        // Validar los datos del formulario
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'eventos' => 'nullable|array',
+            ],
+        );
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error']);
+        }
 
         $partido->eventos = json_encode($request->eventos);
         $partido->save();
 
+        // Limpiar estadísticas de ese partido
+        foreach ($partido->estadisticas as $stat) {
+            $stat->goles = 0;
+            $stat->asistencias = 0;
+            $stat->tarjetas_amarillas = 0;
+            $stat->tarjetas_rojas = 0;
+            $stat->faltas = 0;
+            $stat->puntos = 0;
+
+            $equipoJugador = $stat->jugador->participaciones->firstWhere('id', $partido->torneo->id);
+            $equipo_id = $equipoJugador ? $equipoJugador->pivot->equipo_id : null;
+            // Puntos base por resultado
+            if ($partido->goles_local > $partido->goles_visitante) {
+                if ($equipo_id == $partido->equipo_local_id) {
+                    $stat->resultado = 'ganado';
+                    $stat->puntos = 3;
+                } elseif ($equipo_id == $partido->equipo_visitante_id) {
+                    $stat->resultado = 'perdido';
+                    $stat->puntos = 0;
+                }
+            } elseif ($partido->goles_local < $partido->goles_visitante) {
+                if ($equipo_id == $partido->equipo_visitante_id) {
+                    $stat->resultado = 'ganado';
+                    $stat->puntos = 3;
+                } elseif ($equipo_id == $partido->equipo_local_id) {
+                    $stat->resultado = 'perdido';
+                    $stat->puntos = 0;
+                }
+            } else {
+                $stat->resultado = 'empatado';
+                $stat->puntos = 1;
+            }
+            $stat->save();
+        }
+        // Guardar estadísticas de los jugadores involucrados en los eventos
+        foreach ($request->eventos as $evento) {
+            $stat = Estadistica::firstOrCreate([
+                'jugador_id' => $evento['jugador_id'],
+                'partido_id' => $partido->id,
+            ]);
+            switch ($evento['tipo']) {
+                case 'Gol':
+                    $stat->goles += 1;
+                    $stat->puntos += 5;
+                    break;
+
+                case 'Asistencia':
+                    $stat->asistencias += 1;
+                    $stat->puntos += 3;
+                    break;
+
+                case 'Tarjeta Amarilla':
+                    $stat->tarjetas_amarillas += 1;
+                    $stat->puntos -= 3;
+                    break;
+
+                case 'Tarjeta Roja':
+                    $stat->tarjetas_rojas += 1;
+                    $stat->puntos -= 5;
+                    break;
+
+                case 'Falta':
+                    $stat->faltas += 1;
+                    $stat->puntos -= 1;
+                    break;
+            }
+            $stat->save();
+        }
         return response()->json(['status' => 'ok']);
-    }
-    public function eliminarEvento(Request $request, $id)
-    {
-        $partido = Partido::findOrFail($id);
-        $eventoId = $request->input('id');
-
-        $eventos = $partido->eventos ? json_decode($partido->eventos, true) : [];
-        $eventos = array_filter($eventos, fn($e) => $e['id'] != $eventoId);
-
-        $partido->eventos = json_encode(array_values($eventos));
-        $partido->save();
-
-        return response()->json(['success' => true]);
     }
 }

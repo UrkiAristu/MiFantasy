@@ -61,14 +61,14 @@
                         @endif
                     </td>
                     <td class="text-center">
-                        <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-info" title="Ver torneo">
+                        <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-info m-1" title="Ver torneo">
                             <i class="bi bi-eye"></i> Ver
                         </a>
-                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-sm btn-primary" title="Ver partidos">
+                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-sm btn-primary m-1" title="Ver partidos">
                             <i class="bi bi-calendar-event"></i> Partidos
                         </a>
                         <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}"
-                            class="btn btn-sm btn-danger btn-eliminar-torneo"
+                            class="btn btn-sm btn-danger btn-eliminar-torneo m-1"
                             title="Eliminar torneo"
                             data-url="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}">
                             <i class="bi bi-trash"></i> Eliminar

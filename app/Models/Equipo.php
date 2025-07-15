@@ -27,6 +27,12 @@ class Equipo extends Model
             ->withPivot(['torneo_id', 'goles', 'asistencias', 'puntos'])
             ->withTimestamps();
     }
+    public function jugadoresEnTorneo($torneoId)
+    {
+        return $this->jugadoresEnTorneos()
+            ->wherePivot('torneo_id', $torneoId)
+            ->get();
+    }
 
     public function partidosLocal()
     {

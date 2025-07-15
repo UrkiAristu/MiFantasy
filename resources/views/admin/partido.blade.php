@@ -86,9 +86,9 @@
                     <span>
                         <strong>{{ $evento->minuto }}'</strong> -
                         {{ $evento->tipo }}
-                        ({{ ucfirst($evento->equipo_nombre) }})
+                        (<a href="{{ url('/admin/equipos/' . ($evento->equipo_id ?? '')) }}">{{ ucfirst($evento->equipo_nombre) }}</a>)
                         @if(!empty($evento->jugador_nombre))
-                        - {{ $evento->jugador_nombre }}
+                        - <a href="{{ url('/admin/jugadores/' . ($evento->jugador_id ?? '')) }}">{{ $evento->jugador_nombre }}</a>
                         @endif
                     </span>
                     @if($evento->tipo == 'Gol')
@@ -99,6 +99,8 @@
                     <img src="{{ asset('assets/media/icons/tarjeta_roja.png') }}" alt="Tarjeta Roja" class="me-2" style="height: 24px;">
                     @elseif($evento->tipo == 'Tarjeta Amarilla')
                     <img src="{{ asset('assets/media/icons/tarjeta_amarilla.png') }}" alt="Tarjeta Amarilla" class="me-2" style="height: 24px;">
+                    @elseif($evento->tipo == 'Falta')
+                    <img src="{{ asset('assets/media/icons/falta.png') }}" alt="Falta" class="me-2" style="height: 24px;">
                     @else
                     <i class="bi bi-info-circle fs-5 text-primary"></i>
                     @endif
@@ -228,6 +230,7 @@
                             <option value="">Selecciona tipo</option>
                             <option value="Gol">Gol</option>
                             <option value="Asistencia">Asistencia</option>
+                            <option value="Falta">Falta</option>
                             <option value="Tarjeta Amarilla">Tarjeta Amarilla</option>
                             <option value="Tarjeta Roja">Tarjeta Roja</option>
                         </select>

@@ -21,4 +21,9 @@ class Jugador extends Model
             ->withPivot('equipo_id', 'goles', 'asistencias', 'puntos')
             ->withTimestamps();
     }
+
+    public function estadisticas()
+    {
+        return $this->hasMany(Estadistica::class, 'jugador_id');
+    }
 }
