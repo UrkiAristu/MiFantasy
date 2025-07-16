@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('tarjetas_amarillas')->default(0);
             $table->integer('tarjetas_rojas')->default(0);
             $table->integer('faltas')->default(0);
+            $table->integer('paradas')->default(0);
             $table->enum('resultado', ['pendiente', 'ganado', 'perdido', 'empatado'])->default('pendiente');
             $table->integer('puntos')->default(0);
             $table->timestamps();

@@ -101,6 +101,8 @@
                     <img src="{{ asset('assets/media/icons/tarjeta_amarilla.png') }}" alt="Tarjeta Amarilla" class="me-2" style="height: 24px;">
                     @elseif($evento->tipo == 'Falta')
                     <img src="{{ asset('assets/media/icons/falta.png') }}" alt="Falta" class="me-2" style="height: 24px;">
+                    @elseif($evento->tipo == 'Parada')
+                    <img src="{{ asset('assets/media/icons/parada.png') }}" alt="Falta" class="me-2" style="height: 24px;">
                     @else
                     <i class="bi bi-info-circle fs-5 text-primary"></i>
                     @endif
@@ -233,6 +235,7 @@
                             <option value="Falta">Falta</option>
                             <option value="Tarjeta Amarilla">Tarjeta Amarilla</option>
                             <option value="Tarjeta Roja">Tarjeta Roja</option>
+                            <option value="Parada">Parada</option>
                         </select>
                     </div>
 

@@ -97,6 +97,12 @@ class Partido extends Model
                         $stat->faltas += 1;
                         $stat->puntos -= 1;
                         break;
+
+                    case 'Parada':
+                        $stat->paradas += 1;
+                        $stat->puntos += 2;
+                        break;
+
                     default:
                         break;
                 }

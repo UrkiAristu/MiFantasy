@@ -290,6 +290,11 @@ class PartidoController extends Controller
                         $stat->faltas += 1;
                         $stat->puntos -= 1;
                         break;
+
+                    case 'Parada':
+                        $stat->paradas += 1;
+                        $stat->puntos += 2;
+                        break;
                 }
 
                 $stat->save();
@@ -382,6 +387,11 @@ class PartidoController extends Controller
                 case 'Falta':
                     $stat->faltas += 1;
                     $stat->puntos -= 1;
+                    break;
+
+                case 'Parada':
+                    $stat->paradas += 1;
+                    $stat->puntos += 2;
                     break;
             }
             $stat->save();
