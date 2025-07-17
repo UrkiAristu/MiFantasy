@@ -206,26 +206,26 @@ class JugadorController extends Controller
 
     public function agregarAEquipoJugador(Request $request, $id)
     {
-        // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'equipo_id' => 'required|exists:equipos,id', // Asegurarse de que el equipo exista
-            ],
-            [
-                'equipo_id.required' => 'El equipo es obligatorio.',
-                'equipo_id.exists' => 'El equipo seleccionado no existe.',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return redirect("/admin/jugadores/{$id}")
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'equipo_id' => 'required|exists:equipos,id', // Asegurarse de que el equipo exista
+                ],
+                [
+                    'equipo_id.required' => 'El equipo es obligatorio.',
+                    'equipo_id.exists' => 'El equipo seleccionado no existe.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect("/admin/jugadores/{$id}")
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             $jugador = Jugador::find($id);
             if ($jugador) {
                 $equipoId = $request->equipo_id;
@@ -269,30 +269,30 @@ class JugadorController extends Controller
 
     public function crearEquipoConJugador(Request $request, $id)
     {
-        // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'nombre' => 'required|string|max:255',
-                'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
-            ],
-            [
-                'nombre.required' => 'El nombre del equipo es obligatorio.',
-                'nombre.string' => 'El nombre del equipo debe ser una cadena de texto.',
-                'nombre.max' => 'El nombre del equipo no puede tener más de 255 caracteres.',
-                'logo.image' => 'El logo debe ser una imagen válida.',
-                'logo.max' => 'El logo no puede tener más de 2 MB.',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return redirect("/admin/jugadores/{$id}")
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nombre' => 'required|string|max:255',
+                    'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
+                ],
+                [
+                    'nombre.required' => 'El nombre del equipo es obligatorio.',
+                    'nombre.string' => 'El nombre del equipo debe ser una cadena de texto.',
+                    'nombre.max' => 'El nombre del equipo no puede tener más de 255 caracteres.',
+                    'logo.image' => 'El logo debe ser una imagen válida.',
+                    'logo.max' => 'El logo no puede tener más de 2 MB.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect("/admin/jugadores/{$id}")
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             $jugador = Jugador::find($id);
             if ($jugador) {
                 // Crear el equipo

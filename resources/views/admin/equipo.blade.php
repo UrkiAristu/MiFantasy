@@ -245,7 +245,7 @@
                     <div class="tab-pane fade" id="crearTorneo" role="tabpanel">
                         <form method="POST" action="{{ url('/admin/equipos/'.$equipo->id.'/torneos/crear') }}" enctype="multipart/form-data">
                             @csrf
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label for="nuevo_nombre" class="form-label">Nombre del Torneo</label>
                                     <input type="text" class="form-control" id="nuevo_nombre" name="nombre" required>
@@ -273,6 +273,43 @@
                                         <option value="1" selected>Activo</option>
                                         <option value="0">Inactivo</option>
                                     </select>
+                                </div>
+                            </div> -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="nombre" class="form-label">Nombre del Torneo</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="logo" class="form-label">Logo</label>
+                                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                                </div>
+                                <div class="col-12">
+                                    <label for="descripcion" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select class="form-select" id="estado" name="estado" required>
+                                        <option value="1" selected>Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="jugadores_por_equipo" class="form-label">Jugadores por Equipo</label>
+                                    <input type="number" class="form-control" id="jugadores_por_equipo" name="jugadores_por_equipo" min="1" value="5" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label d-block" for="usa_posiciones">Usar Posiciones</label>
+                                    <input class="form-check-input ms-3 mt-3" type="checkbox" id="usa_posiciones" name="usa_posiciones" value="1" style="transform: scale(2);">
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-success">Crear y Añadir</button>

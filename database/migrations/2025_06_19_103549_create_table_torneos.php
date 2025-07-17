@@ -19,6 +19,10 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->string('logo')->nullable(); // Optional logo field
             $table->string('estado')->default('activo'); // Default state is 'active'
+            $table->unsignedTinyInteger('jugadores_por_equipo')->default(5)
+                ->comment('Número de jugadores por equipo que juegan a la vez');
+            $table->boolean('usa_posiciones')->default(false)
+                ->comment('Indica si se usan posiciones en alineaciones');
             $table->timestamps();
         });
     }

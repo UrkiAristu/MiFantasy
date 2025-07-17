@@ -35,6 +35,8 @@
                     <th class="text-center">Fecha de Inicio</th>
                     <th class="text-center">Fecha de Fin</th>
                     <th class="text-center">Estado</th>
+                    <th class="text-center">Numero Jugadores</th>
+                    <th class="text-center">Posiciones</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
@@ -57,7 +59,15 @@
                         @if($torneo->estado)
                         <span class="badge bg-success">Activo</span>
                         @else
-                        <span class="badge bg-secondary">Inactivo</span>
+                        <span class="badge bg-danger">Inactivo</span>
+                        @endif
+                    </td>
+                    <td class="text-center">{{ $torneo->jugadores_por_equipo }}</td>
+                    <td class="text-center">
+                        @if ($torneo->usa_posiciones)
+                        <span class="badge bg-success">Sí</span>
+                        @else
+                        <span class="badge bg-danger">No</span>
                         @endif
                     </td>
                     <td class="text-center">
@@ -94,32 +104,42 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre del Torneo</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
-                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fecha_fin" class="form-label">Fecha de Fin</label>
-                        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="logo" class="form-label">Logo</label>
-                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="estado" class="form-label">Estado</label>
-                        <select class="form-select" id="estado" name="estado" required>
-                            <option value="1" selected>Activo</option>
-                            <option value="0">Inactivo</option>
-                        </select>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre del Torneo</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="logo" class="form-label">Logo</label>
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                        </div>
+                        <div class="col-12">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                            <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="1" selected>Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="jugadores_por_equipo" class="form-label">Jugadores por Equipo</label>
+                            <input type="number" class="form-control" id="jugadores_por_equipo" name="jugadores_por_equipo" min="1" value="5" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label d-block" for="usa_posiciones">Usar Posiciones</label>
+                            <input class="form-check-input ms-3 mt-3" type="checkbox" id="usa_posiciones" name="usa_posiciones" value="1" style="transform: scale(2);">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

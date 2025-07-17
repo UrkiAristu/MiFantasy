@@ -65,9 +65,17 @@
 
                         <!-- Fila 2: Estado + Descripción -->
                         <div class="row">
-                            <div class="col-md-12 mb-3">
+                            <div class="col-md-7 mb-3">
                                 <label for="descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="descripcion" name="descripcion" rows="2">{{ old('descripcion', $torneo->descripcion) }}</textarea>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="jugadores_por_equipo" class="form-label">Jugadores por Equipo</label>
+                                <input type="number" class="form-control" id="jugadores_por_equipo" name="jugadores_por_equipo" min="1" value="{{ old('jugadores_por_equipo', $torneo->jugadores_por_equipo) }}" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label d-block" for="usa_posiciones">Usar Posiciones</label>
+                                <input class="form-check-input ms-3 mt-3" type="checkbox" id="usa_posiciones" name="usa_posiciones" value="1" style="transform: scale(2);" {{ old('usa_posiciones', $torneo->usa_posiciones ?? false) ? 'checked' : '' }}>
                             </div>
                         </div>
                     </div>

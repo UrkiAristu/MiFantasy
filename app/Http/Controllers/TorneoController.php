@@ -47,18 +47,24 @@ class TorneoController extends Controller
     }
     public function crearTorneo(Request $request)
     {
+
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            $request->merge([
+                'usa_posiciones' => $request->has('usa_posiciones') ? 1 : 0,
+            ]);
             // Validar los datos del formulario
             $validator = Validator::make(
                 $request->all(),
                 [
                     'nombre' => 'required|string|max:255',
-                    'descripcion' => 'nullable|string|max:1000', // Asumiendo que hay un campo de descripción
+                    'descripcion' => 'nullable|string|max:1000',
                     'fecha_inicio' => 'required|date',
-                    'fecha_fin' => 'required|date|after_or_equal:fecha_inicio', // Asegurarse de que la fecha de fin sea igual o posterior a la fecha de inicio
-                    'estado' => 'boolean', // Asumiendo que hay un campo para activar/desactivar el torneo
-                    'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
+                    'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+                    'estado' => 'boolean',
+                    'logo' => 'nullable|image|max:2048',
+                    'jugadores_por_equipo' => 'required|integer|min:1',
+                    'usa_posiciones' => 'nullable|boolean',
                 ],
                 [
                     'nombre.required' => 'El nombre del torneo es obligatorio.',
@@ -74,6 +80,10 @@ class TorneoController extends Controller
                     'estado.boolean' => 'El campo estado debe ser verdadero o falso.',
                     'logo.image' => 'El logo debe ser una imagen válida.',
                     'logo.max' => 'El logo no puede tener más de 2 MB.',
+                    'jugadores_por_equipo.required' => 'El número de jugadores por equipo es obligatorio.',
+                    'jugadores_por_equipo.integer' => 'El número de jugadores por equipo debe ser un número entero.',
+                    'jugadores_por_equipo.min' => 'Debe haber al menos 1 jugador por equipo.',
+                    'usa_posiciones.boolean' => 'El campo "Usar posiciones" debe ser verdadero o falso.',
                 ]
             );
 
@@ -85,10 +95,12 @@ class TorneoController extends Controller
             // Crear un nuevo torneo
             $torneo = new Torneo();
             $torneo->nombre = $request->nombre;
-            $torneo->descripcion = $request->descripcion ?? null; // Asumiendo que hay un campo de descripción
+            $torneo->descripcion = $request->descripcion ?? null;
             $torneo->fecha_inicio = $request->fecha_inicio;
             $torneo->fecha_fin = $request->fecha_fin;
-            $torneo->estado = $request->estado ?? false; // Asumiendo que hay un campo para activar/desactivar el torneo
+            $torneo->estado = $request->estado ?? false;
+            $torneo->jugadores_por_equipo = $request->jugadores_por_equipo;
+            $torneo->usa_posiciones = $request->usa_posiciones;
             if ($request->hasFile('logo')) {
                 $nombreTorneo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->nombre);
                 $timestamp = time();
@@ -136,16 +148,21 @@ class TorneoController extends Controller
     {
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            $request->merge([
+                'usa_posiciones' => $request->has('usa_posiciones') ? 1 : 0,
+            ]);
             // Validar los datos del formulario
             $validator = Validator::make(
                 $request->all(),
                 [
                     'nombre' => 'required|string|max:255',
-                    'descripcion' => 'nullable|string|max:1000', // Asumiendo que hay un campo de descripción
+                    'descripcion' => 'nullable|string|max:1000',
                     'fecha_inicio' => 'required|date',
-                    'fecha_fin' => 'required|date|after_or_equal:fecha_inicio', // Asegurarse de que la fecha de fin sea igual o posterior a la fecha de inicio
-                    'estado' => 'boolean', // Asumiendo que hay un campo para activar/desactivar el torneo
-                    'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
+                    'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+                    'estado' => 'boolean',
+                    'logo' => 'nullable|image|max:2048',
+                    'jugadores_por_equipo' => 'required|integer|min:1',
+                    'usa_posiciones' => 'nullable|boolean',
                 ],
                 [
                     'nombre.required' => 'El nombre del torneo es obligatorio.',
@@ -161,6 +178,10 @@ class TorneoController extends Controller
                     'estado.boolean' => 'El campo estado debe ser verdadero o falso.',
                     'logo.image' => 'El logo debe ser una imagen válida.',
                     'logo.max' => 'El logo no puede tener más de 2 MB.',
+                    'jugadores_por_equipo.required' => 'El número de jugadores por equipo es obligatorio.',
+                    'jugadores_por_equipo.integer' => 'El número de jugadores por equipo debe ser un número entero.',
+                    'jugadores_por_equipo.min' => 'Debe haber al menos 1 jugador por equipo.',
+                    'usa_posiciones.boolean' => 'El campo "Usar posiciones" debe ser verdadero o falso.',
                 ]
             );
 
@@ -174,10 +195,12 @@ class TorneoController extends Controller
             $torneo = Torneo::find($id);
             if ($torneo) {
                 $torneo->nombre = $request->nombre;
-                $torneo->descripcion = $request->descripcion ?? null; // Asumiendo que hay un campo de descripción
+                $torneo->descripcion = $request->descripcion ?? null;
                 $torneo->fecha_inicio = $request->fecha_inicio;
                 $torneo->fecha_fin = $request->fecha_fin;
-                $torneo->estado = $request->estado ?? false; // Asumiendo que hay un campo para activar/desactivar el torneo
+                $torneo->estado = $request->estado ?? false;
+                $torneo->jugadores_por_equipo = $request->jugadores_por_equipo;
+                $torneo->usa_posiciones = $request->usa_posiciones;
                 if ($request->has('eliminar_logo') && $request->eliminar_logo) {
                     // Eliminar el logo del torneo si se ha marcado la opción
                     if ($torneo->logo && file_exists(public_path($torneo->logo))) {
@@ -211,27 +234,26 @@ class TorneoController extends Controller
 
     public function agregarEquipoATorneo(Request $request, $id)
     {
-
-        // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'equipo_id' => 'required|exists:equipos,id', // Asegurarse de que el equipo exista
-            ],
-            [
-                'equipo_id.required' => 'El equipo es obligatorio.',
-                'equipo_id.exists' => 'El equipo seleccionado no existe.',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return redirect("/admin/torneos/{$id}")
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'equipo_id' => 'required|exists:equipos,id', // Asegurarse de que el equipo exista
+                ],
+                [
+                    'equipo_id.required' => 'El equipo es obligatorio.',
+                    'equipo_id.exists' => 'El equipo seleccionado no existe.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect("/admin/torneos/{$id}")
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             // Buscar el torneo por ID
             $torneo = Torneo::find($id);
             if ($torneo) {
@@ -277,29 +299,29 @@ class TorneoController extends Controller
 
     public function crearEquipoEnTorneo(Request $request, $id)
     {
-        // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'nombre' => 'required|string|max:255',
-                'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
-            ],
-            [
-                'nombre.required' => 'El nombre del equipo es obligatorio.',
-                'nombre.string' => 'El nombre del equipo debe ser una cadena de texto.',
-                'nombre.max' => 'El nombre del equipo no puede tener más de 255 caracteres.',
-                'logo.image' => 'El logo debe ser una imagen válida.',
-                'logo.max' => 'El logo no puede tener más de 2 MB.',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return redirect("/admin/torneos/{$id}")
-                ->withErrors($validator)
-                ->withInput();
-        }
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nombre' => 'required|string|max:255',
+                    'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
+                ],
+                [
+                    'nombre.required' => 'El nombre del equipo es obligatorio.',
+                    'nombre.string' => 'El nombre del equipo debe ser una cadena de texto.',
+                    'nombre.max' => 'El nombre del equipo no puede tener más de 255 caracteres.',
+                    'logo.image' => 'El logo debe ser una imagen válida.',
+                    'logo.max' => 'El logo no puede tener más de 2 MB.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect("/admin/torneos/{$id}")
+                    ->withErrors($validator)
+                    ->withInput();
+            }
             $torneo = Torneo::find($id);
             if ($torneo) {
                 // Crear un nuevo equipo
@@ -365,26 +387,26 @@ class TorneoController extends Controller
 
     public function agregarJugadorAEquipoEnTorneo(Request $request, $id, $equipoId)
     {
-        // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'jugador_id' => 'required|exists:jugadores,id', // Asegurarse de que el jugador exista
-            ],
-            [
-                'jugador_id.required' => 'El jugador es obligatorio.',
-                'jugador_id.exists' => 'El jugador seleccionado no existe.',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'jugador_id' => 'required|exists:jugadores,id', // Asegurarse de que el jugador exista
+                ],
+                [
+                    'jugador_id.required' => 'El jugador es obligatorio.',
+                    'jugador_id.exists' => 'El jugador seleccionado no existe.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             // Buscar el torneo por ID
             $torneo = Torneo::find($id);
             if ($torneo) {
@@ -413,6 +435,7 @@ class TorneoController extends Controller
 
     public function eliminarJugadorDeEquipoEnTorneo($id, $equipoId, $jugadorId)
     {
+        // Verificar si el usuario es administrador
         if (session('admin')) {
             $torneo = Torneo::find($id);
             if ($torneo) {
@@ -450,46 +473,46 @@ class TorneoController extends Controller
 
     public function crearJugadorEnEquipoEnTorneo(Request $request, $id, $equipoId)
     {
-        // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'nombre' => 'required|string|max:255',
-                'apellido1' => 'required|string|max:255',
-                'apellido2' => 'required|string|max:255',
-                'fecha_nacimiento' => 'required|date',
-                'posicion' => 'nullable|string|max:50',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ],
-            [
-                'nombre.required' => 'El nombre del jugador es obligatorio.',
-                'nombre.string' => 'El nombre del jugador debe ser una cadena de texto.',
-                'nombre.max' => 'El nombre del jugador no puede tener más de 255 caracteres.',
-                'apellido1.required' => 'El primer apellido del jugador es obligatorio.',
-                'apellido1.string' => 'El primer apellido del jugador debe ser una cadena de texto.',
-                'apellido1.max' => 'El primer apellido del jugador no puede tener más de 255 caracteres.',
-                'apellido2.required' => 'El segundo apellido del jugador es obligatorio.',
-                'apellido2.string' => 'El segundo apellido del jugador debe ser una cadena de texto.',
-                'apellido2.max' => 'El segundo apellido del jugador no puede tener más de 255 caracteres.',
-                'fecha_nacimiento.required' => 'La fecha de nacimiento del jugador es obligatoria.',
-                'fecha_nacimiento.date' => 'La fecha de nacimiento del jugador debe ser una fecha válida.',
-                'posicion.required' => 'La posición del jugador es obligatoria.',
-                'posicion.string' => 'La posición del jugador debe ser una cadena de texto.',
-                'posicion.max' => 'La posición del jugador no puede tener más de 50 caracteres.',
-                'foto.image' => 'La foto debe ser una imagen válida (jpeg, png, jpg, gif).',
-                'foto.mimes' => 'La foto debe ser un archivo de imagen válido (jpeg, png, jpg, gif).',
-                'foto.max' => 'La foto no puede tener más de 2 MB.',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         // Verificar si el usuario es administrador
         if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nombre' => 'required|string|max:255',
+                    'apellido1' => 'required|string|max:255',
+                    'apellido2' => 'required|string|max:255',
+                    'fecha_nacimiento' => 'required|date',
+                    'posicion' => 'nullable|string|max:50',
+                    'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                ],
+                [
+                    'nombre.required' => 'El nombre del jugador es obligatorio.',
+                    'nombre.string' => 'El nombre del jugador debe ser una cadena de texto.',
+                    'nombre.max' => 'El nombre del jugador no puede tener más de 255 caracteres.',
+                    'apellido1.required' => 'El primer apellido del jugador es obligatorio.',
+                    'apellido1.string' => 'El primer apellido del jugador debe ser una cadena de texto.',
+                    'apellido1.max' => 'El primer apellido del jugador no puede tener más de 255 caracteres.',
+                    'apellido2.required' => 'El segundo apellido del jugador es obligatorio.',
+                    'apellido2.string' => 'El segundo apellido del jugador debe ser una cadena de texto.',
+                    'apellido2.max' => 'El segundo apellido del jugador no puede tener más de 255 caracteres.',
+                    'fecha_nacimiento.required' => 'La fecha de nacimiento del jugador es obligatoria.',
+                    'fecha_nacimiento.date' => 'La fecha de nacimiento del jugador debe ser una fecha válida.',
+                    'posicion.required' => 'La posición del jugador es obligatoria.',
+                    'posicion.string' => 'La posición del jugador debe ser una cadena de texto.',
+                    'posicion.max' => 'La posición del jugador no puede tener más de 50 caracteres.',
+                    'foto.image' => 'La foto debe ser una imagen válida (jpeg, png, jpg, gif).',
+                    'foto.mimes' => 'La foto debe ser un archivo de imagen válido (jpeg, png, jpg, gif).',
+                    'foto.max' => 'La foto no puede tener más de 2 MB.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             // Buscar el torneo por ID
             $torneo = Torneo::find($id);
             if ($torneo) {
