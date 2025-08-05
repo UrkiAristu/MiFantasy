@@ -24,16 +24,16 @@
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Crear Liguilla</h5>
                     <p class="card-text">Organiza una nueva liguilla y compite contra tus amigos.</p>
-                    <a href="#" class="btn btn-primary w-100 mt-auto">Crear</a>
+                    <a href={{ url('/user/torneos')}} class="btn btn-primary w-100 mt-auto">Crear</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card h-100 shadow-sm m-2">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Ver Equipos</h5>
-                    <p class="card-text">Explora los equipos que compiten en los torneos activos.</p>
-                    <a href="#" class="btn btn-primary w-100 mt-auto">Equipos</a>
+                    <h5 class="card-title">Unirme a Liguilla</h5>
+                    <p class="card-text">Unete a una liguilla creada por tus amigos y compite en ella.</p>
+                    <a href={{ url('/user/unirseLiguilla')}} class="btn btn-primary w-100 mt-auto">Unirme</a>
                 </div>
             </div>
         </div>

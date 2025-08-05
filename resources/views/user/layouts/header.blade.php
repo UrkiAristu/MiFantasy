@@ -39,8 +39,8 @@
                     <a href="/zonaAdmin" class="nav-link bg-white text-primary rounded mx-3">Zona Admin</a>
                 </li>
                 @endif
-                <li class="nav-item"><a href="#" class="nav-link">Mis Liguillas</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Torneos Activos</a></li>
+                <li class="nav-item"><a href="/user/liguillas" class="nav-link">Mis Liguillas</a></li>
+                <li class="nav-item"><a href="/user/torneos" class="nav-link">Torneos Activos</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Novedades</a></li>
                 <li class="nav-item"><a href="{{ url('/logout') }}" class="nav-link">Cerrar sesión</a></li>
             </ul>

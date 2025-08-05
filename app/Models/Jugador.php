@@ -24,6 +24,6 @@ class Jugador extends Model
 
     public function estadisticas()
     {
-        return $this->hasMany(Estadistica::class, 'jugador_id');
+        return $this->hasMany(Estadistica::class);
     }
 }

@@ -22,10 +22,10 @@ class Estadistica extends Model
     public $timestamps = true;
     public function jugador()
     {
-        return $this->belongsTo(Jugador::class, 'jugador_id');
+        return $this->belongsTo(Jugador::class);
     }
     public function partido()
     {
-        return $this->belongsTo(Partido::class, 'partido_id');
+        return $this->belongsTo(Partido::class);
     }
 }

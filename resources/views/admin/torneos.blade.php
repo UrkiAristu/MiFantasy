@@ -74,8 +74,8 @@
                         <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-sm btn-info m-1" title="Ver torneo">
                             <i class="bi bi-eye"></i> Ver
                         </a>
-                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-sm btn-primary m-1" title="Ver partidos">
-                            <i class="bi bi-calendar-event"></i> Partidos
+                        <a href="{{ url('/admin/torneos/'.$torneo->id.'/jornadas') }}" class="btn btn-sm btn-primary m-1" title="Ver jornadas">
+                            <i class="bi bi-calendar-event"></i> Jornadas
                         </a>
                         <a href="{{ url('/admin/torneos/'.$torneo->id.'/eliminar') }}"
                             class="btn btn-sm btn-danger btn-eliminar-torneo m-1"

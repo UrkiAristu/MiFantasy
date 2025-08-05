@@ -117,8 +117,8 @@
         </div>
     </div>
     <div class="mt-5">
-        <a href="{{ url('/admin/torneos/'.$torneo->id.'/partidos') }}" class="btn btn-primary w-100 btn-lg">
-            <i class="bi bi-calendar-event"></i> Ver Partidos
+        <a href="{{ url('/admin/torneos/'.$torneo->id.'/jornadas') }}" class="btn btn-primary w-100 btn-lg">
+            <i class="bi bi-calendar-event"></i> Ver Jornadas
         </a>
     </div>
     <div class="card mt-5">

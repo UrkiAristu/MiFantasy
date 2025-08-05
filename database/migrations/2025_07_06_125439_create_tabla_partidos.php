@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('partidos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('torneo_id')->constrained()->onDelete('cascade');
+            $table->foreignId('jornada_id')->constrained()->onDelete('cascade');
             $table->foreignId('equipo_local_id')->constrained('equipos')->onDelete('cascade');
             $table->foreignId('equipo_visitante_id')->constrained('equipos')->onDelete('cascade');
             $table->dateTime('fecha_partido');

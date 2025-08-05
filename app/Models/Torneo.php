@@ -20,8 +20,13 @@ class Torneo extends Model
             ->withPivot('equipo_id', 'goles', 'asistencias', 'puntos')
             ->withTimestamps();
     }
-    public function partidos()
+    public function jornadas()
     {
-        return $this->hasMany(Partido::class);
+        return $this->hasMany(Jornada::class);
+    }
+
+    public function liguillas()
+    {
+        return $this->hasMany(Liguilla::class);
     }
 }

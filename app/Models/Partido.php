@@ -8,9 +8,10 @@ class Partido extends Model
 {
     protected $table = 'partidos';
     public $timestamps = true;
-    public function torneo()
+
+    public function jornada()
     {
-        return $this->belongsTo(Torneo::class, 'torneo_id');
+        return $this->belongsTo(Jornada::class);
     }
 
     public function equipoLocal()
@@ -24,7 +25,7 @@ class Partido extends Model
     }
     public function estadisticas()
     {
-        return $this->hasMany(Estadistica::class, 'partido_id');
+        return $this->hasMany(Estadistica::class);
     }
     public function actualizarEstadisticas()
     {
@@ -45,7 +46,7 @@ class Partido extends Model
         // 3) Crear stats base (solo resultado y puntos base)
         $stats = collect();
 
-        foreach ($this->equipoLocal->jugadoresEnTorneo($this->torneo->id) as $jugador) {
+        foreach ($this->equipoLocal->jugadoresEnTorneo($this->jornada->torneo->id) as $jugador) {
             $stats->push(
                 Estadistica::create([
                     'jugador_id' => $jugador->id,
@@ -55,7 +56,7 @@ class Partido extends Model
                 ])
             );
         }
-        foreach ($this->equipoVisitante->jugadoresEnTorneo($this->torneo->id) as $jugador) {
+        foreach ($this->equipoVisitante->jugadoresEnTorneo($this->jornada->torneo->id) as $jugador) {
             $stats->push(
                 Estadistica::create([
                     'jugador_id' => $jugador->id,

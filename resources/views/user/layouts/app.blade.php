@@ -14,6 +14,10 @@
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/fantasy.css') }}" rel="stylesheet" />
+    <!-- Swiper CSS -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
     <style>
         .mobile-menu {

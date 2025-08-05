@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class TorneoController extends Controller
 {
+    //////////////////ADMIN///////////////
     public function mostrarPaginaTorneos()
     {
         // Verificar si el usuario es administrador
@@ -556,5 +557,14 @@ class TorneoController extends Controller
                 return redirect('/admin/torneos')->withErrors(['Torneo no encontrado.']);
             }
         }
+    }
+
+    ///////////////////////////USER////////////////////
+    public function mostrarPaginaTorneosUser()
+    {
+        // Aquí deberías obtener los torneos desde la base de datos
+        $torneos = Torneo::where('estado', 1)->get();
+        // Retornar la vista con los datos de los torneos
+        return view('user.torneos', compact('torneos'));
     }
 }

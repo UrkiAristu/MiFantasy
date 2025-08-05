@@ -7,8 +7,9 @@
     <!-- Título -->
     <div class="text-center mb-4">
         <h1>Detalle del Partido</h1>
-        <a href="{{ url('/admin/torneos/'.$partido->torneo->id.'/partidos') }}">
-            <h4>{{ $partido->torneo->nombre }}</h4>
+        <a href="{{ url('/admin/torneos/'.$partido->jornada->torneo->id.'/jornadas') }}">
+            <h3>{{ $partido->jornada->torneo->nombre }}</h4>
+                <h5>{{ $partido->jornada->nombre }}</h4>
         </a>
     </div>
 
@@ -117,7 +118,7 @@
 
     <!-- Botón para volver -->
     <div class="mt-4">
-        <a href="{{ url('/admin/torneos/'.$partido->torneo->id) }}" class="btn btn-secondary">Volver al Torneo</a>
+        <a href="{{ url('/admin/torneos/'.$partido->jornada->torneo->id.'/jornadas') }}" class="btn btn-secondary">Volver al Torneo</a>
     </div>
 </div>
 <!-- Modal Editar Partido -->
@@ -188,8 +189,8 @@
                         <label for="editarFecha" class="form-label">Fecha</label>
                         <input type="date" name="fecha_partido" id="editarFecha" class="form-control"
                             value="{{ \Carbon\Carbon::parse($partido->fecha_partido)->format('Y-m-d') }}"
-                            min="{{ \Carbon\Carbon::parse($partido->torneo->fecha_inicio)->format('Y-m-d') }}"
-                            max="{{ \Carbon\Carbon::parse($partido->torneo->fecha_fin)->format('Y-m-d') }}" required>
+                            min="{{ \Carbon\Carbon::parse($partido->jornada->torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($partido->jornada->torneo->fecha_fin)->format('Y-m-d') }}" required>
                     </div>
 
                     <!-- Hora -->

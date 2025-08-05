@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\JugadorController;
+use App\Http\Controllers\LiguillaController;
 use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
@@ -89,13 +90,22 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::post('/admin/jugadores/{id}/equipos/agregar', [JugadorController::class, 'agregarAEquipoJugador']);
         Route::get('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
         Route::post('/admin/jugadores/{id}/equipos/crear', [JugadorController::class, 'crearEquipoConJugador']);
+        //Jornadas
+        Route::get('/admin/torneos/{idTorneo}/jornadas', [PartidoController::class, 'mostrarPaginaJornadas']);
+        Route::post('/admin/torneos/{idTorneo}/jornadas/crear', [PartidoController::class, 'crearJornada']);
+        Route::post('/admin/torneos/{idTorneo}/jornadas/guardarOrdenJornadas', [PartidoController::class, 'guardarOrdenJornadas']);
+        Route::get('/admin/jornadas/{id}/eliminar', [PartidoController::class, 'eliminarJornada']);
         //Partidos
-        Route::get('/admin/torneos/{id}/partidos', [PartidoController::class, 'mostrarPaginaPartidos']);
         Route::get('/admin/partidos/{id}', [PartidoController::class, 'mostrarPaginaPartido']);
-        Route::post('/admin/torneos/{id}/partidos/crear', [PartidoController::class, 'crearPartido']);
+        Route::post('/admin/jornadas/{idJornada}/partidos/crear', [PartidoController::class, 'crearPartido']);
         Route::get('/admin/partidos/{id}/eliminar', [PartidoController::class, 'eliminarPartido']);
         Route::post('/admin/partidos/{id}/editar', [PartidoController::class, 'editarPartido']);
         Route::post('/admin/partidos/actualizar-resultado', [PartidoController::class, 'actualizarResultado']);
         Route::post('/admin/partidos/{id}/eventos/agregar', [PartidoController::class, 'agregarEvento']);
     });
+    Route::get('/user/torneos', [TorneoController::class, 'mostrarPaginaTorneosUser']);
+    Route::post('/user/liguillas/crear', [LiguillaController::class, 'crearLiguilla']);
+    Route::get('/user/liguillas', [LiguillaController::class, 'mostrarPaginaLiguillasUser']);
+    Route::get('/user/unirseLiguilla', [LiguillaController::class, 'mostrarPaginaUnirseLiguillasUser']);
+    Route::post('/user/liguillas/unirse', [LiguillaController::class, 'unirseLiguilla']);
 });
