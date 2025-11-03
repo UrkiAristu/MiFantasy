@@ -28,11 +28,16 @@ class PartidoController extends Controller
                 $request->all(),
                 [
                     'nombre' => 'required|string|max:255',
+                    'fecha_inicio' => 'nullable|date',
+                    'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
                 ],
                 [
                     'nombre.required' => 'El nombre es obligatorio.',
                     'nombre.string' => 'El nombre debe ser un string',
                     'nombre.max' => 'El nombre debe tener un maximo de 255 caracteres',
+                    'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha valida.',
+                    'fecha_fin.date' => 'La fecha de fin debe ser una fecha valida.',
+                    'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
                 ]
             );
             if ($validator->fails()) {
@@ -42,6 +47,18 @@ class PartidoController extends Controller
             }
             $torneo = Torneo::find($idTorneo);
             if ($torneo) {
+                $fecha_inicio = Carbon::parse($request->fecha_inicio);
+                $fecha_fin = Carbon::parse($request->fecha_fin);
+
+                // Validar que las fechas de la jornada estén dentro del rango del torneo
+                if (($request->fecha_inicio && $fecha_inicio->gt($torneo->fecha_fin)) ||
+                    ($request->fecha_fin && $fecha_fin->lt($torneo->fecha_inicio))
+                ) {
+                    return redirect('/admin/torneos/' . $idTorneo . '/jornadas')
+                        ->withErrors(['fecha_jornada' => 'Las fechas de inicio y fin de la jornada deben estar dentro del rango del torneo.'])
+                        ->withInput();
+                }
+
                 // Obtener el siguiente orden
                 $maxOrden = Jornada::where('torneo_id', $idTorneo)->max('orden');
                 $nuevoOrden = $maxOrden ? $maxOrden + 1 : 1;
@@ -49,6 +66,8 @@ class PartidoController extends Controller
                 $jornada = new Jornada();
                 $jornada->torneo_id = $idTorneo;
                 $jornada->nombre = $request->nombre;
+                $jornada->fecha_inicio = $request->fecha_inicio;
+                $jornada->fecha_fin = $request->fecha_fin;
                 $jornada->orden = $nuevoOrden;
                 $jornada->save();
                 // Redirigir a la página de torneos con un mensaje de éxito
@@ -60,6 +79,59 @@ class PartidoController extends Controller
             }
         } else {
             // Si no es administrador, redirigir a la página de inicio o mostrar un error
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+    }
+    public function editarJornada(Request $request, $id)
+    {
+        if (session('admin')) {
+            // Validar los datos del formulario
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nombre' => 'required|string|max:255',
+                    'fecha_inicio' => 'nullable|date',
+                    'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
+                ],
+                [
+                    'nombre.required' => 'El nombre es obligatorio.',
+                    'nombre.string' => 'El nombre debe ser un string',
+                    'nombre.max' => 'El nombre debe tener un máximo de 255 caracteres',
+                    'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha válida.',
+                    'fecha_fin.date' => 'La fecha de fin debe ser una fecha válida.',
+                    'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
+                ]
+            );
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+            $jornada = Jornada::findOrFail($id);
+            $torneo = $jornada->torneo;
+            if ($torneo) {
+                $fecha_inicio = Carbon::parse($request->fecha_inicio);
+                $fecha_fin = Carbon::parse($request->fecha_fin);
+
+                // Validar que las fechas de la jornada estén dentro del rango del torneo
+                if (($request->fecha_inicio && $fecha_inicio->gt($torneo->fecha_fin)) ||
+                    ($request->fecha_fin && $fecha_fin->lt($torneo->fecha_inicio))
+                ) {
+                    return redirect('/admin/torneos/' . $torneo->id . '/jornadas')
+                        ->withErrors(['fecha_jornada' => 'Las fechas de inicio y fin de la jornada deben estar dentro del rango del torneo.'])
+                        ->withInput();
+                }
+                $jornada->nombre = $request->nombre;
+                $jornada->fecha_inicio = $request->fecha_inicio;
+                $jornada->fecha_fin = $request->fecha_fin;
+                $jornada->save();
+                return redirect('/admin/torneos/' . $jornada->torneo_id . '/jornadas')->with('success', 'Jornada actualizada correctamente.');
+            } else {
+                return redirect('/admin/torneos')
+                    ->withErrors(['torneo' => 'Torneo no encontrado.'])
+                    ->withInput();
+            }
+        } else {
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
     }

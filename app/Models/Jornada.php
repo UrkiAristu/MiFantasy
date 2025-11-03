@@ -18,4 +18,8 @@ class Jornada extends Model
     {
         return $this->hasMany(Partido::class);
     }
+    public function alineaciones()
+    {
+        return $this->hasMany(Alineacion::class);
+    }
 }

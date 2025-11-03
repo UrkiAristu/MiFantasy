@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alineacion;
 use App\Models\Cuenta;
+use App\Models\Jugador;
 use App\Models\Liguilla;
+use App\Models\Plantilla;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -52,6 +56,8 @@ class LiguillaController extends Controller
 
             // Añadir al creador como primer usuario
             $liguilla->usuarios()->attach(session('cuenta'));
+            // Crear plantilla aleatoria para este usuario en la liguilla
+            $this->crearPlantillaAleatoria($liguilla->id, session('cuenta'));
             // Redirigir a la página de torneos con un mensaje de éxito
             return redirect('/user/liguillas')->with('success', 'Ligulla creada correctamente.');
         } else {
@@ -71,9 +77,10 @@ class LiguillaController extends Controller
         $liguillasUsuario = $usuario->liguillas()->with('torneo')->get();
         return view('user.liguillas', compact('liguillasUsuario'));
     }
-    public function mostrarPaginaUnirseLiguillasUser()
+    public function mostrarPaginaUnirseLiguillasUser(Request $request)
     {
-        return view('user.unirseLiguilla');
+        $codigo = $request->query('codigo'); // o $request->input('codigo')
+        return view('user.unirseLiguilla', compact('codigo'));
     }
     public function unirseLiguilla(Request $request)
     {
@@ -96,7 +103,7 @@ class LiguillaController extends Controller
         $usuarioId = session('cuenta');
 
         // Comprobar si el usuario ya está en esa liguilla
-        if ($liguilla->usuarios()->where('usuario_id', $usuarioId)->exists()) {
+        if ($liguilla->usuarios()->where('cuenta_id', $usuarioId)->exists()) {
             return redirect()->back()->withErrors(['codigo' => 'Ya estás inscrito en esta liguilla.'])->withInput();
         }
 
@@ -107,7 +114,112 @@ class LiguillaController extends Controller
 
         // Añadir usuario a la liguilla
         $liguilla->usuarios()->attach($usuarioId);
+        // Crear plantilla aleatoria para este usuario en la liguilla
+        $this->crearPlantillaAleatoria($liguilla->id, $usuarioId);
 
         return redirect('/user/liguillas')->with('success', 'Te has unido correctamente a la liguilla.');
+    }
+    private function crearPlantillaAleatoria($liguillaId, $usuarioId)
+    {
+        // Crear registro de plantilla
+        $plantilla = Plantilla::create([
+            'liguilla_id' => $liguillaId,
+            'cuenta_id' => $usuarioId
+        ]);
+        $liguilla = Liguilla::findOrFail($liguillaId);
+
+        // Seleccionar jugadores aleatorios del torneo de esa liguilla
+        $jugadores = Jugador::whereHas('participaciones', function ($query) use ($liguilla) {
+            $query->where('torneo_id', $liguilla->torneo->id);
+        })
+            ->whereDoesntHave('plantillas', function ($query) use ($liguilla) {
+                $query->where('liguilla_id', $liguilla->id);
+            })
+            ->inRandomOrder()
+            ->limit(value: $liguilla->torneo->jugadores_por_equipo + 3)
+            ->get();
+        foreach ($jugadores as $jugador) {
+            DB::table('jugador_plantilla')->insert([
+                'plantilla_id' => $plantilla->id,
+                'jugador_id' => $jugador->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+    public function mostrarPaginaLiguillaUser($id)
+    {
+        $usuarioId = session('cuenta'); // ID de usuario logueado
+        $usuario = Cuenta::findOrFail($usuarioId);
+
+        // 1️⃣ Liguilla y torneo
+        $liguilla = Liguilla::with('torneo.jornadas.partidos')
+            ->findOrFail($id);
+
+        // 2️⃣ Clasificación general
+        $clasificacion = $liguilla->usuarios()
+            ->withPivot('puntos')
+            ->orderByDesc('pivot_puntos')
+            ->get()
+            ->map(function ($usuario, $index) {
+                return (object) [
+                    'posicion' => $index + 1,
+                    'nombre' => $usuario->nombreUsuario,
+                    'email' => $usuario->email,
+                    'puntos' => $usuario->pivot->puntos ?? 0
+                ];
+            });
+
+        // 3️⃣ Jornada actual o próxima
+        $hoy = now();
+        $jornadaActiva = $liguilla->torneo->jornadas()
+            ->whereDate('fecha_inicio', '<=', $hoy)
+            ->whereDate('fecha_fin', '>=', $hoy)
+            ->first();
+        if (!$jornadaActiva) {
+            $jornadaActiva = $liguilla->torneo->jornadas()
+                ->whereDate('fecha_inicio', '>=', $hoy)
+                ->orderBy('fecha_inicio', 'asc')
+                ->first();
+        }
+        // 4️⃣ Alineación del usuario en la jornada actual
+        $alineacion = null;
+        if ($jornadaActiva) {
+            $alineacion = Alineacion::with('jugadores')
+                ->where('jornada_id', $jornadaActiva->id)
+                ->where('cuenta_id', $usuarioId)
+                ->first();
+        }
+
+        // 5️⃣ Resultados de partidos de la última jornada
+        $resultados = $jornadaActiva
+            ? $jornadaActiva->partidos()->with(['local', 'visitante'])->get()
+            : collect();
+
+        // Plantilla de usuario
+        $plantilla = Plantilla::with('jugadores')
+            ->where('liguilla_id', $liguilla->id)
+            ->where('cuenta_id', $usuarioId)
+            ->first();
+        $miPlantilla = $plantilla?->jugadores ?? collect();
+
+        // 7️⃣ Comprobar si la jornada ya ha empezado
+        $bloqueada = false;
+        if ($jornadaActiva) {
+            $primerPartido = $jornadaActiva->partidos()->orderBy('fecha_partido', 'asc')->first();
+            if ($primerPartido && now()->gte($primerPartido->fecha_partido)) {
+                $bloqueada = true;
+            }
+        }
+        return view('user.liguilla', compact(
+            'liguilla',
+            'clasificacion',
+            'alineacion',
+            'resultados',
+            'jornadaActiva',
+            'usuario',
+            'miPlantilla',
+            'bloqueada'
+        ));
     }
 }

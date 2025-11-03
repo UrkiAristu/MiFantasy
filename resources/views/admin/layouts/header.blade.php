@@ -4,13 +4,13 @@
             <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="Logo" height="40" class="me-2">
             Admin {{ session()->has('nombreUsuario') ? session('nombreUsuario') : 'Panel' }}
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="adminNavbar">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link bg-white text-primary rounded mx-3" href="{{ url('/') }}">Zona User</a></li>
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link bg-white text-primary rounded mx-3 px-2" href="{{ url('/') }}">Zona User</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url('/admin/usuarios') }}">Usuarios</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url('/admin/torneos') }}">Torneos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url('/admin/equipos') }}">Equipos</a></li>

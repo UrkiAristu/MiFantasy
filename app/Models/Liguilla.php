@@ -18,9 +18,13 @@ class Liguilla extends Model
     }
     public function usuarios()
     {
-        return $this->belongsToMany(Cuenta::class, 'liguilla_usuario', 'liguilla_id', 'usuario_id')
+        return $this->belongsToMany(Cuenta::class, 'liguilla_usuario', 'liguilla_id', 'cuenta_id')
             ->withPivot('puesto', 'puntos')
-            ->withTimestamps()
-            ->with('torneo');;
+            ->withTimestamps();
+    }
+
+    public function plantillas()
+    {
+        return $this->hasMany(Plantilla::class);
     }
 }

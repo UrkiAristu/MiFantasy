@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipo;
 use App\Models\Jugador;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -320,5 +321,29 @@ class JugadorController extends Controller
         } else {
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
+    }
+
+    public function info($idJugador, $idTorneo)
+    {
+        $jugador = Jugador::findOrFail($idJugador);
+        $edad = Carbon::parse($jugador->fecha_nacimiento)->age;
+        $estadisticas = $jugador->resumenEstadisticasEnTorneo($idTorneo);
+        return response()->json([
+            'nombre' => $jugador->nombre,
+            'apellido1' => $jugador->apellido1,
+            'apellido2' => $jugador->apellido2,
+            'foto' => $jugador->foto ? asset($jugador->foto) : null,
+            'equipo' => $jugador->equipoEnTorneo($idTorneo)->nombre ?? '',
+            'posicion' => $jugador->posicion,
+            'edad' => $edad,
+            'partidos' => $estadisticas['partidos_jugados'],
+            'goles' => $estadisticas['goles'],
+            'asistencias' => $estadisticas['asistencias'],
+            'paradas' => $estadisticas['paradas'],
+            'faltas' => $estadisticas['faltas'],
+            'tarjetas_amarillas' => $estadisticas['amarillas'],
+            'tarjetas_rojas' => $estadisticas['rojas'],
+            'puntos' => $estadisticas['puntos'],
+        ]);
     }
 }

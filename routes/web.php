@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlineacionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\JugadorController;
@@ -95,6 +96,7 @@ Route::middleware('verificar.sesion')->group(function () {
         Route::post('/admin/torneos/{idTorneo}/jornadas/crear', [PartidoController::class, 'crearJornada']);
         Route::post('/admin/torneos/{idTorneo}/jornadas/guardarOrdenJornadas', [PartidoController::class, 'guardarOrdenJornadas']);
         Route::get('/admin/jornadas/{id}/eliminar', [PartidoController::class, 'eliminarJornada']);
+        Route::post('/admin/jornadas/{id}/editar', [PartidoController::class, 'editarJornada']);
         //Partidos
         Route::get('/admin/partidos/{id}', [PartidoController::class, 'mostrarPaginaPartido']);
         Route::post('/admin/jornadas/{idJornada}/partidos/crear', [PartidoController::class, 'crearPartido']);
@@ -108,4 +110,8 @@ Route::middleware('verificar.sesion')->group(function () {
     Route::get('/user/liguillas', [LiguillaController::class, 'mostrarPaginaLiguillasUser']);
     Route::get('/user/unirseLiguilla', [LiguillaController::class, 'mostrarPaginaUnirseLiguillasUser']);
     Route::post('/user/liguillas/unirse', [LiguillaController::class, 'unirseLiguilla']);
+    Route::get('/user/liguillas/{id}', [LiguillaController::class, 'mostrarPaginaLiguillaUser']);
+    Route::post('/user/liguillas/{id}/alineacion/guardar', [AlineacionController::class, 'guardarAlineacion']);
+    Route::get('/user/liguillas/{idLiguilla}/alineacion/{idJornada}', [AlineacionController::class, 'obtenerAlineacion']);
+    Route::get('/user/jugadores/{idJugador}/info/torneo/{idTorneo}', [JugadorController::class, 'info']);
 });

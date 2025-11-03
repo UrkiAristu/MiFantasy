@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('liguilla_usuario', function (Blueprint $table) {
+        Schema::create('alineaciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('liguilla_id')->constrained('liguillas')->onDelete('cascade');
             $table->foreignId('cuenta_id')->constrained('cuentas')->onDelete('cascade');
-            $table->string('nombre_equipo')->nullable();
-            $table->integer('puesto')->nullable();
-            $table->integer('puntos')->default(0);
+            $table->foreignId('liguilla_id')->constrained()->onDelete('cascade');
+            $table->foreignId('jornada_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['cuenta_id', 'liguilla_id', 'jornada_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('liguilla_usuario');
+        Schema::dropIfExists('alineaciones');
     }
 };

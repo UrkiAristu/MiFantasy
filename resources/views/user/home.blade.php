@@ -22,7 +22,22 @@
         <div class="col-md-4">
             <div class="card h-100 shadow-sm m-2">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Crear Liguilla</h5>
+                    <h5 class="card-title">
+                        Mis liguillas
+                        <i class="bi bi-trophy text-dark fs-4 ms-1"></i>
+                    </h5>
+                    <p class="card-text">Consulta las liguillas en las que estas compitiendo con tu equipo.</p>
+                    <a href={{ url('/user/liguillas')}} class="btn btn-primary w-100 mt-auto">Ver</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm m-2">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        Crear Liguilla
+                        <i class="bi bi-plus-circle text-dark fs-4 ms-1"></i>
+                    </h5>
                     <p class="card-text">Organiza una nueva liguilla y compite contra tus amigos.</p>
                     <a href={{ url('/user/torneos')}} class="btn btn-primary w-100 mt-auto">Crear</a>
                 </div>
@@ -31,22 +46,15 @@
         <div class="col-md-4">
             <div class="card h-100 shadow-sm m-2">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Unirme a Liguilla</h5>
+                    <h5 class="card-title">
+                        Unirme a Liguilla
+                        <i class="bi bi-person-plus text-dark fs-4 ms-1"></i>
+                    </h5>
                     <p class="card-text">Unete a una liguilla creada por tus amigos y compite en ella.</p>
                     <a href={{ url('/user/unirseLiguilla')}} class="btn btn-primary w-100 mt-auto">Unirme</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm m-2">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Estadísticas</h5>
-                    <p class="card-text">Consulta las estadísticas de tus jugadores.</p>
-                    <a href="#" class="btn btn-primary w-100 mt-auto">Ver estadísticas</a>
-                </div>
-            </div>
-        </div>
-
     </div>
 </section>
 <style>

@@ -14,19 +14,27 @@
             @foreach($liguillasUsuario as $liguilla)
             <div class="swiper-slide d-flex justify-content-center">
                 <div class="card text-center shadow p-5" style="width: 320px;">
-                    @if($liguilla->torneo->logo && file_exists(public_path($liguilla->torneo->logo)))
-                    <img src="{{ asset($liguilla->torneo->logo) }}" alt="{{ $liguilla->torneo->nombre }}" style="height: 180px; object-fit: contain; padding: 20px;">
-                    @else
-                    <!-- Aquí pones la copa grande como fallback -->
-                    <i class="fa fa-trophy" style="font-size: 6rem; color: gold; padding: 20px;"></i>
-                    {{-- O una imagen local: --}}
-                    {{-- <img src="{{ asset('images/copa-grande.png') }}" alt="Copa" style="height: 180px; object-fit: contain; padding: 20px;"> --}}
-                    @endif <div class="card-body">
-                        <h5 class="card-title">{{ $liguilla->nombre }}</h5>
-                        <p class="card-text mb-1"><strong>Torneo:</strong> {{ $liguilla->torneo->nombre }}</p>
-                        <p class="card-text mb-1"><strong>Posición:</strong> {{ $liguilla->pivot->posicion ?? 'N/D' }}</p>
-                        <p class="card-text"><strong>Puntos:</strong> {{ $liguilla->pivot->puntos ?? 0 }}</p>
-                    </div>
+                    <a href={{ url('/user/liguillas/'.$liguilla->id)}}>
+                        @if($liguilla->torneo->logo && file_exists(public_path($liguilla->torneo->logo)))
+                        <img src="{{ asset($liguilla->torneo->logo) }}" alt="{{ $liguilla->torneo->nombre }}" style="height: 180px; object-fit: contain; padding: 20px;">
+                        @else
+                        <!-- Aquí pones la copa grande como fallback -->
+                        <i class="fa fa-trophy" style="font-size: 6rem; color: gold; padding: 20px;"></i>
+                        {{-- O una imagen local: --}}
+                        {{-- <img src="{{ asset('images/copa-grande.png') }}" alt="Copa" style="height: 180px; object-fit: contain; padding: 20px;"> --}}
+                        @endif
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $liguilla->nombre }}</h5>
+                            <p class="card-text mb-1"><strong>Torneo:</strong> {{ $liguilla->torneo->nombre }}</p>
+                            <p class="card-text mb-1"><strong>Posición:</strong> {{ $liguilla->pivot->posicion ?? 'N/D' }}</p>
+                            <p class="card-text"><strong>Puntos:</strong> {{ $liguilla->pivot->puntos ?? 0 }}</p>
+                            <button
+                                class="btn btn-primary btn-sm mt-3"
+                                onclick="compartirEnlace('{{ $liguilla->codigo_unico }}')">
+                                <i class="fa fa-share-alt"></i> Compartir enlace
+                            </button>
+                        </div>
+                    </a>
                 </div>
             </div>
             @endforeach
@@ -59,6 +67,24 @@
 </style>
 @endpush
 @push('scripts')
+<script>
+    function compartirEnlace(codigo) {
+        const enlace = "{{ url('/user/unirseLiguilla') }}?codigo=" + codigo;
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'Únete a mi liguilla',
+                text: 'Haz clic en este enlace para unirte:',
+                url: enlace
+            }).catch(err => console.error('Error al compartir:', err));
+        } else {
+            navigator.clipboard.writeText(enlace).then(() => {
+                alert('Enlace copiado al portapapeles');
+            }).catch(err => console.error('Error al copiar:', err));
+        }
+    }
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 <script>
     var swiper = new Swiper(".mySwiper", {

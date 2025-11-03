@@ -9,6 +9,9 @@
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy.png') }}" type="image/png">
 
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Fuentes y Estilos -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700" rel="stylesheet" />
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" />
@@ -68,7 +71,7 @@
     <main>
         @yield('content')
     </main>
-
+    @include('user.layouts.menu-movil')
     @include('user.layouts.footer')
 </body>
 

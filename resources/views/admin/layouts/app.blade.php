@@ -33,7 +33,7 @@
     <main class="container py-4">
         @yield('content')
     </main>
-
+    @include('admin.layouts.menu-movil')
     {{-- Footer --}}
     @include('admin.layouts.footer')
 
@@ -44,7 +44,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 
     {{-- SweetAlert2 --}}
@@ -52,8 +51,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-    {{-- Inicialización de DataTables --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toggler = document.querySelector('.navbar-toggler');
+            const navbar = document.getElementById('adminNavbar');
 
+            // Asegura que se cierre al volver a pulsar el botón
+            toggler.addEventListener('click', function() {
+                const bsCollapse = bootstrap.Collapse.getInstance(navbar) ||
+                    new bootstrap.Collapse(navbar, {
+                        toggle: false
+                    });
+                if (navbar.classList.contains('show')) {
+                    bsCollapse.hide();
+                } else {
+                    bsCollapse.show();
+                }
+            });
+
+            // Opcional: cerrar automáticamente cuando se pulsa un enlace en móvil
+            document.querySelectorAll('#adminNavbar .nav-link').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    if (window.innerWidth < 992) { // solo en móvil/tablet
+                        const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+                        if (bsCollapse) {
+                            bsCollapse.hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 

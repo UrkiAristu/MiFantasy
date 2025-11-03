@@ -72,15 +72,32 @@
                 aria-labelledby="tab-jornada-{{ $jornada->id }}">
 
                 <div class="card-header d-flex justify-content-between align-items-center mb-2">
-                    <h5>{{ $jornada->nombre }}</h5>
-                    <button
-                        class="btn btn-success btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCrearPartido"
-                        data-jornada-id="{{ $jornada->id }}"
-                        data-jornada-nombre="{{ $jornada->nombre }}">
-                        Añadir Partido
-                    </button>
+                    <div>
+                        <h5>{{ $jornada->nombre }}</h5>
+                        <small class="text-muted">
+                            {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }} -
+                            {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button
+                            class="btn btn-success btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalCrearPartido"
+                            data-jornada-id="{{ $jornada->id }}"
+                            data-jornada-nombre="{{ $jornada->nombre }}">
+                            Añadir Partido
+                        </button>
+                        <button class="btn btn-warning btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEditarJornada"
+                            data-id="{{ $jornada->id }}"
+                            data-nombre="{{ $jornada->nombre }}"
+                            data-fecha-inicio="{{ $jornada->fecha_inicio }}"
+                            data-fecha-fin="{{ $jornada->fecha_fin }}">
+                            Editar
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     @if ($jornada->partidos->count())
@@ -137,11 +154,28 @@
         @forelse ($torneo->jornadas as $jornada)
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">{{ $jornada->nombre }}</h5>
-                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearPartido"
-                    data-jornada-id="{{ $jornada->id }}" data-jornada-nombre="{{ $jornada->nombre }}">
-                    Añadir Partido
-                </button>
+                <div>
+                    <h5>{{ $jornada->nombre }}</h5>
+                    <small class="text-muted">
+                        {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }} -
+                        {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
+                    </small>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearPartido"
+                        data-jornada-id="{{ $jornada->id }}" data-jornada-nombre="{{ $jornada->nombre }}">
+                        Añadir Partido
+                    </button>
+                    <button class="btn btn-warning btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditarJornada"
+                        data-id="{{ $jornada->id }}"
+                        data-nombre="{{ $jornada->nombre }}"
+                        data-fecha-inicio="{{ $jornada->fecha_inicio }}"
+                        data-fecha-fin="{{ $jornada->fecha_fin }}">
+                        Editar
+                    </button>
+                </div>
             </div>
             <div class="card-body p-0">
                 @if ($jornada->partidos->count())
@@ -205,7 +239,12 @@
                 @foreach ($torneo->jornadas as $jornada)
                 <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ $jornada->id }}">
                     <span>
-                        {{ $jornada->nombre }}
+                        <strong>{{ $jornada->nombre }}</strong><br>
+                        <small class="text-muted">
+                            {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }}
+                            –
+                            {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
+                        </small>
                     </span>
                     <div class="d-flex align-items-center gap-5">
                         <i class="bi bi-list fs-1 cursor-move"></i>
@@ -253,7 +292,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Fecha </label>
-                    <input type="date" class="form-control" name="fecha_partido" required>
+                    <input type="date" class="form-control" name="fecha_partido" required
+                        min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->format('Y-m-d') }}"
+                        max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->format('Y-m-d') }}" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Hora</label>
@@ -282,9 +323,60 @@
                     <label class="form-label">Nombre de la Jornada</label>
                     <input type="text" class="form-control" name="nombre" required>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha de Inicio</label>
+                        <input type="date" class="form-control" name="fecha_inicio"
+                            min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->format('Y-m-d') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha de Fin</label>
+                        <input type="date" class="form-control" name="fecha_fin"
+                            min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->format('Y-m-d') }}">
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-success">Crear</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal editar jornada -->
+<div class="modal fade" id="modalEditarJornada" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url('/admin/jornadas/'.$jornada->id.'/editar') }}" method="POST" id="formEditarJornada" class="modal-content">
+            @csrf
+            <input type="hidden" name="jornada_id" id="editarJornadaId">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Jornada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" name="nombre" id="editarNombre" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" name="fecha_inicio" id="editarFechaInicio"
+                            min="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_fin)->format('Y-m-d') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" name="fecha_fin" id="editarFechaFin"
+                            min="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_fin)->format('Y-m-d') }}">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success">Guardar</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </form>
@@ -378,6 +470,18 @@
             resultadoModal.querySelector('#modalGolesLocal').value = button.getAttribute('data-goles-local') || '';
             resultadoModal.querySelector('#modalGolesVisitante').value = button.getAttribute('data-goles-visitante') || '';
         });
+
+        const modalEditar = document.getElementById('modalEditarJornada');
+        modalEditar.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            document.getElementById('editarJornadaId').value = button.getAttribute('data-id');
+            document.getElementById('editarNombre').value = button.getAttribute('data-nombre');
+            document.getElementById('editarFechaInicio').value = button.getAttribute('data-fecha-inicio');
+            document.getElementById('editarFechaFin').value = button.getAttribute('data-fecha-fin');
+            const form = document.getElementById('formEditarJornada');
+            form.action = `/admin/jornadas/${button.getAttribute('data-id')}/editar`;
+        });
+
         const btnTabs = document.getElementById('btnVistaTabs');
         const btnCards = document.getElementById('btnVistaCards');
         const vistaTabs = document.getElementById('vistaTabs');
