@@ -52,8 +52,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/usuarios', [UsuarioController::class, 'mostrarPaginaUsuarios']);
         Route::get('/admin/usuarios/{id}', [UsuarioController::class, 'mostrarPaginaUsuario']);
         Route::post('admin/usuarios/{id}/editar', [UsuarioController::class, 'editarUsuario']);
-        Route::get('/admin/usuarios/{id}/inhabilitar', [UsuarioController::class, 'inhabilitarUsuario']);
-        Route::get('/admin/usuarios/{id}/habilitar', [UsuarioController::class, 'habilitarUsuario']);
+        Route::put('/admin/usuarios/{id}/toggle', [UsuarioController::class, 'toggleActivo']);
         //Torneos
         Route::get('/admin/torneos', [TorneoController::class, 'mostrarPaginaTorneos']);
         Route::get('/admin/torneos/{id}', [TorneoController::class, 'mostrarPaginaTorneo']);

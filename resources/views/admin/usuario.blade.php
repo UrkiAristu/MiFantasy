@@ -28,8 +28,8 @@
                 <h5 class="card-title">Datos del Usuario</h5>
 
                 <div class="mb-3">
-                    <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
-                    <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario" value="{{ old('nombreUsuario', $usuario->nombreUsuario) }}" required>
+                    <label for="name" class="form-label">Nombre de Usuario</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $usuario->name) }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -46,16 +46,16 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="activo" class="form-label">¿Está Activo?</label>
-                    <select name="activo" id="activo" class="form-select">
-                        <option value="1" {{ old('activo', $usuario->activo) ? 'selected' : '' }}>Sí</option>
-                        <option value="0" {{ !old('activo', $usuario->activo) ? 'selected' : '' }}>No</option>
+                    <label for="active" class="form-label">¿Está Activo?</label>
+                    <select name="active" id="active" class="form-select">
+                        <option value="1" {{ old('active', $usuario->active) ? 'selected' : '' }}>Sí</option>
+                        <option value="0" {{ !old('active', $usuario->active) ? 'selected' : '' }}>No</option>
                     </select>
                 </div>
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
-                    <a href="{{ url('/admin/usuarios') }}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{{ url('/admin/usuarios') }}" class="btn btn-secondary">Volver</a>
                 </div>
             </div>
         </div>

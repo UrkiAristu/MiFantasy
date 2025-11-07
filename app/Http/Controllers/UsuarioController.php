@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cuenta;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UsuarioController extends Controller
@@ -11,111 +13,91 @@ class UsuarioController extends Controller
     public function mostrarPaginaUsuarios()
     {
         // Verificar si el usuario es administrador
-        if (session('admin')) {
-            $cuentas = Cuenta::all();
-            // Retornar la vista con los datos de las cuentas
-            return view('admin.usuarios', ['usuarios' => $cuentas]);
-        } else {
+        if (!Auth::check() || !Auth::user()->admin) {
             // Si no es administrador, redirigir a la página de inicio o mostrar un error
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
+        $usuarios = User::all();
+        // Retornar la vista con los datos de los usuarios
+        return view('admin.usuarios', ['usuarios' => $usuarios]);
     }
     public function mostrarPaginaUsuario($id)
     {
         // Verificar si el usuario es administrador
-        if (session('admin')) {
-            $cuenta = Cuenta::find($id);
-            if ($cuenta) {
-                // Retornar la vista con los datos de la cuenta
-                return view('admin.usuario', ['usuario' => $cuenta]);
-            } else {
-                return redirect('/admin/usuarios')->withErrors(['Usuario no encontrado.']);
-            }
-        } else {
+        if (!Auth::check() || !Auth::user()->admin){
             // Si no es administrador, redirigir a la página de inicio o mostrar un error
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
+        $usuario = User::findOrFail($id);
+
+        // Retornar la vista con los datos de la cuenta
+        return view('admin.usuario', ['usuario' => $usuario]);
+
     }
 
     public function editarUsuario(Request $request, $id)
     {
         // Verificar si el usuario es administrador
-        if (session('admin')) {
-            $cuenta = Cuenta::find($id);
-            if ($cuenta) {
-                // Validar los datos del formulario
-                $validator = Validator::make(
-                    $request->all(),
-                    [
-                        'nombreUsuario' => 'required|string|max:255',
-                        'email' => 'required|email|max:255|unique:cuentas,email,' . $id,
-                        'admin' => 'required|boolean',
-                        'activo' => 'required|boolean',
-                    ],
-                    [
-                        'nombreUsuario' => 'El nombre de usuario es obligatorio y debe tener un máximo de 255 caracteres.',
-                        'email' => 'El email es obligatorio y debe ser una dirección de correo electrónico válida.',
-                        'admin' => 'El campo admin es obligatorio y debe ser verdadero o falso.',
-                        'activo' => 'El campo activo es obligatorio y debe ser verdadero o falso.',
-                    ]
-                );
-
-                if ($validator->fails()) {
-                    return redirect('/usuario/' . $id . '/editar')
-                        ->withErrors($validator)
-                        ->withInput();
-                }
-
-                // Actualizar los datos de la cuenta
-                $cuenta->nombreUsuario = $request->nombreUsuario;
-                $cuenta->email = $request->email;
-                $cuenta->admin = $request->admin;
-                $cuenta->activo = $request->activo;
-                $cuenta->save();
-
-                return redirect('/admin/usuarios/' . $id)->with('success', 'Usuario actualizado correctamente.');
-            } else {
-                return redirect('/admin/usuarios')->withErrors(['Usuario no encontrado.']);
-            }
-        } else {
+        if (!Auth::check() || !Auth::user()->admin) {
             // Si no es administrador, redirigir a la página de inicio o mostrar un error
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
+        $usuario = User::findOrFail($id);
+        
+        // Validar los datos del formulario
+        $validated = $request->validate(
+            [
+                'name'   => 'required|string|max:50|unique:users,name,'.$id,
+                'email'  => 'required|email|max:100|unique:users,email,'.$id,
+                'admin'  => 'required|boolean',
+                'active' => 'required|boolean',
+            ],
+            [
+                'name.required'   => 'El nombre de usuario es obligatorio.',
+                'name.unique'     => 'Ese nombre de usuario ya existe.',
+                'email.required'  => 'El email es obligatorio.',
+                'email.email'     => 'Introduce un email válido.',
+                'email.unique'    => 'Ese email ya está en uso.',
+                'admin.required'  => 'Debes indicar si es administrador.',
+                'admin.boolean'   => 'El valor de admin debe ser 0 o 1.',
+                'active.required' => 'Debes indicar si la cuenta está activa.',
+                'active.boolean'  => 'El valor de active debe ser 0 o 1.',
+            ]
+        );
+
+        // Actualizar los datos de la cuenta
+        $usuario->name   = $validated['name'];
+        $usuario->email  = $validated['email'];
+        $usuario->admin  = (bool)$validated['admin'];
+        $usuario->active = (bool)$validated['active'];
+        $usuario->save();
+
+        return redirect('/admin/usuarios/' . $id)->with('success', 'Usuario actualizado correctamente.');
+            
     }
 
-    public function inhabilitarUsuario($id)
+    public function toggleActivo($id)
     {
         // Verificar si el usuario es administrador
-        if (session('admin')) {
-            $cuenta = Cuenta::find($id);
-            if ($cuenta && $cuenta->activo) {
-                $cuenta->activo = false;
-                $cuenta->save();
-                return redirect('/admin/usuarios')->with('success', 'Usuario inhabilitado correctamente.');
-            } else {
-                return redirect('/admin/usuarios')->withErrors(['Usuario no encontrado.']);
-            }
-        } else {
+        if (!Auth::check() || !Auth::user()->admin) {
             // Si no es administrador, redirigir a la página de inicio o mostrar un error
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
-    }
+        $usuario = User::find($id);
 
-    public function habilitarUsuario($id)
-    {
-        // Verificar si el usuario es administrador
-        if (session('admin')) {
-            $cuenta = Cuenta::find($id);
-            if ($cuenta && !$cuenta->activo) {
-                $cuenta->activo = true;
-                $cuenta->save();
-                return redirect('/admin/usuarios')->with('success', 'Usuario habilitado correctamente.');
-            } else {
-                return redirect('/admin/usuarios')->withErrors(['Usuario no encontrado.']);
-            }
-        } else {
-            // Si no es administrador, redirigir a la página de inicio o mostrar un error
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        // Evita que un admin se autodesactive
+        if (Auth::id() === $id) {
+            return redirect('/admin/usuarios')
+                ->withErrors(['No puedes inhabilitar tu propia cuenta.']);
         }
+        //Evita dejar el sistema sin admins
+        if ($usuario->admin && $usuario->active && User::where('admin', true)->where('active', true)->count() === 1) {
+            return back()->withErrors(['No puedes inhabilitar al último admin activo.']);
+        }
+
+        $usuario->active = !$usuario->active;
+        $usuario->save();
+        $mensaje = $usuario->active ? 'habilitado' : 'inhabilitado';
+        return redirect('/admin/usuarios')->with('success', "Usuario {$usuario->name} {$mensaje} correctamente.");
     }
 }

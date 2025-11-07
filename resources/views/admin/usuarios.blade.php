@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Usuarios Registrados')
+@section('title', 'Usuarios')
 
 @section('content')
 <div class="container mt-5">
@@ -35,7 +35,7 @@
                 @forelse($usuarios as $usuario)
                 <tr>
                     <td class="text-center">{{ $usuario->id }}</td>
-                    <td class="text-center">{{ $usuario->nombreUsuario }}</td>
+                    <td class="text-center">{{ $usuario->name }}</td>
                     <td class="text-center">{{ $usuario->email }}</td>
                     <td class="text-center">
                         @if($usuario->admin)
@@ -46,7 +46,7 @@
                     </td>
                     <td class="text-center">{{ $usuario->created_at->format('d/m/Y') }}</td>
                     <td class="text-center">
-                        @if($usuario->activo)
+                        @if($usuario->active)
                         <span class="badge bg-success">Sí</span>
                         @else
                         <span class="badge bg-secondary">No</span>
@@ -55,19 +55,17 @@
                     <td class="text-center">
                         <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-info">
                             <i class="bi bi-eye"></i> Ver</a>
-                        @if($usuario->activo)
-                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}"
-                            class="btn btn-sm btn-danger btn-inhabilitar-usuario"
-                            title="Inhabilitar usuario"
-                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/inhabilitar') }}">
-                            <i class="bi bi-x-circle"></i>Inhabilitar</a>
-                        @else
-                        <a href="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}"
-                            class="btn btn-sm btn-success btn-habilitar-usuario"
-                            title="Habilitar usuario"
-                            data-url="{{ url('/admin/usuarios/'.$usuario->id.'/habilitar') }}">
-                            <i class="bi bi-check-circle"></i>Habilitar</a>
-                        @endif
+                            <form action="{{ url('/admin/usuarios/'.$usuario->id.'/toggle') }}" method="POST" class="d-inline form-toggle-usuario">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit"
+                                        class="btn btn-sm {{ $usuario->active ? 'btn-danger' : 'btn-success' }}"
+                                        data-nombre="{{ $usuario->name }}"
+                                        data-estado="{{ $usuario->active ? 'inhabilitar' : 'habilitar' }}">
+                                    <i class="bi {{ $usuario->active ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                                    {{ $usuario->active ? 'Inhabilitar' : 'Habilitar' }}
+                                </button>
+                            </form>
                     </td>
                 </tr>
                 @empty
@@ -82,67 +80,35 @@
 @endsection
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        $('#tablaUsuarios').DataTable({
-            order: false,
-            locale: "es",
-            colReorder: true,
-            dom: 'Bfrtip',
-            stateSave: true,
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print',
-            ]
-        });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const botonesInhabilitar = document.querySelectorAll('.btn-inhabilitar-usuario');
-        const botonesHabilitar = document.querySelectorAll('.btn-habilitar-usuario');
+document.addEventListener('DOMContentLoaded', function () {
+    const forms = document.querySelectorAll('.form-toggle-usuario');
 
-        botonesInhabilitar.forEach(boton => {
-            boton.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = this.getAttribute('data-url');
+    forms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // Evita envío inmediato
 
-                Swal.fire({
-                    title: '¿Estás seguro de que deseas inhabilitar este usuario?',
-                    text: "El usuario no podrá acceder al sistema.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, inhabilitar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = url;
-                    }
-                });
-            });
-        });
+            const button = form.querySelector('button[type="submit"]');
+            const nombre = button.dataset.nombre;
+            const estado = button.dataset.estado;
 
-        botonesHabilitar.forEach(boton => {
-            boton.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = this.getAttribute('data-url');
-
-                Swal.fire({
-                    title: '¿Estás seguro de que deseas habilitar este usuario?',
-                    text: "El usuario podrá acceder nuevamente al sistema.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, habilitar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = url;
-                    }
-                });
+            Swal.fire({
+                title: `¿Seguro que deseas ${estado} a ${nombre}?`,
+                text: estado === 'inhabilitar' 
+                      ? 'El usuario no podrá acceder al sistema.' 
+                      : 'El usuario podrá volver a acceder.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Sí, ${estado}`,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Envía el formulario si confirma
+                }
             });
         });
     });
+});
 </script>
 @endpush
