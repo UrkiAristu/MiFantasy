@@ -70,13 +70,16 @@
                                 class="form-control form-control-lg form-control-solid 
                                 {{ ($errors->has('password') || $errors->has('login')) ? 'is-invalid' : '' }}"
                                 required>
-                            <div class="form-check mt-5">
-                                <input type="checkbox" class="form-check-input" id="mostrar_contraseña" onclick="togglePassword()">
-                                <label class="form-check-label" for="mostrar_contraseña">Mostrar contraseñas</label>
-                            </div>
                         </div>
 
-
+                        <!-- Recordarme -->
+                        <div class="fv-row mb-10 form-check">
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                                value="1" {{ old('remember') ? 'checked' : '' }}>
+                            <label class="form-check-label text-dark fs-6 fw-bolder" for="remember">
+                                Recuérdame en este dispositivo
+                            </label>
+                        </div>
 
                         <!-- Mensajes -->
                         @if ($errors->any())
@@ -113,19 +116,6 @@
                 }));
             } catch (e) {}
         };
-    </script>
-    <script>
-        //Funcion para alternar la visibilidad de la contraseña
-        function togglePassword() {
-            const passwordField = document.getElementById('password');
-            const isChecked = document.getElementById('mostrar_contraseña').checked;
-
-            if (isChecked) {
-                passwordField.type = 'text';
-            } else {
-                passwordField.type = 'password';
-            }
-        }
     </script>
 </body>
 

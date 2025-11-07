@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -22,7 +22,10 @@ class LoginController extends Controller
             ],
             [
                 'login.required' => 'El email  o nombre de usuario es obligatorio.',
-                'password.required' => 'La contraseña es obligatoria.'
+                'login.string' => 'El email o nombre de usuario debe ser una cadena de texto.',
+                'password.required' => 'La contraseña es obligatoria.',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.string' => 'La contraseña debe ser una cadena de texto.',
             ]);
 
         $login = $request->login;
@@ -40,10 +43,11 @@ class LoginController extends Controller
             $request->session()->regenerate();
             return redirect()->intended('/'); // o /dashboard
         }
-        throw ValidationException::withMessages([
-            'login' => 'El usuario/contraseña no son correctos o la cuenta está inactiva.',
-        ]);
+        return back()->withErrors([
+            'login' => 'El usuario o la contraseña son incorrectos o la cuenta está inactiva.',
+        ])->onlyInput('login');
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
