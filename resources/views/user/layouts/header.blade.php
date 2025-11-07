@@ -3,25 +3,32 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy Logo" height="40" class="me-2">
-            @if (session()->has('nombreUsuario'))
-            {{ session('nombreUsuario') }}
+            @auth
+                {{ Auth::user()->name }}
             @else
-            MiFantasy
-            @endif
+                MiFantasy
+            @endauth
         </a>
         <button onclick="toggleMenu()" class="btn btn-sm btn-light">
             <i class="bi bi-arrow-left text-dark fs-4"></i>
         </button>
     </div>
-    @if(session('admin') == 1)
-    <a href="{{ url('/zonaAdmin') }}" class="nav-link text-primary bg-white rounded px-3 mb-2">
-        Zona Admin
-    </a>
-    @endif
-    <a href="{{ url('/user/liguillas') }}" class="nav-link text-white">Mis Liguillas</a>
-    <a href="{{ url('/user/torneos') }}" class="nav-link text-white">Torneos Activos</a>
-    <a href="{{ url('/user/unirseLiguilla') }}" class="nav-link text-white">Unirse a Liguilla</a>
-    <a href="{{ url('/logout') }}" class="nav-link text-white bg-danger rounded">Cerrar sesión</a>
+    @auth
+        @if(Auth::user()->admin)
+        <a href="{{ url('/zonaAdmin') }}" class="nav-link text-primary bg-white rounded px-3 mb-2">
+            Zona Admin
+        </a>
+        @endif
+        <a href="{{ url('/user/liguillas') }}" class="nav-link text-white">Mis Liguillas</a>
+        <a href="{{ url('/user/torneos') }}" class="nav-link text-white">Torneos Activos</a>
+        <a href="{{ url('/user/unirseLiguilla') }}" class="nav-link text-white">Unirse a Liguilla</a>
+        <form action="{{ url('/logout') }}" method="POST" class="mt-3">
+            @csrf
+            <button type="submit" class="nav-link text-white bg-danger rounded w-100 text-start border-0">
+                Cerrar sesión
+            </button>
+        </form>
+    @endauth
 
 
 </div>
@@ -31,24 +38,33 @@
     <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy Logo" height="40" class="me-2">
-            @if(session()->has('nombreUsuario'))
-            {{ session('nombreUsuario') }}
+            @auth
+                {{ Auth::user()->name }}
             @else
-            MiFantasy
-            @endif
+                MiFantasy
+            @endauth
         </a>
         <button class="hamburger d-lg-none" onclick="toggleMenu()">☰</button>
         <div class="collapse navbar-collapse justify-content-end d-none d-lg-block">
             <ul class="navbar-nav">
-                @if(session('admin') == 1)
-                <li class="nav-item">
-                    <a href="/zonaAdmin" class="nav-link bg-white text-primary rounded mx-3">Zona Admin</a>
-                </li>
-                @endif
-                <li class="nav-item"><a href={{ url('/user/liguillas')}} class="nav-link">Mis Liguillas</a></li>
-                <li class="nav-item"><a href={{ url('/user/torneos')}} class="nav-link">Torneos Activos</a></li>
-                <li class="nav-item"><a href={{ url('/user/unirseLiguilla')}} class="nav-link">Unirse a Liguilla</a></li>
-                <li class="nav-item"><a href={{ url('/logout') }} class="nav-link text-danger">Cerrar sesión</a></li>
+                @auth
+                    @if(Auth::user()->admin)
+                        <li class="nav-item">
+                            <a href="/zonaAdmin" class="nav-link bg-white text-primary rounded mx-3">Zona Admin</a>
+                        </li>
+                    @endif
+                    <li class="nav-item"><a href={{ url('/user/liguillas')}} class="nav-link">Mis Liguillas</a></li>
+                    <li class="nav-item"><a href={{ url('/user/torneos')}} class="nav-link">Torneos Activos</a></li>
+                    <li class="nav-item"><a href={{ url('/user/unirseLiguilla')}} class="nav-link">Unirse a Liguilla</a></li>
+                    <li class="nav-item">
+                        <form action="{{ url('/logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="nav-link text-danger border-0 bg-transparent">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                @endauth
             </ul>
         </div>
     </div>

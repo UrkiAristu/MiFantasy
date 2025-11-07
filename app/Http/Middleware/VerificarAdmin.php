@@ -15,7 +15,7 @@ class VerificarAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session('admin') !== 1) {
+        if (Auth::user()->admin) {
             return redirect('/')->with('error', 'Acceso no autorizado');
         }
         return $next($request);

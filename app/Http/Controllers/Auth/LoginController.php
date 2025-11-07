@@ -3,60 +3,57 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cuenta;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
+        $request->validate(
             [
-                'nombreUsuario' => 'required',
-                'password' => 'required|min:0',
+                'login' => 'required|string',
+                'password' => 'required|string|min:8',
+                'remember' => 'sometimes|boolean',
             ],
             [
-                'nombreUsuario.required' => 'El email  o nombre de usuario es obligatorio.',
+                'login.required' => 'El email  o nombre de usuario es obligatorio.',
                 'password.required' => 'La contraseña es obligatoria.'
-            ]
-        );
+            ]);
 
-        if ($validator->fails()) {
-            return redirect('/login')->withErrors($validator)->withInput();;
+        $login = $request->login;
+
+        // Detecta si es email o username (name)
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+
+        $credentials = [
+            $field     => $login,
+            'password' => $request->password,
+            'active'   => 1, // solo usuarios activos pueden autenticarse
+        ];
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended('/'); // o /dashboard
         }
-
-        $nombreUsuario = $request->nombreUsuario;
-        $password = $request->password;
-
-        //Obtenemos la cuenta con el nombredeusuario o el email
-        $cuenta = Cuenta::where('nombreUsuario', $nombreUsuario)->orWhere('email', $nombreUsuario)->first();
-        if (!$cuenta) {
-            //Devuelve los errores en json
-            return redirect('/login')->withErrors(['login' => 'El nombre de usuario o la contraseña son incorrectos.'])->withInput();
-        }
-
-        //Comprobamos la contraseña
-        if (!password_verify($password, $cuenta->password)) {
-            //Devuelve los errores en json
-            return redirect('/login')->withErrors(['login' => 'El nombre de usuario o la contraseña son incorrectos.'])->withInput();
-        }
-
-        //Comprobamos si la cuenta está activa
-        if (!$cuenta->activo) {
-            //Si la cuenta no está activa, redirigimos al login con un error
-            return redirect('/login')->withErrors(['login' => 'La cuenta no está activa. Por favor, contacta con el administrador.'])->withInput();
-        }
-
-        //Si todo es correcto, iniciamos sesión
-        session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email, 'admin' => $cuenta->admin]);
-        return redirect('/')->with('success', 'Inicio de sesión exitoso.');
+        throw ValidationException::withMessages([
+            'login' => 'El usuario/contraseña no son correctos o la cuenta está inactiva.',
+        ]);
     }
-    public function registro(Request $request)
+    public function logout(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
+    }
+    public function register(Request $request)
+    {
+       $validated = $request->validate(
             [
                 'nombreUsuario' => 'required|unique:cuentas',
                 'email' => 'required|unique:cuentas',
@@ -73,21 +70,18 @@ class LoginController extends Controller
             ]
         );
 
-        if ($validator->fails()) {
-            return redirect('/registro')->withErrors($validator)->withInput();
-        }
+        // Crear el usuario en la tabla users
+        $user = User::create([
+            'name'     => $validated['nombreUsuario'],   // <- mapeo a users.name
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'active'   => true,   // o false si quieres activación manual
+            'admin'    => false,
+        ]);
 
-        $nombreUsuario = $request->nombreUsuario;
-        $email = $request->email;
-        $password = $request->password;
+        Auth::login($user);
+        $request->session()->regenerate();
 
-        $cuenta = new Cuenta();
-        $cuenta->nombreUsuario = $nombreUsuario;
-        $cuenta->email = $email;
-        $cuenta->password = password_hash($password, PASSWORD_DEFAULT);
-        $cuenta->save();
-        //Iniciar sesión automáticamente después del registro
-        session(['cuenta' => $cuenta->id, 'nombreUsuario' => $cuenta->nombreUsuario, 'email' => $cuenta->email, 'admin' => $cuenta->admin]);
-        return redirect('/')->with('success', 'Registro exitoso. Bienvenido, ' . $nombreUsuario . '!');
+        return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, '.$user->name.'!');
     }
 }

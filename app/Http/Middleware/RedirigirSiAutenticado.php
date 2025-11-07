@@ -15,7 +15,7 @@ class RedirigirSiAutenticado
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session()->has('cuenta')) {
+        if (Auth::check()) {
             return redirect('/home');
         }
 

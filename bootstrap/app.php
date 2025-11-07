@@ -6,6 +6,9 @@ use App\Http\Middleware\VerificarSesion;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Auth\Middleware\Authenticate as AuthMiddleware;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated as GuestMiddleware;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified as VerifiedMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'auth'     => AuthMiddleware::class,
+            'guest'    => GuestMiddleware::class,
+            'verified' => VerifiedMiddleware::class,
             'verificar.sesion' => VerificarSesion::class,
             'redirigir.si.autenticado' => RedirigirSiAutenticado::class,
             'verificar.admin' => VerificarAdmin::class,

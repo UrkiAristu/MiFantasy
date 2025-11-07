@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>Fantasy League - Iniciar sesión</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    {{-- Favicon --}}
+    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy.png') }}" type="image/png">
 
     <!-- SEO -->
     <meta name="description" content="Accede a tu cuenta para gestionar tu equipo de Fantasy League.">
@@ -50,10 +53,10 @@
                         <!-- Nombre de usuario/Email -->
                         <div class="fv-row mb-10">
                             <label class="form-label fs-6 fw-bolder text-dark">Nombre de usuario/Correo electrónico</label>
-                            <input type="text" name="nombreUsuario"
+                            <input type="text" name="login"
                                 class="form-control form-control-lg form-control-solid 
-                                {{ $errors->has('nombreUsuario') || $errors->has('login') ? 'is-invalid' : (old('nombreUsuario') ? 'is-valid' : '') }}"
-                                value="{{ old('nombreUsuario') }}"
+                                {{ $errors->has('login') ? 'is-invalid' : (old('login') ? 'is-valid' : '') }}"
+                                value="{{ old('login') }}"
                                 required autofocus>
                         </div>
 

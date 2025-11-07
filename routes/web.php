@@ -17,24 +17,24 @@ Route::get('/test', function () {
 
 
 ////////////MIDLEWARE REDIRIGIR SI AUTENTICADO/////////
-Route::middleware('redirigir.si.autenticado')->group(function () {
+Route::middleware('guest')->group(function () {
     //REGISTER
     //Mostrar página de registro
     Route::get('/registro', function () {
         return view('user/registro');
-    });
-    Route::post('/registro', [LoginController::class, 'registro']);
+    })->name('register');
+    Route::post('/registro', [LoginController::class, 'register'])->name('register.attempt');
 
     //LOGIN
     //Mostrar página de login
     Route::get('/login', function () {
         return view('user/login');
-    });
-    Route::post('/login', [LoginController::class, 'login']);
+    })->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
 
 ////////////MIDLEWARE VERIFICAR SESION/////////
-Route::middleware('verificar.sesion')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return view('user/home');
     });
@@ -42,10 +42,7 @@ Route::middleware('verificar.sesion')->group(function () {
         return view('user/home');
     });
     //LOGOUT
-    Route::get('/logout', function () {
-        session()->flush(); // Borra todos los datos de la sesión
-        return redirect('/login')->with('success', 'Sesión cerrada correctamente.');
-    })->middleware('verificar.sesion');
+    Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
     ///////////////MIDLEWARE VERIFICAR ADMIN/////////
     Route::middleware('verificar.admin')->group(function () {
         Route::get('/zonaAdmin', function () {

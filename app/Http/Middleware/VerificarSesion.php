@@ -15,7 +15,7 @@ class VerificarSesion
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!session()->has('cuenta')) {
+        if (!Auth::check()) {
             return redirect('/login')->with('error', 'Debes iniciar sesión primero.');
         }
 
