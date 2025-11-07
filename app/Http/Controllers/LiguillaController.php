@@ -193,7 +193,7 @@ class LiguillaController extends Controller
 
         // 5️⃣ Resultados de partidos de la última jornada
         $resultados = $jornadaActiva
-            ? $jornadaActiva->partidos()->with(['local', 'visitante'])->get()
+            ? $jornadaActiva->partidos()->with(['equipoLocal', 'equipoVisitante'])->get()
             : collect();
 
         // Plantilla de usuario
