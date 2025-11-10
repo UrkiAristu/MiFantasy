@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RedirigirSiAutenticado;
+use App\Http\Middleware\RedirigirSiVerificado;
 use App\Http\Middleware\VerificarAdmin;
 use App\Http\Middleware\VerificarSesion;
 use Illuminate\Foundation\Application;
@@ -22,8 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest'    => GuestMiddleware::class,
             'verified' => VerifiedMiddleware::class,
             'verificar.sesion' => VerificarSesion::class,
-            'redirigir.si.autenticado' => RedirigirSiAutenticado::class,
             'verificar.admin' => VerificarAdmin::class,
+            'redirigir.si.autenticado' => RedirigirSiAutenticado::class,
+            'redirigir.si.verificado' => RedirigirSiVerificado::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

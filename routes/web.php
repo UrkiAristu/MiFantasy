@@ -8,12 +8,34 @@ use App\Http\Controllers\LiguillaController;
 use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function () {
     dd(session()->all());
 });
 
+///////////MIDLEWARE REDIRIGIR SI VERIFICADO/////////
+Route::middleware('redirigir.si.verificado')->group(function () {
+//VERIFICADOR DE EMAIL
+    //Muestra aviso al usuario no verificado
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware('auth')->name('verification.notice');
+
+    // Procesa el enlace del correo
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill(); // Marca el email como verificado
+        return redirect('/')->with('success', 'Tu correo ha sido verificado correctamente.');
+    })->middleware(['auth', 'signed'])->name('verification.verify');
+
+    //Permite reenviar el correo de verificación
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', 'Se ha reenviado el enlace de verificación.');
+    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+});
 
 
 ////////////MIDLEWARE REDIRIGIR SI AUTENTICADO/////////
@@ -32,17 +54,18 @@ Route::middleware('guest')->group(function () {
     })->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
+//LOGOUT
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 
 ////////////MIDLEWARE VERIFICAR SESION/////////
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verificar email
     Route::get('/', function () {
         return view('user/home');
     });
     Route::get('/home', function () {
         return view('user/home');
     });
-    //LOGOUT
-    Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
+    
     ///////////////MIDLEWARE VERIFICAR ADMIN/////////
     Route::middleware('verificar.admin')->group(function () {
         Route::get('/zonaAdmin', function () {
