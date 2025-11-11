@@ -33,7 +33,7 @@ class TorneoController extends Controller
             return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
         }
         // Buscar el torneo por ID
-        $torneo = Torneo::with('equipos.jugadores')->findOrFail($id);
+        $torneo = Torneo::with(['equipos','jugadores'])->findOrFail($id);
         // Obtener equipos disponibles (no inscritos en el torneo)
         $equiposDisponibles = Equipo::whereNotIn('id', $torneo->equipos->pluck('id'))->get();
         // Retornar la vista con los datos del torneo
