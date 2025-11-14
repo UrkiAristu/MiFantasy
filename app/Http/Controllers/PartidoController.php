@@ -170,16 +170,22 @@ class PartidoController extends Controller
             ->each(function ($jugador) use ($partido) {
                 $jugador->equipo_id = $partido->equipoLocal->id;
             });
+        //Estadisticas equipo local
+        $idsLocal      = $jugadoresLocal->pluck('id');
+        $statsLocal = $partido->estadisticas()->whereIn('jugador_id', $idsLocal)->get();
 
         // Jugadores del equipo visitante inscritos en el torneo, añadiendo el id del equipo con el que están inscritos
         $jugadoresVisitante = $partido->equipoVisitante->jugadoresEnTorneo($partido->jornada->torneo->id)
             ->each(function ($jugador) use ($partido) {
                 $jugador->equipo_id = $partido->equipoVisitante->id;
             });
+        //Estadisticas equipo visitante
+        $idsVisitante      = $jugadoresVisitante->pluck('id');
+        $statsVisitante = $partido->estadisticas()->whereIn('jugador_id', $idsVisitante)->get();
 
         // Todos los jugadores del partido
         $jugadores = $jugadoresLocal->merge($jugadoresVisitante);
-        return view('admin.partido', compact('partido', 'equipos', 'jugadoresLocal', 'jugadoresVisitante', 'jugadores'));
+        return view('admin.partido', compact('partido', 'equipos', 'jugadoresLocal', 'jugadoresVisitante', 'jugadores', 'statsLocal', 'statsVisitante'));
     }
 
     public function crearPartido(Request $request, $idJornada)
