@@ -15,11 +15,11 @@ class Cuenta extends Model
     }
     public function liguillas()
     {
-        return $this->belongsToMany(Liguilla::class, 'liguilla_usuario',  'cuenta_id', 'liguilla_id')
+        return $this->belongsToMany(Liguilla::class, 'liguilla_usuario',  'user_id', 'liguilla_id')
             ->withTimestamps();
     }
     public function plantillaLiguilla($liguillaId)
     {
-        return $this->hasMany(Plantilla::class, 'cuenta_id')->where('liguilla_id', $liguillaId);
+        return $this->hasMany(Plantilla::class, 'user_id')->where('liguilla_id', $liguillaId);
     }
 }

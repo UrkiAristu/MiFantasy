@@ -8,6 +8,7 @@ use App\Models\Jugador;
 use App\Models\Liguilla;
 use App\Models\Plantilla;
 use App\Models\Torneo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,8 +20,7 @@ class LiguillaController extends Controller
     public function crearLiguilla(Request $request)
     {
         // Validar los datos del formulario
-        $validator = Validator::make(
-            $request->all(),
+        $validated = $request->validate(
             [
                 'nombre' => 'required|string|max:255',
                 'num_max_part' => 'required|integer|min:2|max:100',
@@ -39,36 +39,28 @@ class LiguillaController extends Controller
                 'torneo_id.exists' => 'El torneo seleccionado no existe.',
             ]
         );
-        if ($validator->fails()) {
-            return redirect('/user/torneos')
-                ->withErrors($validator)
-                ->withInput();
-        }
-        $torneo = Torneo::find($request->torneo_id);
-        if ($torneo) {
-            $liguilla = new Liguilla();
-            $liguilla->nombre = $request->nombre;
-            $liguilla->torneo_id = $torneo->id;
-            $liguilla->max_usuarios = $request->num_max_part;
-            $liguilla->creador_id = session('cuenta');
-            $liguilla->codigo_unico = Str::random(8); // Código para unirse
-            $liguilla->save();
 
-            // Añadir al creador como primer usuario
-            $liguilla->usuarios()->attach(session('cuenta'));
-            // Crear plantilla aleatoria para este usuario en la liguilla
-            $this->crearPlantillaAleatoria($liguilla->id, session('cuenta'));
-            // Redirigir a la página de torneos con un mensaje de éxito
-            return redirect('/user/liguillas')->with('success', 'Ligulla creada correctamente.');
-        } else {
-            return redirect('/user/torneos')
-                ->withErrors(['torneo' => 'Torneo no encontrado.'])
-                ->withInput();
-        }
+        $usuario_id = Auth::id();
+        $torneo = Torneo::findOrFail($validated['torneo_id']);
+        $liguilla = new Liguilla();
+        $liguilla->nombre = $validated['nombre'];
+        $liguilla->torneo_id = $torneo->id;
+        $liguilla->max_usuarios = $validated['num_max_part'];
+        $liguilla->creador_id = $usuario_id;
+        $liguilla->codigo_unico = Str::random(8); // Código para unirse
+        $liguilla->save();
+
+        // Añadir al creador como primer usuario
+        $liguilla->usuarios()->attach($usuario_id);
+        // Crear plantilla aleatoria para este usuario en la liguilla
+        $this->crearPlantillaAleatoria($liguilla->id, $usuario_id);
+        // Redirigir a la página de torneos con un mensaje de éxito
+        return redirect('/user/liguillas')->with('success', 'Ligulla creada correctamente.');
     }
     public function mostrarPaginaLiguillasUser()
     {
-        $usuario = Cuenta::find(session('cuenta'));
+        /** @var \App\Models\User $usuario */
+        $usuario = Auth::user();
         if (!$usuario) {
             return redirect('/login')->withErrors('Usuario no encontrado.');
         }
@@ -84,14 +76,14 @@ class LiguillaController extends Controller
     }
     public function unirseLiguilla(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'codigo' => 'required|string|size:8', // suponiendo código de 8 caracteres
         ], [
             'codigo.required' => 'El código es obligatorio.',
             'codigo.size' => 'El código debe tener exactamente 8 caracteres.',
         ]);
 
-        $codigo = strtoupper($request->input('codigo')); // uniformizar mayúsculas
+        $codigo = strtoupper($validated['codigo']); // uniformizar mayúsculas
 
         // Buscar liguilla por código único
         $liguilla = Liguilla::where('codigo_unico', $codigo)->first();
@@ -100,10 +92,10 @@ class LiguillaController extends Controller
             return redirect()->back()->withErrors(['codigo' => 'Código de liguilla no válido.'])->withInput();
         }
 
-        $usuarioId = session('cuenta');
+        $usuarioId = Auth::id();
 
         // Comprobar si el usuario ya está en esa liguilla
-        if ($liguilla->usuarios()->where('cuenta_id', $usuarioId)->exists()) {
+        if ($liguilla->usuarios()->where('user_id', $usuarioId)->exists()) {
             return redirect()->back()->withErrors(['codigo' => 'Ya estás inscrito en esta liguilla.'])->withInput();
         }
 
@@ -124,7 +116,7 @@ class LiguillaController extends Controller
         // Crear registro de plantilla
         $plantilla = Plantilla::create([
             'liguilla_id' => $liguillaId,
-            'cuenta_id' => $usuarioId
+            'user_id' => $usuarioId
         ]);
         $liguilla = Liguilla::findOrFail($liguillaId);
 
@@ -149,8 +141,7 @@ class LiguillaController extends Controller
     }
     public function mostrarPaginaLiguillaUser($id)
     {
-        $usuarioId = session('cuenta'); // ID de usuario logueado
-        $usuario = Cuenta::findOrFail($usuarioId);
+        $usuario = Auth::user();
 
         // 1️⃣ Liguilla y torneo
         $liguilla = Liguilla::with('torneo.jornadas.partidos')
@@ -164,7 +155,7 @@ class LiguillaController extends Controller
             ->map(function ($usuario, $index) {
                 return (object) [
                     'posicion' => $index + 1,
-                    'nombre' => $usuario->nombreUsuario,
+                    'name' => $usuario->name,
                     'email' => $usuario->email,
                     'puntos' => $usuario->pivot->puntos ?? 0
                 ];
@@ -187,7 +178,7 @@ class LiguillaController extends Controller
         if ($jornadaActiva) {
             $alineacion = Alineacion::with('jugadores')
                 ->where('jornada_id', $jornadaActiva->id)
-                ->where('cuenta_id', $usuarioId)
+                ->where('user_id', $usuario->id)
                 ->first();
         }
 
@@ -199,7 +190,7 @@ class LiguillaController extends Controller
         // Plantilla de usuario
         $plantilla = Plantilla::with('jugadores')
             ->where('liguilla_id', $liguilla->id)
-            ->where('cuenta_id', $usuarioId)
+            ->where('user_id', $usuario->id)
             ->first();
         $miPlantilla = $plantilla?->jugadores ?? collect();
 

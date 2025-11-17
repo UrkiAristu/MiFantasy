@@ -10,11 +10,11 @@ class Plantilla extends Model
     public $timestamps = true;
     protected $fillable = [
         'liguilla_id',
-        'cuenta_id',
+        'user_id',
     ];
     public function usuario()
     {
-        return $this->belongsTo(Cuenta::class, 'cuenta_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function liguilla()

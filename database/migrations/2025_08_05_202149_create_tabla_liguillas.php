@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('torneo_id')->constrained('torneos')->onDelete('cascade');
             $table->unsignedInteger('max_usuarios')->default(10);
             $table->string('codigo_unico')->unique();
-            $table->foreignId('creador_id')->constrained('cuentas')->onDelete('cascade');
+            $table->foreignId('creador_id')->constrained('users')->onDelete('cascade');
             $table->enum('estado', ['activa', 'cerrada'])->default('activa');
             $table->timestamps();
         });

@@ -242,7 +242,7 @@
                                 @foreach($clasificacion ?? $liguilla->usuarios()->withPivot('puntos','posicion')->get() as $u)
                                 <tr>
                                     <td>{{ $u->pivot->posicion ?? '-' }}</td>
-                                    <td>{{ $u->nombre ?? $u->email ?? 'Usuario' }}</td>
+                                    <td>{{ $u->name ?? $u->email ?? 'Usuario' }}</td>
                                     <td>{{ $u->pivot->nombre_equipo ?? '-' }}</td>
                                     <td class="text-end">{{ $u->pivot->puntos ?? 0 }}</td>
                                 </tr>
@@ -285,7 +285,7 @@
                         @foreach($liguilla->plantillas()->with('usuario')->get() as $plantilla)
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>{{ $plantilla->usuario->nombreUsuario ?? 'Usuario' }}</strong><br>
+                                <strong>{{ $plantilla->usuario->name ?? 'Usuario' }}</strong><br>
                                 <small class="text-muted">Plantilla: {{ $plantilla->jugadores()->count() }} jugadores</small>
                             </div>
                             <div>
@@ -311,7 +311,7 @@
                             <select id="selectUsuarioHistorico" class="form-select">
                                 <option value="">Selecciona participante</option>
                                 @foreach($liguilla->plantillas()->with('usuario')->get() as $p)
-                                <option value="{{ $p->usuario->id }}">{{ $p->usuario->nombreUsuario }}</option>
+                                <option value="{{ $p->usuario->id }}">{{ $p->usuario->name }}</option>
                                 @endforeach
                             </select>
                         </div>

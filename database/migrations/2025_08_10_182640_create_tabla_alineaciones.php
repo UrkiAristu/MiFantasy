@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('alineaciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cuenta_id')->constrained('cuentas')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('liguilla_id')->constrained()->onDelete('cascade');
             $table->foreignId('jornada_id')->constrained()->onDelete('cascade');
             $table->timestamps();
 
-            $table->unique(['cuenta_id', 'liguilla_id', 'jornada_id']);
+            $table->unique(['user_id', 'liguilla_id', 'jornada_id']);
         });
     }
 

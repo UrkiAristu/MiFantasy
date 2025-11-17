@@ -7,20 +7,32 @@ use App\Models\Jornada;
 use App\Models\Liguilla;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AlineacionController extends Controller
 {
     public function guardarAlineacion(Request $request, $liguillaId)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'jornada_id' => 'required|exists:jornadas,id',
                 'jugadores' => 'array',
                 'jugadores.*' => 'exists:jugadores,id'
             ]);
-            $usuarioId = session('cuenta');
+            $usuarioId = Auth::id();
+
+            // Comprobar que la liguilla existe (y, si quieres, que el user pertenece a ella)
+            $liguilla = Liguilla::with('torneo')->findOrFail($liguillaId);
+
+            // (Opcional pero recomendable) asegurar que el usuario está en la liguilla
+            if (! $liguilla->usuarios()->where('users.id', $usuarioId)->exists()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'No puedes modificar alineaciones de una liguilla en la que no participas.',
+                ], 403);
+            }
             // Buscar la jornada y verificar si ya ha comenzado
-            $jornada = Jornada::with('partidos')->findOrFail($request->jornada_id);
+            $jornada = Jornada::with('partidos')->findOrFail($validated['jornada_id']);
 
             // Primer partido de la jornada
             $primerPartido = $jornada->partidos()->orderBy('fecha_partido')->first();
@@ -33,10 +45,9 @@ class AlineacionController extends Controller
             }
 
             // Evitamos duplicados por seguridad
-            $jugadoresUnicos = array_unique($request->jugadores ?? []);
+            $jugadoresUnicos = array_unique($validated['jugadores'] ?? []);
 
             // Limitar al número permitido por torneo
-            $liguilla = Liguilla::findOrFail($liguillaId);
             $maxJugadores = $liguilla->torneo->jugadores_por_equipo;
             if (count($jugadoresUnicos) > $maxJugadores) {
                 return response()->json([
@@ -48,9 +59,9 @@ class AlineacionController extends Controller
             // Buscar alineación existente
             $alineacion = Alineacion::firstOrCreate(
                 [
-                    'cuenta_id' => $usuarioId,
+                    'user_id' => $usuarioId,
                     'liguilla_id' => $liguillaId,
-                    'jornada_id' => $request->jornada_id
+                    'jornada_id' => $validated['jornada_id']
                 ]
             );
 
@@ -70,12 +81,12 @@ class AlineacionController extends Controller
     }
     public function obtenerAlineacion($idLiguilla, $idJornada)
     {
-        $cuenta_id = session('cuenta');
-        $alineacion = Alineacion::where('cuenta_id', $cuenta_id)
+        $user_id = Auth::id();
+        $alineacion = Alineacion::with(['jugadores','jornada.torneo'])
+            ->where('user_id', $user_id)
             ->where('liguilla_id', $idLiguilla)
             ->where('jornada_id', $idJornada)
-            ->with('jugadores')
-            ->first();;
+            ->first();
         if (!$alineacion) {
             return response()->json([
                 'status' => 'empty',

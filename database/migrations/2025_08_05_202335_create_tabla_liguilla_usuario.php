@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('liguilla_usuario', function (Blueprint $table) {
             $table->id();
             $table->foreignId('liguilla_id')->constrained('liguillas')->onDelete('cascade');
-            $table->foreignId('cuenta_id')->constrained('cuentas')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nombre_equipo')->nullable();
             $table->integer('puesto')->nullable();
             $table->integer('puntos')->default(0);

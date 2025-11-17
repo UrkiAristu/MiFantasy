@@ -14,11 +14,11 @@ class Liguilla extends Model
     }
     public function creador()
     {
-        return $this->belongsTo(Cuenta::class, 'creador_id');
+        return $this->belongsTo(User::class, 'creador_id');
     }
     public function usuarios()
     {
-        return $this->belongsToMany(Cuenta::class, 'liguilla_usuario', 'liguilla_id', 'cuenta_id')
+        return $this->belongsToMany(User::class, 'liguilla_usuario', 'liguilla_id', 'user_id')
             ->withPivot('puesto', 'puntos')
             ->withTimestamps();
     }

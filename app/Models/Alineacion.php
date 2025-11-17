@@ -9,13 +9,13 @@ class Alineacion extends Model
     protected $table = 'alineaciones';
     public $timestamps = true;
     protected $fillable = [
-        'cuenta_id',
+        'user_id',
         'liguilla_id',
         'jornada_id',
     ];
     public function usuario()
     {
-        return $this->belongsTo(Cuenta::class, 'cuenta_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function liguilla()
