@@ -43,14 +43,14 @@ Route::middleware('guest')->group(function () {
     //REGISTER
     //Mostrar página de registro
     Route::get('/registro', function () {
-        return view('user/registro');
+        return view('auth/registro');
     })->name('register');
     Route::post('/registro', [LoginController::class, 'register'])->name('register.attempt');
 
     //LOGIN
     //Mostrar página de login
     Route::get('/login', function () {
-        return view('user/login');
+        return view('auth/login');
     })->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
