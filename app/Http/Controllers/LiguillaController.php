@@ -17,6 +17,17 @@ use Illuminate\Support\Str;
 
 class LiguillaController extends Controller
 {
+    public function mostrarPaginaLiguillas()
+    {
+        // Verificar si el usuario es administrador
+        if (!Auth::check() || !Auth::user()->admin) {
+            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
+        }
+        $liguillas = Liguilla::all();
+
+        // Retornar la vista con los datos de los equipos
+        return view('admin.liguillas', compact('liguillas'));
+    }
     public function crearLiguilla(Request $request)
     {
         // Validar los datos del formulario

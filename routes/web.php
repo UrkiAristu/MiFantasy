@@ -110,6 +110,8 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
         Route::post('/admin/jugadores/{id}/equipos/agregar', [JugadorController::class, 'agregarAEquipoJugador']);
         Route::get('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
         Route::post('/admin/jugadores/{id}/equipos/crear', [JugadorController::class, 'crearEquipoConJugador']);
+        //Liguillas
+        Route::get('/admin/liguillas', [LiguillaController::class, 'mostrarPaginaLiguillas']);
         //Jornadas
         Route::get('/admin/torneos/{idTorneo}/jornadas', [PartidoController::class, 'mostrarPaginaJornadas']);
         Route::post('/admin/torneos/{idTorneo}/jornadas/crear', [PartidoController::class, 'crearJornada']);

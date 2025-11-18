@@ -20,6 +20,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ url('/admin/torneos') }}">Torneos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url('/admin/equipos') }}">Equipos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url('/admin/jugadores') }}">Jugadores</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url('/admin/liguillas') }}">Liguillas</a></li>
                 <li class="nav-item">
                     <form action="{{ url('/logout') }}" method="POST" class="d-inline">
                         @csrf
