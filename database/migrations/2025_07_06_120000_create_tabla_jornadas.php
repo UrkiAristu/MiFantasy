@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('orden')->default(0);
             $table->date('fecha_inicio')->nullable();
             $table->date('fecha_fin')->nullable();
+            $table->dateTime('fecha_cierre_alineaciones')->nullable();
+            $table->boolean('alineaciones_congeladas')->default(false);
             $table->timestamps();
         });
     }

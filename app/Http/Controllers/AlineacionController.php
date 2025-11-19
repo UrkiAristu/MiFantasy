@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Alineacion;
 use App\Models\Jornada;
 use App\Models\Liguilla;
+use App\Models\Plantilla;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +15,12 @@ class AlineacionController extends Controller
     public function guardarAlineacion(Request $request, $liguillaId)
     {
         try {
+            $usuarioId = Auth::id();
+
             $validated = $request->validate([
-                'jornada_id' => 'required|exists:jornadas,id',
                 'jugadores' => 'array',
                 'jugadores.*' => 'exists:jugadores,id'
             ]);
-            $usuarioId = Auth::id();
 
             // Comprobar que la liguilla existe (y, si quieres, que el user pertenece a ella)
             $liguilla = Liguilla::with('torneo')->findOrFail($liguillaId);
@@ -31,18 +32,11 @@ class AlineacionController extends Controller
                     'message' => 'No puedes modificar alineaciones de una liguilla en la que no participas.',
                 ], 403);
             }
-            // Buscar la jornada y verificar si ya ha comenzado
-            $jornada = Jornada::with('partidos')->findOrFail($validated['jornada_id']);
-
-            // Primer partido de la jornada
-            $primerPartido = $jornada->partidos()->orderBy('fecha_partido')->first();
-
-            if ($primerPartido && now()->gte($primerPartido->fecha_partido)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No puedes modificar la alineación, la jornada ya ha comenzado.'
-                ], 403);
-            }
+            //Obtener plantilla del usuario para comprobar que los jugadores son suyos
+            $plantilla = Plantilla::with('jugadores')
+                ->where('liguilla_id', $liguillaId)
+                ->where('user_id', $usuarioId)
+                ->first();
 
             // Evitamos duplicados por seguridad
             $jugadoresUnicos = array_unique($validated['jugadores'] ?? []);
@@ -55,13 +49,26 @@ class AlineacionController extends Controller
                     'message' => "Solo puedes seleccionar hasta $maxJugadores jugadores."
                 ], 422);
             }
+            // Comprobar que los jugadores están en la plantilla del usuario
+            if ($plantilla) {
+                $idsEnPlantilla = $plantilla->jugadores->pluck('id')->toArray();
+                foreach ($jugadoresUnicos as $idJug) {
+                    if (!in_array($idJug, $idsEnPlantilla)) {
+                        return response()->json([
+                            'status'  => 'error',
+                            'message' => 'Solo puedes alinear jugadores que están en tu plantilla.',
+                        ], 422);
+                    }
+                }
+            }
 
-            // Buscar alineación existente
+
+            // Buscar alineación BASE
             $alineacion = Alineacion::firstOrCreate(
                 [
                     'user_id' => $usuarioId,
                     'liguilla_id' => $liguillaId,
-                    'jornada_id' => $validated['jornada_id']
+                    'jornada_id' => null
                 ]
             );
 
@@ -82,6 +89,7 @@ class AlineacionController extends Controller
     public function obtenerAlineacion($idLiguilla, $idJornada)
     {
         $user_id = Auth::id();
+
         $alineacion = Alineacion::with(['jugadores','jornada.torneo'])
             ->where('user_id', $user_id)
             ->where('liguilla_id', $idLiguilla)
@@ -93,11 +101,9 @@ class AlineacionController extends Controller
                 'jugadores' => []
             ]);
         }
-        $idTorneo = $alineacion->jornada->torneo->id;
-
         return response()->json([
             'status' => 'ok',
-            'jugadores' => $alineacion->jugadores->map(function ($jugador) use ($idTorneo) {
+            'jugadores' => $alineacion->jugadores->map(function ($jugador) {
                 return [
                     'id' => $jugador->id,
                     'nombre' => $jugador->nombre,

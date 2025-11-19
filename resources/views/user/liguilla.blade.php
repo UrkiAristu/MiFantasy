@@ -43,52 +43,58 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Alineación para la jornada</h5>
-                    <p class="text-muted">Selecciona hasta {{ $liguilla->torneo->jugadores_por_equipo }} jugadores de tu plantilla.</p>
+                    <p class="text-muted"> Esta es tu alineación base. Selecciona hasta {{ $liguilla->torneo->jugadores_por_equipo }} jugadores de tu plantilla. Se usará automáticamente en cada jornada cuando se cierre el plazo de alineaciones.
+                    </p>
 
-                    <!-- Selector de jornada -->
-                    <form id="formSeleccionJornada" class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label for="jornada_id" class="form-label">Jornada</label>
-                            <select id="jornada_id" name="jornada_id" class="form-select">
-                                <option value="">Selecciona jornada</option>
-                                @foreach($liguilla->torneo->jornadas()->orderBy('orden')->get() as $j)
-                                <option value="{{ $j->id }}"
-                                    {{ $jornadaActiva && $jornadaActiva->id === $j->id ? 'selected' : '' }}>
-                                    J {{ $j->orden }} - {{ $j->nombre ?? '' }}
-                                </option>
-                                @endforeach
-                            </select>
-
-                        </div>
-                    </form>
+                    @php
+                        $jugadoresBase = isset($jugadoresBase)
+                            ? ($jugadoresBase instanceof \Illuminate\Support\Collection ? $jugadoresBase->values() : collect($jugadoresBase)->values())
+                            : collect();
+                    @endphp
 
                     <!-- Campo de fútbol -->
                     <div class="futbol-campo mb-4 position-relative">
                         <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3">
                             @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
-                                <div class="slot card text-center d-flex align-items-center justify-content-center" data-slot="{{ $i }}">
+                                @php
+                                    $jug = $jugadoresBase->get($i - 1); // índice 0-based
+                                @endphp
+                                <div class="slot card text-center d-flex align-items-center justify-content-center {{ $jug ? 'ocupado' : 'vacio' }}"
+                                    data-slot="{{ $i }}">
                                     <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                                        <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
-                                        <small class="text-white mt-1">Vacío</small>
+                                        @if($jug)
+                                            <img src="{{ $jug->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
+                                                alt="{{ $jug->nombre }} {{ $jug->apellido1 }}"
+                                                width="50"
+                                                class="rounded-circle mb-1">
+                                            <small class="text-white">
+                                                {{ $jug->nombre }} {{ $jug->apellido1 }}
+                                            </small>
+                                        @else
+                                            <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
+                                            <small class="text-white mt-1">Vacío</small>
+                                        @endif
                                     </div>
                                 </div>
-                                @endfor
-                        </div>
-                        <!-- Overlay loader -->
-                        <div id="loaderOverlay" class="loader-overlay" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
+                            @endfor
                         </div>
                     </div>
 
-                    <!-- Formulario alineación -->
+                    <!-- Formulario alineación base -->
                     <form id="formAlineacion" method="POST"
                         action="{{ url('/user/liguillas/'.$liguilla->id.'/alineacion/guardar') }}"
                         class="mt-4">
                         @csrf
-                        <input type="hidden" name="jornada_id" id="form_jornada_id" value="{{ $jornadaActiva->id ?? '' }}">
-                        <div id="alineacionInputs"></div>
+
+                        <div id="alineacionInputs">
+                            @foreach($jugadoresBase as $index => $jug)
+                                <input type="hidden"
+                                    name="jugadores[]"
+                                    data-slot="{{ $index + 1 }}"
+                                    value="{{ $jug->id }}">
+                            @endforeach
+                        </div>
+
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-success" {{ $bloqueada ? 'disabled' : '' }}>
                                 Guardar alineación
@@ -469,8 +475,8 @@
             img.classList.add('rounded-circle', 'mb-1');
             body.appendChild(img);
             // Marcar el slot como ocupado
-            slotSeleccionado.classList.add('ocupado');
-            slotSeleccionado.classList.remove('vacio');
+            // slotSeleccionado.classList.add('ocupado');
+            // slotSeleccionado.classList.remove('vacio');
 
 
             const nombreEl = document.createElement('small');
@@ -478,7 +484,7 @@
             nombreEl.classList.add('text-white');
             body.appendChild(nombreEl);
 
-            // Añadir input hidden
+            // Añadir / actualizar input hidden
             let slotNumber = slotSeleccionado.dataset.slot;
             let formInput = document.querySelector(`#alineacionInputs input[data-slot="${slotNumber}"]`);
             if (!formInput) {
@@ -546,61 +552,6 @@
         slotSeleccionado.classList.remove('ocupado');
     });
 
-    // Al cambiar la jornada en el select
-    document.getElementById('jornada_id').addEventListener('change', function() {
-        const jornadaId = this.value;
-        const liguillaId = "{{$liguilla->id}}";
-        const loader = document.getElementById('loaderOverlay');
-
-        document.getElementById('form_jornada_id').value = jornadaId;
-        if (!jornadaId) return;
-
-        // Mostrar overlay
-        loader.style.display = 'flex';
-
-        fetch(`/user/liguillas/${liguillaId}/alineacion/${jornadaId}`)
-            .then(res => res.json())
-            .then(data => {
-                // Limpiar y rellenar slots...
-                document.querySelectorAll('.slot').forEach((slot, index) => {
-                    const body = slot.querySelector('.card-body');
-                    if (data.status === 'ok' && data.jugadores[index]) {
-                        const jugador = data.jugadores[index];
-                        body.innerHTML = `
-                        <img src="${jugador.foto}" width="50" class="rounded-circle mb-1">
-                        <small class="text-white">${jugador.nombre} ${jugador.apellido1} ${jugador.apellido2}</small>
-                    `;
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'jugadores[]';
-                        input.dataset.slot = index + 1;
-                        input.value = jugador.id;
-                        document.getElementById('alineacionInputs').appendChild(input);
-                        slot.classList.add('ocupado');
-                        slot.classList.remove('vacio');
-                    } else {
-                        body.innerHTML = '<i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i><small class="text-white mt-1">Vacío</small>';
-                        slot.classList.add('vacio');
-                        slot.classList.remove('ocupado');
-                    }
-                });
-
-                actualizarJugadoresDisponibles();
-                loader.style.display = 'none'; // ocultar overlay
-            })
-            .catch(err => {
-                console.error(err);
-                loader.style.display = 'none';
-            });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        const select = document.getElementById('jornada_id');
-        if (select.value) {
-            // dispara el evento change para que pinte la alineación inicial
-            select.dispatchEvent(new Event('change'));
-        }
-    });
-
     //Submit
     document.getElementById('formAlineacion').addEventListener('submit', function(e) {
         e.preventDefault(); // evitar recarga
@@ -654,5 +605,9 @@
             }
         });
     }
+    // Inicializar al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        actualizarJugadoresDisponibles();
+    });
 </script>
 @endpush

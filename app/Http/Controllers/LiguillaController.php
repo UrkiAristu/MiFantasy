@@ -184,14 +184,13 @@ class LiguillaController extends Controller
                 ->orderBy('fecha_inicio', 'asc')
                 ->first();
         }
-        // 4️⃣ Alineación del usuario en la jornada actual
-        $alineacion = null;
-        if ($jornadaActiva) {
-            $alineacion = Alineacion::with('jugadores')
-                ->where('jornada_id', $jornadaActiva->id)
-                ->where('user_id', $usuario->id)
-                ->first();
-        }
+        // 4️⃣ Alineación BASE del usuario
+        $alineacionBase = Alineacion::with('jugadores')
+        ->where('liguilla_id', $liguilla->id)
+        ->where('user_id', $usuario->id)
+        ->whereNull('jornada_id')
+        ->first();
+        $jugadoresBase = $alineacionBase?->jugadores ?? collect();
 
         // 5️⃣ Resultados de partidos de la última jornada
         $resultados = $jornadaActiva
@@ -207,20 +206,15 @@ class LiguillaController extends Controller
 
         // 7️⃣ Comprobar si la jornada ya ha empezado
         $bloqueada = false;
-        if ($jornadaActiva) {
-            $primerPartido = $jornadaActiva->partidos()->orderBy('fecha_partido', 'asc')->first();
-            if ($primerPartido && now()->gte($primerPartido->fecha_partido)) {
-                $bloqueada = true;
-            }
-        }
+
         return view('user.liguilla', compact(
             'liguilla',
             'clasificacion',
-            'alineacion',
-            'resultados',
             'jornadaActiva',
             'usuario',
             'miPlantilla',
+            'jugadoresBase',
+            'resultados',
             'bloqueada'
         ));
     }

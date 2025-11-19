@@ -133,7 +133,7 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="jugadores_por_equipo" class="form-label">Jugadores por Equipo</label>
+                            <label for="jugadores_por_equipo" class="form-label">Jugadores por Alineacion</label>
                             <input type="number" class="form-control" id="jugadores_por_equipo" name="jugadores_por_equipo" min="1" value="5" required>
                         </div>
                         <div class="col-md-4">

@@ -283,14 +283,14 @@
                     <div class="col-md-4 mb-3">
                         <label for="editarGolesLocal" class="form-label">Goles Local</label>
                         <input type="number" name="goles_local" id="editarGolesLocal" class="form-control"
-                            value="{{ $partido->goles_local ?? '' }}" min="0" required>
+                            value="{{ $partido->goles_local ?? '' }}" min="0">
                     </div>
 
                     <!-- Goles Visitante -->
                     <div class="col-md-4 mb-3">
                         <label for="editarGolesVisitante" class="form-label">Goles Visitante</label>
                         <input type="number" name="goles_visitante" id="editarGolesVisitante" class="form-control"
-                            value="{{ $partido->goles_visitante ?? '' }}" min="0" required>
+                            value="{{ $partido->goles_visitante ?? '' }}" min="0">
                     </div>
 
                     <!-- Estado -->

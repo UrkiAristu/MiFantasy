@@ -22,6 +22,19 @@ class Liguilla extends Model
             ->withPivot('puesto', 'puntos')
             ->withTimestamps();
     }
+    public function alineaciones()
+    {
+        return $this->hasMany(Alineacion::class);
+    }
+
+    public function alineacionBaseDe(User $user)
+    {
+        return $this->alineaciones()
+                    ->where('user_id', $user->id)
+                    ->whereNull('jornada_id')
+                    ->with('jugadores')
+                    ->first();
+    }
 
     public function plantillas()
     {

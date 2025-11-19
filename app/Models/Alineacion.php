@@ -34,4 +34,13 @@ class Alineacion extends Model
             ->withPivot('puntos')
             ->withTimestamps();
     }
+    public function scopeBase($q)
+    {
+        return $q->whereNull('jornada_id');
+    }
+
+    public function scopeDeJornada($q, $jornadaId)
+    {
+        return $q->where('jornada_id', $jornadaId);
+    }
 }

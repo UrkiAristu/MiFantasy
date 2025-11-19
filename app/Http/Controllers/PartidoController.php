@@ -36,6 +36,7 @@ class PartidoController extends Controller
                 'nombre' => 'required|string|max:255',
                 'fecha_inicio' => 'nullable|date',
                 'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
+                'fecha_cierre_alineaciones' => 'nullable|date_format:Y-m-d\TH:i'
             ],
             [
                 'nombre.required' => 'El nombre es obligatorio.',
@@ -44,12 +45,14 @@ class PartidoController extends Controller
                 'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha valida.',
                 'fecha_fin.date' => 'La fecha de fin debe ser una fecha valida.',
                 'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
+                'fecha_cierre_alineaciones.date_format' => 'La fecha de cierre de alineaciones debe ser una fecha válida.',
             ]
         );
         $torneo = Torneo::findOrFail($idTorneo);
         
         $fecha_inicio = Carbon::parse($validated['fecha_inicio']);
         $fecha_fin = Carbon::parse($validated['fecha_fin']);
+        $fecha_cierre = Carbon::parse($validated['fecha_cierre_alineaciones']);
 
         // Validar que las fechas de la jornada estén dentro del rango del torneo
         if (($validated['fecha_inicio'] && $fecha_inicio->gt($torneo->fecha_fin)) ||
@@ -58,6 +61,16 @@ class PartidoController extends Controller
             return redirect('/admin/torneos/' . $idTorneo . '/jornadas')
                 ->withErrors(['fecha_jornada' => 'Las fechas de inicio y fin de la jornada deben estar dentro del rango del torneo.'])
                 ->withInput();
+        }
+        // Validar que la fecha de cierre es una fecha valida. Previa al final de la jornada
+        if ($validated['fecha_cierre_alineaciones'] && $fecha_cierre->gt($fecha_fin->endOfDay())) {
+            return redirect('/admin/torneos/' . $idTorneo . '/jornadas')
+                ->withErrors(['fecha_cierre_alineaciones' => 'La fecha de cierre de alineaciones debe ser anterior al fin de la jornada.'])
+                ->withInput();
+        }
+        // Si NO han rellenado fecha_cierre_alineaciones pero sí fecha_inicio, calculamos 1 hora antes
+        if (!$fecha_cierre && $fecha_inicio) {
+            $fecha_cierre = (clone $fecha_inicio)->subHour();
         }
 
         // Obtener el siguiente orden
@@ -69,6 +82,7 @@ class PartidoController extends Controller
         $jornada->nombre = $validated['nombre'];
         $jornada->fecha_inicio = $validated['fecha_inicio'];
         $jornada->fecha_fin = $validated['fecha_fin'];
+        $jornada->fecha_cierre_alineaciones = $validated['fecha_cierre_alineaciones'];
         $jornada->orden = $nuevoOrden;
         $jornada->save();
         // Redirigir a la página de torneos con un mensaje de éxito
@@ -86,6 +100,7 @@ class PartidoController extends Controller
                 'nombre' => 'required|string|max:255',
                 'fecha_inicio' => 'nullable|date',
                 'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
+                'fecha_cierre_alineaciones' => 'nullable|date_format:Y-m-d\TH:i'
             ],
             [
                 'nombre.required' => 'El nombre es obligatorio.',
@@ -94,6 +109,7 @@ class PartidoController extends Controller
                 'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha válida.',
                 'fecha_fin.date' => 'La fecha de fin debe ser una fecha válida.',
                 'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
+                'fecha_cierre_alineaciones.date_format' => 'La fecha de cierre de alineaciones debe ser una fecha válida.',
             ]
         );
         $jornada = Jornada::findOrFail($id);
@@ -101,7 +117,7 @@ class PartidoController extends Controller
         if ($torneo) {
             $fecha_inicio = Carbon::parse($validated['fecha_inicio']);
             $fecha_fin = Carbon::parse($validated['fecha_fin']);
-
+            $fecha_cierre = Carbon::parse($validated['fecha_cierre_alineaciones']);
             // Validar que las fechas de la jornada estén dentro del rango del torneo
             if (($validated['fecha_inicio'] && $fecha_inicio->gt($torneo->fecha_fin)) ||
                 ($validated['fecha_fin'] && $fecha_fin->lt($torneo->fecha_inicio))
@@ -110,11 +126,21 @@ class PartidoController extends Controller
                     ->withErrors(['fecha_jornada' => 'Las fechas de inicio y fin de la jornada deben estar dentro del rango del torneo.'])
                     ->withInput();
             }
+            // Validar que la fecha de cierre es una fecha valida. Previa al final de la jornada
+            if ($validated['fecha_cierre_alineaciones'] && $fecha_cierre->gt($fecha_fin->endOfDay())) {
+                return redirect('/admin/torneos/' . $torneo->id . '/jornadas')
+                    ->withErrors(['fecha_cierre_alineaciones' => 'La fecha de cierre de alineaciones debe ser anterior al fin de la jornada.'])
+                    ->withInput();
+            }
+            if (!$fecha_cierre && $fecha_inicio) {
+                $fecha_cierre = (clone $fecha_inicio)->subHour();
+            }
             $jornada->nombre = $validated['nombre'];
             $jornada->fecha_inicio = $validated['fecha_inicio'];
             $jornada->fecha_fin = $validated['fecha_fin'];
+            $jornada->fecha_cierre_alineaciones = $validated['fecha_cierre_alineaciones'];
             $jornada->save();
-            return redirect('/admin/torneos/' . $jornada->torneo_id . '/jornadas')->with('success', 'Jornada actualizada correctamente.');
+            return redirect('/admin/torneos/' . $jornada->torneo_id . '/jornadas')->with('success', 'Jornada ' . $jornada->nombre . ' actualizada correctamente.');
         } else {
             return redirect('/admin/torneos')
                 ->withErrors(['torneo' => 'Torneo no encontrado.'])
@@ -202,6 +228,7 @@ class PartidoController extends Controller
                 'equipo_local_id' => 'required|exists:equipos,id',
                 'equipo_visitante_id' => 'required|exists:equipos,id|different:equipo_local_id',
                 'fecha_partido' => 'required|date',
+                'hora_partido' => 'nullable|date_format:H:i',
                 'goles_local' => 'nullable|integer|min:0',
                 'goles_visitante' => 'nullable|integer|min:0',
                 'estado' => 'nullable|in:programado,jugado,cancelado',
@@ -214,6 +241,7 @@ class PartidoController extends Controller
                 'equipo_visitante_id.exists' => 'El equipo visitante debe existir.',
                 'equipo_visitante_id.different' => 'El equipo visitante debe ser diferente al equipo local.',
                 'fecha_partido.required' => 'La fecha del partido es obligatoria.',
+                'hora_partido.date_format' => 'La hora del partido debe tener el formato HH:MM.',
                 'goles_local.integer' => 'Los goles del equipo local deben ser un número entero.',
                 'goles_visitante.integer' => 'Los goles del equipo visitante deben ser un número entero.',
                 'estado.required' => 'El estado del partido es obligatorio.',
@@ -239,8 +267,8 @@ class PartidoController extends Controller
         $partido->equipo_local_id = $validated['equipo_local_id'];
         $partido->equipo_visitante_id = $validated['equipo_visitante_id'];
         $partido->fecha_partido = $fecha_hora_partido;
-        $partido->goles_local = $validated['goles_local'];
-        $partido->goles_visitante = $validated['goles_visitante'];
+        $partido->goles_local = $validated['goles_local'] ?? null;
+        $partido->goles_visitante = $validated['goles_visitante'] ?? null;
         $partido->estado = $validated['estado'] ?? 'programado';
         $partido->eventos = $validated['eventos'] ?? null;
         $partido->save();

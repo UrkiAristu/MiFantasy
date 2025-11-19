@@ -77,6 +77,12 @@
                         <small class="text-muted">
                             {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }} -
                             {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
+                            . Cierre alineaciones:
+                            @if($jornada->fecha_cierre_alineaciones)
+                                {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
+                            @else
+                                -
+                            @endif
                         </small>
                     </div>
                     <div class="d-flex gap-2">
@@ -94,7 +100,8 @@
                             data-id="{{ $jornada->id }}"
                             data-nombre="{{ $jornada->nombre }}"
                             data-fecha-inicio="{{ $jornada->fecha_inicio }}"
-                            data-fecha-fin="{{ $jornada->fecha_fin }}">
+                            data-fecha-fin="{{ $jornada->fecha_fin }}"
+                            data-fecha-cierre-alineaciones="{{ $jornada->fecha_cierre_alineaciones }}">
                             Editar
                         </button>
                     </div>
@@ -126,7 +133,7 @@
                                     <a href="{{ url('/admin/partidos/'.$partido->id) }}" class="btn btn-sm btn-info">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-warning"
+                                    <button type="button" class="btn btn-sm btn-secondary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#resultadoModal"
                                         data-partido-id="{{ $partido->id }}"
@@ -134,7 +141,7 @@
                                         data-visitante="{{ $partido->equipoVisitante->nombre }}"
                                         data-goles-local="{{ $partido->goles_local }}"
                                         data-goles-visitante="{{ $partido->goles_visitante }}">
-                                        <i class="bi bi-pencil-square"></i> Editar
+                                        <i class="bi bi-pencil-square"></i> Resultado
                                     </button>
                                 </td>
                             </tr>
@@ -159,6 +166,12 @@
                     <small class="text-muted">
                         {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }} -
                         {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
+                        . Cierre alineaciones:
+                            @if($jornada->fecha_cierre_alineaciones)
+                                {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
+                            @else
+                                -
+                            @endif
                     </small>
                 </div>
                 <div class="d-flex gap-2">
@@ -172,7 +185,8 @@
                         data-id="{{ $jornada->id }}"
                         data-nombre="{{ $jornada->nombre }}"
                         data-fecha-inicio="{{ $jornada->fecha_inicio }}"
-                        data-fecha-fin="{{ $jornada->fecha_fin }}">
+                        data-fecha-fin="{{ $jornada->fecha_fin }}"
+                        data-fecha-cierre-alineaciones="{{ $jornada->fecha_cierre_alineaciones }}">
                         Editar
                     </button>
                 </div>
@@ -204,7 +218,7 @@
                                 <a href="{{ url('/admin/partidos/'.$partido->id) }}" class="btn btn-sm btn-info">
                                     <i class="bi bi-eye"></i> Ver
                                 </a>
-                                <button type="button" class="btn btn-sm btn-warning"
+                                <button type="button" class="btn btn-sm btn-secondary"
                                     data-bs-toggle="modal"
                                     data-bs-target="#resultadoModal"
                                     data-partido-id="{{ $partido->id }}"
@@ -212,7 +226,7 @@
                                     data-visitante="{{ $partido->equipoVisitante->nombre }}"
                                     data-goles-local="{{ $partido->goles_local }}"
                                     data-goles-visitante="{{ $partido->goles_visitante }}">
-                                    <i class="bi bi-pencil-square"></i> Editar
+                                    <i class="bi bi-pencil-square"></i> Resultado
                                 </button>
                             </td>
                         </tr>
@@ -228,6 +242,7 @@
         <p class="text-muted">Este torneo aún no tiene jornadas creadas.</p>
         @endforelse
     </div>
+    @if ($torneo->jornadas->count())
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-3">
             <h2>Orden de jornadas en {{ $torneo->nombre }}</h2>
@@ -244,6 +259,12 @@
                             {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }}
                             –
                             {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
+                            . Cierre alineaciones:
+                            @if($jornada->fecha_cierre_alineaciones)
+                                {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
+                            @else
+                                -
+                            @endif
                         </small>
                     </span>
                     <div class="d-flex align-items-center gap-5">
@@ -260,13 +281,15 @@
             <button type="submit" class="btn btn-success">Guardar orden</button>
         </form>
     </div>
+    @else
+    <h2>Aún no hay jornadas en {{ $torneo->nombre }}</h2>
+    @endif
 </div>
 <!-- Modal único para crear partido -->
 <div class="modal fade" id="modalCrearPartido" tabindex="-1">
     <div class="modal-dialog">
         <form method="POST" id="formCrearPartido" class="modal-content">
             @csrf
-            <input type="hidden" name="jornada_id" id="inputJornadaId">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalCrearPartidoTitle">Nuevo Partido</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -337,6 +360,13 @@
                             max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->format('Y-m-d') }}">
                     </div>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Fecha y hora de cierre de alineaciones</label>
+                    <input type="datetime-local" class="form-control" name="fecha_cierre_alineaciones"
+                     min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->subDay()->format('Y-m-d\TH:i') }}"
+                    max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->endOfDay()->format('Y-m-d\TH:i') }}">
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button class="btn btn-success">Crear</button>
@@ -348,7 +378,7 @@
 <!-- Modal editar jornada -->
 <div class="modal fade" id="modalEditarJornada" tabindex="-1">
     <div class="modal-dialog">
-        <form action="{{ url('/admin/jornadas/'.$jornada->id.'/editar') }}" method="POST" id="formEditarJornada" class="modal-content">
+        <form action="" method="POST" id="formEditarJornada" class="modal-content">
             @csrf
             <input type="hidden" name="jornada_id" id="editarJornadaId">
             <div class="modal-header">
@@ -364,15 +394,21 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Fecha Inicio</label>
                         <input type="date" class="form-control" name="fecha_inicio" id="editarFechaInicio"
-                            min="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_inicio)->format('Y-m-d') }}"
-                            max="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_fin)->format('Y-m-d') }}">
+                            min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->format('Y-m-d') }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Fecha Fin</label>
                         <input type="date" class="form-control" name="fecha_fin" id="editarFechaFin"
-                            min="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_inicio)->format('Y-m-d') }}"
-                            max="{{ \Carbon\Carbon::parse($jornada->torneo->fecha_fin)->format('Y-m-d') }}">
+                            min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->format('Y-m-d') }}"
+                            max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->format('Y-m-d') }}">
                     </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Fecha y hora de cierre de alineaciones</label>
+                    <input type="datetime-local" class="form-control" name="fecha_cierre_alineaciones" id="editarFechaCierre"
+                        min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->subDay()->format('Y-m-d\TH:i') }}"
+                        max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->endOfDay()->format('Y-m-d\TH:i') }}">
                 </div>
             </div>
             <div class="modal-footer">
@@ -478,6 +514,7 @@
             document.getElementById('editarNombre').value = button.getAttribute('data-nombre');
             document.getElementById('editarFechaInicio').value = button.getAttribute('data-fecha-inicio');
             document.getElementById('editarFechaFin').value = button.getAttribute('data-fecha-fin');
+            document.getElementById('editarFechaCierre').value = button.getAttribute('data-fecha-cierre-alineaciones');
             const form = document.getElementById('formEditarJornada');
             form.action = `/admin/jornadas/${button.getAttribute('data-id')}/editar`;
         });
