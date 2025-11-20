@@ -371,7 +371,7 @@
                         <label for="equipoEvento" class="form-label">Equipo</label>
                         <select id="equipoEvento" name="equipo_id" class="form-select">
                             <option value="">Selecciona equipo</option>
-                            @foreach ($equipos as $equipo)
+                            @foreach ($partido->equipos as $equipo)
                             <option value="{{ $equipo->id }}">{{ $equipo->nombre }}</option>
                             @endforeach
                         </select>
@@ -413,6 +413,43 @@ $eventosArray = collect(json_decode($partido->eventos, true) ?? [])->sortBy('min
 
 @endsection
 @push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#editarEquipoLocal').select2({
+            width: '100%',
+            dropdownParent: $('#editarPartidoModal'),
+            placeholder: 'Selecciona un equipo',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron equipos";
+                }
+            }
+        });
+        $('#editarEquipoVisitante').select2({
+            width: '100%',
+            dropdownParent: $('#editarPartidoModal'),
+            placeholder: 'Selecciona un equipo',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron equipos";
+                }
+            }
+        });
+        $('#jugadorEvento').select2({
+            width: '100%',
+            dropdownParent: $('#eventosPartidoModal'),
+            placeholder: 'Selecciona un jugador',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron jugadores";
+                }
+            }
+        });
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const botonesEliminarPartido = document.querySelectorAll('.btn-eliminar-partido');

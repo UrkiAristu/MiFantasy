@@ -182,6 +182,20 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        $('#jugador_existente').select2({
+            width: '100%',
+            placeholder: 'Selecciona un jugador',
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "No se encontraron jugadores";
+                }
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
         $('#tablaJugadores').DataTable({
             order: false,
             locale: "es",

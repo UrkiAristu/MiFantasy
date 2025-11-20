@@ -23,6 +23,11 @@ class Partido extends Model
     {
         return $this->belongsTo(Equipo::class, 'equipo_visitante_id');
     }
+    public function getEquiposAttribute()
+    {
+        return collect([$this->equipoLocal, $this->equipoVisitante])
+            ->filter();
+    }
     public function estadisticas()
     {
         return $this->hasMany(Estadistica::class);

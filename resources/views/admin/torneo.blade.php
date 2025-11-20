@@ -288,6 +288,17 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        $('#equipo_existente').select2({
+            width: '100%',
+            dropdownParent: $('#equipoModal'),
+            placeholder: 'Selecciona un equipo',
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "No se encontraron equipos";
+                }
+            }
+        });
         $('#tablaEquiposTorneo').DataTable({
             order: false,
             locale: "es",

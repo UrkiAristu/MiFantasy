@@ -245,36 +245,6 @@
                     <div class="tab-pane fade" id="crearTorneo" role="tabpanel">
                         <form method="POST" action="{{ url('/admin/equipos/'.$equipo->id.'/torneos/crear') }}" enctype="multipart/form-data">
                             @csrf
-                            <!-- <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    <label for="nuevo_nombre" class="form-label">Nombre del Torneo</label>
-                                    <input type="text" class="form-control" id="nuevo_nombre" name="nombre" required>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <label for="descripcion" class="form-label">Descripción</label>
-                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
-                                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="fecha_fin" class="form-label">Fecha Fin</label>
-                                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="logo" class="form-label">Logo</label>
-                                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="estado" class="form-label">Estado</label>
-                                    <select class="form-select" id="estado" name="estado" required>
-                                        <option value="">Selecciona un estado</option>
-                                        <option value="1" selected>Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                </div>
-                            </div> -->
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label for="nombre" class="form-label">Nombre del Torneo</label>
@@ -401,6 +371,28 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        $('#jugador_existente').select2({
+            width: '100%',
+            dropdownParent: $('#jugadorModal'),
+            placeholder: 'Selecciona un jugador',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron jugadores";
+                }
+            }
+        });
+        $('#torneo_existente').select2({
+            width: '100%',
+            dropdownParent: $('#torneoModal'),
+            placeholder: 'Selecciona un torneo',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron torneos";
+                }
+            }
+        });
         $('#tablaTorneosEquipo').DataTable({
             order: false,
             locale: "es",

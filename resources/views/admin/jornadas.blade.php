@@ -297,7 +297,7 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Equipo Local</label>
-                    <select class="form-select" name="equipo_local_id" required>
+                    <select class="form-select" id="equipo_local_id" name="equipo_local_id" required>
                         <option value="">Selecciona un equipo local</option>
                         @foreach ($torneo->equipos as $equipo)
                         <option value="{{ $equipo->id }}">{{ $equipo->nombre }}</option>
@@ -306,7 +306,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Equipo Visitante</label>
-                    <select class="form-select" name="equipo_visitante_id" required>
+                    <select class="form-select" id="equipo_visitante_id" name="equipo_visitante_id" required>
                         <option value="">Selecciona un equipo visitante</option>
                         @foreach ($torneo->equipos as $equipo)
                         <option value="{{ $equipo->id }}">{{ $equipo->nombre }}</option>
@@ -472,6 +472,32 @@
         });
 
         document.getElementById('ordenInput').value = JSON.stringify(orden);
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#equipo_local_id').select2({
+            width: '100%',
+            dropdownParent: $('#modalCrearPartido'),
+            placeholder: 'Selecciona un equipo',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron equipos";
+                }
+            }
+        });
+        $('#equipo_visitante_id').select2({
+            width: '100%',
+            dropdownParent: $('#modalCrearPartido'),
+            placeholder: 'Selecciona un equipo',
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No se encontraron equipos";
+                }
+            }
+        });
     });
 </script>
 <script>
