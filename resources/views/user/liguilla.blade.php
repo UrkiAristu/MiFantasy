@@ -26,13 +26,13 @@
             <button class="nav-link" id="clasificacion-tab" data-bs-toggle="tab" data-bs-target="#clasificacion" type="button" role="tab">Clasificación</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="jornadas-tab" data-bs-toggle="tab" data-bs-target="#jornadas" type="button" role="tab">Jornadas / Resultados</button>
+            <button class="nav-link" id="resultados-tab" data-bs-toggle="tab" data-bs-target="#resultados" type="button" role="tab">Resultados</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="participantes-tab" data-bs-toggle="tab" data-bs-target="#participantes" type="button" role="tab">Participantes</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico" type="button" role="tab">Histórico</button>
+            <button class="nav-link" id="jornadas-tab" data-bs-toggle="tab" data-bs-target="#jornadas" type="button" role="tab">Mis Jornadas</button>
         </li>
     </ul>
 
@@ -226,8 +226,6 @@
             </div>
         </div>
 
-
-
         <!-- Clasificación -->
         <div class="tab-pane fade" id="clasificacion" role="tabpanel" aria-labelledby="clasificacion-tab">
             <div class="card mb-4">
@@ -260,33 +258,111 @@
             </div>
         </div>
 
-        <!-- Jornadas / Resultados -->
-        <div class="tab-pane fade" id="jornadas" role="tabpanel" aria-labelledby="jornadas-tab">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="list-group mb-3">
-                        @foreach($liguilla->torneo->jornadas()->orderBy('orden')->get() as $j)
-                        <a href="#" class="list-group-item list-group-item-action jornada-link" data-jornada-id="{{ $j->id }}">
-                            Jornada {{ $j->orden }} <br>
-                            <small class="text-muted">{{ $j->nombre }}</small>
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
+        <!-- Resultados -->
+        <div class="tab-pane fade" id="resultados" role="tabpanel" aria-labelledby="resultados-tab">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Resultados por jornada</h5>
 
-                <div class="col-md-8">
-                    <div id="panelJornadaSeleccionada">
-                        <h5>Selecciona una jornada a la izquierda</h5>
-                    </div>
+                    @if($jornadasConPartidos->count())
+                        {{-- Pestañas internas por jornada --}}
+                        <ul class="nav nav-pills mb-3" id="resultadosJornadasTabs" role="tablist">
+                            @foreach($jornadasConPartidos as $j)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link @if($loop->first) active @endif"
+                                            id="resultados-jornada-tab-{{ $j->id }}"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#resultados-jornada-{{ $j->id }}"
+                                            type="button"
+                                            role="tab">
+                                        J{{ $j->orden }}
+                                        @if($j->nombre)
+                                            <small class="d-block text-muted" style="font-size: 0.7rem;">
+                                                {{ $j->nombre }}
+                                            </small>
+                                        @endif
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+
+                        <div class="tab-content" id="resultadosJornadasContent">
+                            @foreach($jornadasConPartidos as $j)
+                                <div class="tab-pane fade @if($loop->first) show active @endif"
+                                    id="resultados-jornada-{{ $j->id }}"
+                                    role="tabpanel"
+                                    aria-labelledby="resultados-jornada-tab-{{ $j->id }}">
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <strong>Jornada {{ $j->orden }} - {{ $j->nombre }}</strong><br>
+                                            <small class="text-muted">
+                                                {{ $j->fecha_inicio ? \Carbon\Carbon::parse($j->fecha_inicio)->format('d/m/Y') : '-' }}
+                                                @if($j->fecha_fin)
+                                                    – {{ \Carbon\Carbon::parse($j->fecha_fin)->format('d/m/Y') }}
+                                                @endif
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    @if($j->partidos->count())
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">Fecha</th>
+                                                        <th class="text-center">Local</th>
+                                                        <th class="text-center">Marcador</th>
+                                                        <th class="text-center">Visitante</th>
+                                                        <th class="text-center">Estado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($j->partidos as $p)
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                {{ $p->fecha_partido
+                                                                    ? \Carbon\Carbon::parse($p->fecha_partido)->format('d/m H:i')
+                                                                    : '-' }}
+                                                            </td>
+                                                            <td class="text-center">{{ $p->equipoLocal->nombre ?? '—' }}</td>
+                                                            <td class="text-center">
+                                                                @if(!is_null($p->goles_local) && !is_null($p->goles_visitante))
+                                                                    <strong>{{ $p->goles_local }} - {{ $p->goles_visitante }}</strong>
+                                                                @else
+                                                                    <span class="text-muted">–</span>
+                                                                @endif
+                                                            </td>
+                                                            <td class="text-center">{{ $p->equipoVisitante->nombre ?? '—' }}</td>
+                                                            <td class="text-center">
+                                                                <span class="badge bg-secondary">
+                                                                    {{ ucfirst($p->estado ?? 'programado') }}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @else
+                                        <p class="text-muted">No hay partidos registrados para esta jornada.</p>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-muted">No hay jornadas definidas aún.</p>
+                    @endif
                 </div>
             </div>
         </div>
+
 
         <!-- Participantes -->
         <div class="tab-pane fade" id="participantes" role="tabpanel" aria-labelledby="participantes-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Participantes</h5>
+                    <h5 class="card-title">Participantes de la liguilla</h5>
                     <div class="list-group">
                         @foreach($liguilla->plantillas()->with('usuario')->get() as $plantilla)
                         <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -305,30 +381,62 @@
             </div>
         </div>
 
-        <!-- Histórico / Detalles -->
-        <div class="tab-pane fade" id="historico" role="tabpanel" aria-labelledby="historico-tab">
+        <!-- Mis Jornadas -->
+        <div class="tab-pane fade" id="jornadas" role="tabpanel" aria-labelledby="jornadas-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Histórico de alineaciones y puntuaciones</h5>
-                    <p class="text-muted">Selecciona un participante para ver sus alineaciones por jornada.</p>
+                    <h5 class="card-title">Mis jornadas</h5>
+                    <p class="text-muted">
+                        Alineaciones de jornadas pasadas y puntos obtenidos.
+                    </p>
 
                     <div class="row">
                         <div class="col-md-4">
-                            <select id="selectUsuarioHistorico" class="form-select">
-                                <option value="">Selecciona participante</option>
-                                @foreach($liguilla->plantillas()->with('usuario')->get() as $p)
-                                <option value="{{ $p->usuario->id }}">{{ $p->usuario->name }}</option>
-                                @endforeach
-                            </select>
+                            <div class="list-group" id="listaMisJornadas">
+                                @php
+                                    $misJornadas = $misAlineaciones->pluck('jornada')->filter()->unique('id')->sortBy('orden');
+                                @endphp
+
+                                @forelse($misJornadas as $j)
+                                    <button type="button"
+                                            class="list-group-item list-group-item-action mis-jornada-link"
+                                            data-jornada-id="{{ $j->id }}">
+                                        Jornada {{ $j->orden }} - {{ $j->nombre }}
+                                    </button>
+                                @empty
+                                    <div class="text-muted">Todavía no tienes alineaciones congeladas.</div>
+                                @endforelse
+                            </div>
                         </div>
-                        <div class="col-md-8" id="panelHistoricoUsuario">
-                            <p class="text-muted">No hay participante seleccionado.</p>
+
+                        <div class="col-md-8">
+                            <div id="panelMisJornadas">
+                                <h6 class="text-muted mb-3">Selecciona una jornada para ver tu alineación y puntos.</h6>
+
+                                <div class="futbol-campo mb-3 position-relative d-none" id="campoMisJornadas">
+                                    <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3" id="misJornadasSlots">
+                                        @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
+                                            <div class="slot card text-center d-flex align-items-center justify-content-center vacio"
+                                                data-slot="{{ $i }}">
+                                                <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                                                    <small class="text-white mt-1">Vacío</small>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <div id="misJornadasPuntos" class="d-none">
+                                    <h5>Total puntos: <span id="totalPuntosJornada">0</span></h5>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 @endsection
@@ -608,6 +716,82 @@
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function() {
         actualizarJugadoresDisponibles();
+
+        const liguillaId = "{{ $liguilla->id }}";
+
+        // Click en una jornada de "Mis Jornadas"
+        document.querySelectorAll('.mis-jornada-link').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const jornadaId = this.dataset.jornadaId;
+                cargarAlineacionJornada(liguillaId, jornadaId);
+
+                // marcar activo visualmente
+                document.querySelectorAll('.mis-jornada-link').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
     });
+
+    function cargarAlineacionJornada(liguillaId, jornadaId) {
+        const campo = document.getElementById('campoMisJornadas');
+        const slotsContainer = document.getElementById('misJornadasSlots');
+        const panelPuntos = document.getElementById('misJornadasPuntos');
+        const totalPuntosEl = document.getElementById('totalPuntosJornada');
+
+        fetch(`/user/liguillas/${liguillaId}/alineacion/${jornadaId}`)
+            .then(res => res.json())
+            .then(data => {
+                campo.classList.remove('d-none');
+                panelPuntos.classList.remove('d-none');
+
+                // Reset slots
+                const slots = slotsContainer.querySelectorAll('.slot');
+                slots.forEach(slot => {
+                    const body = slot.querySelector('.card-body');
+                    body.innerHTML = '<small class="text-white mt-1">Vacío</small>';
+                    slot.classList.add('vacio');
+                    slot.classList.remove('ocupado');
+                });
+
+                if (data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
+                    totalPuntosEl.textContent = 0;
+                    return;
+                }
+
+                // Rellenar slots en orden de array
+                data.jugadores.forEach((jug, index) => {
+                    const slot = slotsContainer.querySelector(`.slot[data-slot="${index + 1}"]`);
+                    if (!slot) return;
+
+                    const body = slot.querySelector('.card-body');
+                    body.innerHTML = '';
+
+                    const img = document.createElement('img');
+                    img.src = jug.foto;
+                    img.width = 50;
+                    img.classList.add('rounded-circle', 'mb-1');
+                    body.appendChild(img);
+
+                    const nombreEl = document.createElement('small');
+                    nombreEl.textContent = `${jug.nombre} ${jug.apellido1}`;
+                    nombreEl.classList.add('text-white');
+                    body.appendChild(nombreEl);
+
+                    const puntosEl = document.createElement('small');
+                    puntosEl.textContent = `Puntos: ${jug.puntos ?? 0}`;
+                    puntosEl.classList.add('text-white');
+                    body.appendChild(puntosEl);
+
+                    slot.classList.remove('vacio');
+                    slot.classList.add('ocupado');
+                });
+
+                totalPuntosEl.textContent = data.total_puntos ?? 0;
+            })
+            .catch(err => {
+                console.error(err);
+                alert('No se pudo cargar la alineación de esa jornada.');
+            });
+    }
 </script>
 @endpush

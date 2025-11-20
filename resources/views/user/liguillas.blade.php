@@ -13,8 +13,7 @@
         <div class="swiper-wrapper">
             @foreach($liguillasUsuario as $liguilla)
             <div class="swiper-slide d-flex justify-content-center">
-                <div class="card text-center shadow p-5" style="width: 320px;">
-                    <a href={{ url('/user/liguillas/'.$liguilla->id)}}>
+                <div class="card card-pulsable text-center shadow p-5" style="width: 320px; " onclick="window.location='{{ url('/user/liguillas/'.$liguilla->id) }}'">
                         @if($liguilla->torneo->logo && file_exists(public_path($liguilla->torneo->logo)))
                         <img src="{{ asset($liguilla->torneo->logo) }}" alt="{{ $liguilla->torneo->nombre }}" style="height: 180px; object-fit: contain; padding: 20px;">
                         @else
@@ -30,11 +29,10 @@
                             <p class="card-text"><strong>Puntos:</strong> {{ $liguilla->pivot->puntos ?? 0 }}</p>
                             <button
                                 class="btn btn-primary btn-sm mt-3"
-                                onclick="compartirEnlace('{{ $liguilla->codigo_unico }}')">
+                                onclick="event.stopPropagation();compartirEnlace('{{ $liguilla->codigo_unico }}')">
                                 <i class="fa fa-share-alt"></i> Compartir enlace
                             </button>
                         </div>
-                    </a>
                 </div>
             </div>
             @endforeach
@@ -57,6 +55,21 @@
         max-width: 600px;
         margin: 0 auto;
         padding: 20px 0;
+    }
+
+    .card-pulsable {
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card-pulsable:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .card-pulsable:active {
+        transform: scale(0.98);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 768px) {

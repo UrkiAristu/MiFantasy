@@ -172,7 +172,7 @@ class LiguillaController extends Controller
                 ];
             });
 
-        // 3️⃣ Jornada actual o próxima
+        // 3️⃣ Jornada actual o próxima + jornadas con partidos
         $hoy = now();
         $jornadaActiva = $liguilla->torneo->jornadas()
             ->whereDate('fecha_inicio', '<=', $hoy)
@@ -184,13 +184,25 @@ class LiguillaController extends Controller
                 ->orderBy('fecha_inicio', 'asc')
                 ->first();
         }
-        // 4️⃣ Alineación BASE del usuario
+
+        $jornadasConPartidos = $liguilla->torneo->jornadas()
+        ->with(['partidos.equipoLocal', 'partidos.equipoVisitante'])
+        ->orderBy('orden')
+        ->get();
+
+        // 4️⃣ Alineación BASE del usuario + alineaciones congeladas
         $alineacionBase = Alineacion::with('jugadores')
         ->where('liguilla_id', $liguilla->id)
         ->where('user_id', $usuario->id)
         ->whereNull('jornada_id')
         ->first();
         $jugadoresBase = $alineacionBase?->jugadores ?? collect();
+
+        $misAlineaciones = Alineacion::with(['jornada', 'jugadores'])
+        ->where('liguilla_id', $liguilla->id)
+        ->where('user_id', $usuario->id)
+        ->whereNotNull('jornada_id') // solo las "fotos" de jornada
+        ->get();
 
         // 5️⃣ Resultados de partidos de la última jornada
         $resultados = $jornadaActiva
@@ -211,9 +223,11 @@ class LiguillaController extends Controller
             'liguilla',
             'clasificacion',
             'jornadaActiva',
+            'jornadasConPartidos',
             'usuario',
             'miPlantilla',
             'jugadoresBase',
+            'misAlineaciones',
             'resultados',
             'bloqueada'
         ));

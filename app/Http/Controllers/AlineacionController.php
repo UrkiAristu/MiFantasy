@@ -98,9 +98,11 @@ class AlineacionController extends Controller
         if (!$alineacion) {
             return response()->json([
                 'status' => 'empty',
-                'jugadores' => []
+                'jugadores' => [],
+                'total_puntos' => 0,
             ]);
         }
+        $totalPuntos = $alineacion->jugadores->sum(fn($j) => $j->pivot->puntos ?? 0);
         return response()->json([
             'status' => 'ok',
             'jugadores' => $alineacion->jugadores->map(function ($jugador) {
@@ -111,7 +113,8 @@ class AlineacionController extends Controller
                     'apellido2' => $jugador->apellido2,
                     'foto' => $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png'),
                 ];
-            }),
+            })->values(),
+            'total_puntos' => $totalPuntos,
         ]);
     }
 }
