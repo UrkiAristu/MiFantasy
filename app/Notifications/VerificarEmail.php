@@ -18,25 +18,10 @@ class VerificarEmail extends VerifyEmail
 
         return (new MailMessage)
             ->subject('Verifica tu dirección de correo electrónico')
-            ->greeting('¡Hola!')
+            ->greeting('¡Hola ' . $notifiable->name . '!')
             ->line('Por favor, haz clic en el siguiente botón para verificar tu dirección de correo electrónico.')
             ->action('Verificar correo electrónico', $verificationUrl)
             ->line('Si no has creado una cuenta, no es necesario realizar ninguna acción.')
             ->salutation('Saludos, ' . config('app.name'));
-    }
-
-    /**
-     * Genera la URL firmada de verificación (igual que la original de Laravel).
-     */
-    protected function verificationUrl($notifiable)
-    {
-        return URL::temporarySignedRoute(
-            'verification.verify',
-            Carbon::now()->addMinutes(config('auth.verification.expire', 60)),
-            [
-                'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
-            ]
-        );
     }
 }

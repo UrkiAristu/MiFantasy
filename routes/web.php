@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AlineacionController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\LiguillaController;
@@ -53,6 +54,19 @@ Route::middleware('guest')->group(function () {
         return view('auth/login');
     })->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+
+    //RECUPERAR CONTRASEÑA
+    Route::get('/forgot-password', [PasswordController::class, 'showForgotForm'])
+        ->name('password.request');
+
+    Route::post('/forgot-password', [PasswordController::class, 'sendResetLink'])
+        ->name('password.email');
+
+    Route::get('/reset-password/{token}', [PasswordController::class, 'showResetForm'])
+        ->name('password.reset');
+
+    Route::post('/reset-password', [PasswordController::class, 'reset'])
+        ->name('password.update');
 });
 //LOGOUT
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');

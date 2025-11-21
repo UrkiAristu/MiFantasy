@@ -64,7 +64,7 @@
                         <div class="fv-row mb-10">
                             <div class="d-flex justify-content-between mb-2">
                                 <label class="form-label fs-6 fw-bolder text-dark mb-0">Contraseña</label>
-                                <a href="/recuperar" class="link-primary fs-6 fw-bolder" tabindex="-1">¿Olvidaste tu contraseña?</a>
+                                <a href="{{ route('password.request') }}" class="link-primary fs-6 fw-bolder" tabindex="-1">¿Olvidaste tu contraseña?</a>
                             </div>
                             <input type="password" name="password" id="password"
                                 class="form-control form-control-lg form-control-solid 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetearPassword;
 use App\Notifications\VerificarEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,6 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         $this->notify(new VerificarEmail());
+    }
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetearPassword($token));
     }
 
     public function liguillasCreadas()
