@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlineacionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\LiguillaController;
@@ -46,7 +47,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/registro', function () {
         return view('auth/registro');
     })->name('register');
-    Route::post('/registro', [LoginController::class, 'register'])->name('register.attempt');
+    Route::post('/registro', [RegisterController::class, 'register'])->name('register.attempt');
 
     //LOGIN
     //Mostrar página de login
