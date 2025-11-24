@@ -45,7 +45,7 @@
         <!-- Unirse a liga -->
         <div class="col-3 text-center p-1">
             <a href="{{ url('/user/unirseLiguilla') }}">
-                <i class="bi bi-person-plus text-white fs-4"></i>
+                <i class="bi bi-bookmark-plus text-white fs-4"></i>
             </a>
         </div>
 
