@@ -32,7 +32,7 @@
     @include('admin.layouts.header')
 
     {{-- Contenido principal --}}
-    <main class="bg-light py-4 px-3 px-md-4 container-lg mb-6 " style="padding-bottom: 50px !important;">
+    <main class="bg-light py-4 px-3 px-md-4 container-lg mb-6 flex-fill" style="padding-bottom: 50px !important;">
         @yield('content')
     </main>
     @include('admin.layouts.menu-movil')

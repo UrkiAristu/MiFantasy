@@ -72,7 +72,7 @@
 
     @include('user.layouts.header')
 
-    <main class="bg-light" >
+    <main class="bg-light flex-fill" >
         @yield('content')
     </main>
     @include('user.layouts.menu-movil')
