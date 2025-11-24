@@ -5,6 +5,7 @@
     <title>MiFantasy - Inicio</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#181c32">
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy.png') }}" type="image/png">
@@ -53,6 +54,9 @@
             color: white;
             font-size: 1.5rem;
         }
+        main {
+            padding-bottom: 50px !important;
+        }
 
         @media (min-width: 992px) {
             .hamburger {
@@ -68,7 +72,7 @@
 
     @include('user.layouts.header')
 
-    <main>
+    <main class="bg-light" >
         @yield('content')
     </main>
     @include('user.layouts.menu-movil')

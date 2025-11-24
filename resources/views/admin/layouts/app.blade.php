@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#181c32">
     <title>@yield('title', 'Panel de Administración')</title>
 
     {{-- Favicon --}}
@@ -25,13 +26,13 @@
     @stack('styles')
 </head>
 
-<body class="bg-light">
+<body class="bg-light mb-6">
 
     {{-- Header --}}
     @include('admin.layouts.header')
 
     {{-- Contenido principal --}}
-    <main class="container py-4">
+    <main class="bg-light py-4 px-3 px-md-4 container-lg mb-6 " style="padding-bottom: 50px !important;">
         @yield('content')
     </main>
     @include('admin.layouts.menu-movil')
@@ -61,23 +62,35 @@
             const toggler = document.querySelector('.navbar-toggler');
             const navbar = document.getElementById('adminNavbar');
 
-            // Asegura que se cierre al volver a pulsar el botón
-            toggler.addEventListener('click', function() {
-                const bsCollapse = bootstrap.Collapse.getInstance(navbar) ||
-                    new bootstrap.Collapse(navbar, {
-                        toggle: false
-                    });
-                if (navbar.classList.contains('show')) {
-                    bsCollapse.hide();
-                } else {
-                    bsCollapse.show();
-                }
-            });
+            if (toggler && navbar) {
+                toggler.addEventListener('click', function() {
+                    const bsCollapse = bootstrap.Collapse.getInstance(navbar) ||
+                        new bootstrap.Collapse(navbar, { toggle: false });
 
-            // Opcional: cerrar automáticamente cuando se pulsa un enlace en móvil
+                    const isOpen = navbar.classList.contains('show');
+
+                    if (isOpen) {
+                        // Lo estás cerrando
+                        bsCollapse.hide();
+                    } else {
+                        // Lo estás abriendo
+                        bsCollapse.show();
+
+                        // 👇 Si estás en móvil, sube arriba para que el menú se vea
+                        if (window.innerWidth < 992) {
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Cerrar automáticamente cuando se pulsa un enlace en móvil
             document.querySelectorAll('#adminNavbar .nav-link').forEach(function(el) {
                 el.addEventListener('click', function() {
-                    if (window.innerWidth < 992) { // solo en móvil/tablet
+                    if (window.innerWidth < 992) {
                         const bsCollapse = bootstrap.Collapse.getInstance(navbar);
                         if (bsCollapse) {
                             bsCollapse.hide();
@@ -87,6 +100,7 @@
             });
         });
     </script>
+
     @stack('scripts')
 </body>
 

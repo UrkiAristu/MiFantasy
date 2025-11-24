@@ -1,3 +1,8 @@
+<footer class="bg-dark text-white text-center py-3 mt-md-5 mb-6">
+    <div class="container">
+        <p class="mb-0">&copy; {{ date('Y') }} MiFantasy</p>
+    </div>
+</footer>
 <script>
     function toggleMenu() {
         const menu = document.getElementById('mobileMenu');

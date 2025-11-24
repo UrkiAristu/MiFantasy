@@ -112,6 +112,10 @@ html,
 body {
     font-size: 14px !important;
 }
+html, body {
+    background-color: #181c32 !important;
+    overscroll-behavior-y: contain;
+}
 
 .w-10 {
     width: 10%;
@@ -155,11 +159,15 @@ body {
     .footerP {
         padding-bottom: 80px !important;
     }
+    body {
+        padding-bottom: 80px;
+    }
 }
 
 @media (min-width: 768px) {
     .menuMovil {
         margin-left: 25%;
+        margin-right: 25%;
     }
 }
 

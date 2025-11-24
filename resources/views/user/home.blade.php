@@ -48,7 +48,7 @@
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">
                         Unirme a Liguilla
-                        <i class="bi bi-person-plus text-dark fs-4 ms-1"></i>
+                        <i class="bi bi-bookmark-plus text-dark fs-4 ms-1"></i>
                     </h5>
                     <p class="card-text">Unete a una liguilla creada por tus amigos y compite en ella.</p>
                     <a href={{ url('/user/unirseLiguilla')}} class="btn btn-primary w-100 mt-auto">Unirme</a>

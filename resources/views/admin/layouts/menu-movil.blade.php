@@ -10,11 +10,16 @@
         width: 32px;
         height: 32px;
     }
+    
+    #menuMovil svg {
+        width: 24px;
+        height: 24px;
+    }
 </style>
 <div id="menuMovil"
-    class="d-lg-none fixed-bottom w-100 bg-transparent mb-3 d-flex justify-content-center">
+    class="d-md-none fixed-bottom w-100 bg-transparent d-flex justify-content-center">
 
-    <div class="row menuMovil d-flex flex-wrap rounded-pill overflow-hidden shadow-lg"
+    <div class="menuMovil d-flex flex-wrap rounded-pill overflow-hidden shadow-lg"
         style="width: 80%; background-color: rgba(34, 34, 34, 0.9);">
 
         <!-- Botón atrás -->
