@@ -14,6 +14,8 @@ use App\Http\Controllers\UsuarioController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 Route::get('/test', function () {
     dd(session()->all());
@@ -84,6 +86,42 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
     
     ///////////////MIDLEWARE VERIFICAR ADMIN/////////
     Route::middleware('verificar.admin')->group(function () {
+        Route::get('/poblar', function () {
+            // Seguridad: SOLO permite en local
+            if (!app()->isLocal()) {
+                abort(403, 'Solo disponible en entorno local.');
+            }
+
+            // Ruta del archivo SQL
+            $path = database_path('seeders/sql/mi_fantasy_datos.sql');
+
+            if (!File::exists($path)) {
+                return 'ERROR: No se encuentra el archivo SQL.';
+            }
+
+            $sql = File::get($path);
+
+            DB::beginTransaction();
+
+            try {
+                // Desactivamos FK para evitar errores de orden
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+                // Ejecutar SQL completo
+                DB::unprepared($sql);
+
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                DB::commit();
+
+                return '<h2>Base de datos poblada correctamente ✔</h2>';
+
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+                return '<h2>Error ❌</h2><pre>' . $e->getMessage() . '</pre>';
+            }
+        });
         Route::get('/zonaAdmin', function () {
             return view('admin/home');
         });
