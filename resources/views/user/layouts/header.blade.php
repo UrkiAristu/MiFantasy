@@ -19,10 +19,10 @@
             Zona Admin
         </a>
         @endif
-        <a href="{{ url('/user/perfil') }}" class="nav-link text-white">Mi Perfil</a>
-        <a href="{{ url('/user/liguillas') }}" class="nav-link text-white">Mis Liguillas</a>
-        <a href="{{ url('/user/torneos') }}" class="nav-link text-white">Torneos Activos</a>
-        <a href="{{ url('/user/unirseLiguilla') }}" class="nav-link text-white">Unirse a Liguilla</a>
+        <a href="{{ url('/user/perfil') }}" class="nav-link text-white">Mi Perfil <i class="bi bi-person text-white fs-4 ms-1 align-middle"></i></a>
+        <a href="{{ url('/user/liguillas') }}" class="nav-link text-white">Mis Liguillas <i class="bi bi-trophy text-white fs-4 ms-1 align-middle"></i></a>
+        <a href="{{ url('/user/torneos') }}" class="nav-link text-white">Torneos Activos <i class="bi bi-plus-circle text-white fs-4 ms-1 align-middle"></i></a>
+        <a href="{{ url('/user/unirseLiguilla') }}" class="nav-link text-white">Unirse a Liguilla <i class="bi bi-bookmark-plus text-white fs-4 ms-1 align-middle"></i></a>
         <form action="{{ url('/logout') }}" method="POST" class="mt-3">
             @csrf
             <button type="submit" class="nav-link text-white bg-danger rounded w-100 text-start border-0">

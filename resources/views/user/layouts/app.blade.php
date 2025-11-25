@@ -57,6 +57,9 @@
         main {
             padding-bottom: 50px !important;
         }
+        body{
+            padding-bottom: 0px !important;
+        }
 
         @media (min-width: 992px) {
             .hamburger {
