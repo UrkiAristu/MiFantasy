@@ -19,6 +19,7 @@
             Zona Admin
         </a>
         @endif
+        <a href="{{ url('/user/perfil') }}" class="nav-link text-white">Mi Perfil</a>
         <a href="{{ url('/user/liguillas') }}" class="nav-link text-white">Mis Liguillas</a>
         <a href="{{ url('/user/torneos') }}" class="nav-link text-white">Torneos Activos</a>
         <a href="{{ url('/user/unirseLiguilla') }}" class="nav-link text-white">Unirse a Liguilla</a>
@@ -53,6 +54,7 @@
                             <a href="/zonaAdmin" class="nav-link bg-white text-primary rounded mx-3">Zona Admin</a>
                         </li>
                     @endif
+                    <li class="nav-item"><a href={{ url('/user/perfil')}} class="nav-link">Mi Perfil</a></li>
                     <li class="nav-item"><a href={{ url('/user/liguillas')}} class="nav-link">Mis Liguillas</a></li>
                     <li class="nav-item"><a href={{ url('/user/torneos')}} class="nav-link">Torneos Activos</a></li>
                     <li class="nav-item"><a href={{ url('/user/unirseLiguilla')}} class="nav-link">Unirse a Liguilla</a></li>
