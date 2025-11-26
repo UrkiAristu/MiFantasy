@@ -26,13 +26,13 @@
             <button class="nav-link" id="clasificacion-tab" data-bs-toggle="tab" data-bs-target="#clasificacion" type="button" role="tab">Clasificación</button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="jornadas-tab" data-bs-toggle="tab" data-bs-target="#jornadas" type="button" role="tab">Mis Jornadas</button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="resultados-tab" data-bs-toggle="tab" data-bs-target="#resultados" type="button" role="tab">Resultados</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="participantes-tab" data-bs-toggle="tab" data-bs-target="#participantes" type="button" role="tab">Participantes</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="jornadas-tab" data-bs-toggle="tab" data-bs-target="#jornadas" type="button" role="tab">Mis Jornadas</button>
         </li>
     </ul>
 
@@ -42,8 +42,8 @@
         <div class="tab-pane fade show active" id="alineacion" role="tabpanel" aria-labelledby="alineacion-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Alineación para la jornada</h5>
-                    <p class="text-muted"> Esta es tu alineación base. Selecciona hasta {{ $liguilla->torneo->jugadores_por_equipo }} jugadores de tu plantilla. Se usará automáticamente en cada jornada cuando se cierre el plazo de alineaciones.
+                    <h5 class="card-title">Alineación actual</h5>
+                    <p class="text-muted"> Selecciona {{ $liguilla->torneo->jugadores_por_equipo }} jugadores de tu plantilla.
                     </p>
 
                     @php
@@ -174,6 +174,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Modal Jugador -->
         <div class="modal fade" id="modalJugador" tabindex="-1" aria-labelledby="modalJugadorLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -254,6 +255,62 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mis Jornadas -->
+        <div class="tab-pane fade" id="jornadas" role="tabpanel" aria-labelledby="jornadas-tab">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Mis jornadas</h5>
+                    <p class="text-muted">
+                        Alineaciones de jornadas pasadas y puntos obtenidos.
+                    </p>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="list-group" id="listaMisJornadas">
+                                @php
+                                    $misJornadas = $misAlineaciones->pluck('jornada')->filter()->unique('id')->sortBy('orden');
+                                @endphp
+
+                                @forelse($misJornadas as $j)
+                                    <button type="button"
+                                            class="list-group-item list-group-item-action mis-jornada-link"
+                                            data-jornada-id="{{ $j->id }}">
+                                        Jornada {{ $j->orden }} - {{ $j->nombre }}
+                                    </button>
+                                @empty
+                                    <div class="text-muted">Todavía no tienes alineaciones congeladas.</div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div id="panelMisJornadas">
+                                <h6 class="text-muted mb-3">Selecciona una jornada para ver tu alineación y puntos.</h6>
+
+                                <div class="futbol-campo mb-3 position-relative d-none" id="campoMisJornadas">
+                                    <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3" id="misJornadasSlots">
+                                        @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
+                                            <div class="slot card text-center d-flex align-items-center justify-content-center vacio"
+                                                data-slot="{{ $i }}">
+                                                <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                                                    <small class="text-white mt-1">Vacío</small>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <div id="misJornadasPuntos" class="d-none">
+                                    <h5>Total puntos: <span id="totalPuntosJornada">0</span></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -357,7 +414,6 @@
             </div>
         </div>
 
-
         <!-- Participantes -->
         <div class="tab-pane fade" id="participantes" role="tabpanel" aria-labelledby="participantes-tab">
             <div class="card mb-4">
@@ -377,62 +433,6 @@
                         </div>
                         @endforeach
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mis Jornadas -->
-        <div class="tab-pane fade" id="jornadas" role="tabpanel" aria-labelledby="jornadas-tab">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Mis jornadas</h5>
-                    <p class="text-muted">
-                        Alineaciones de jornadas pasadas y puntos obtenidos.
-                    </p>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="list-group" id="listaMisJornadas">
-                                @php
-                                    $misJornadas = $misAlineaciones->pluck('jornada')->filter()->unique('id')->sortBy('orden');
-                                @endphp
-
-                                @forelse($misJornadas as $j)
-                                    <button type="button"
-                                            class="list-group-item list-group-item-action mis-jornada-link"
-                                            data-jornada-id="{{ $j->id }}">
-                                        Jornada {{ $j->orden }} - {{ $j->nombre }}
-                                    </button>
-                                @empty
-                                    <div class="text-muted">Todavía no tienes alineaciones congeladas.</div>
-                                @endforelse
-                            </div>
-                        </div>
-
-                        <div class="col-md-8">
-                            <div id="panelMisJornadas">
-                                <h6 class="text-muted mb-3">Selecciona una jornada para ver tu alineación y puntos.</h6>
-
-                                <div class="futbol-campo mb-3 position-relative d-none" id="campoMisJornadas">
-                                    <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3" id="misJornadasSlots">
-                                        @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
-                                            <div class="slot card text-center d-flex align-items-center justify-content-center vacio"
-                                                data-slot="{{ $i }}">
-                                                <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                                                    <small class="text-white mt-1">Vacío</small>
-                                                </div>
-                                            </div>
-                                        @endfor
-                                    </div>
-                                </div>
-
-                                <div id="misJornadasPuntos" class="d-none">
-                                    <h5>Total puntos: <span id="totalPuntosJornada">0</span></h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -474,20 +474,18 @@
         border-radius: 8px;
     }
 
-    .slot:hover {
+    .slot.vacio:hover,
+    .slot.ocupado:hover {
         border-color: #0d6efd;
-        /* azul Bootstrap al pasar ratón */
         cursor: pointer;
     }
 
     .slot.ocupado {
         border: 2px solid #ffffff;
-        /* verde */
     }
 
     .slot.vacio {
         border: 2px dashed #ffffff;
-        /* gris */
     }
 
     .jugador-card {
@@ -582,9 +580,9 @@
             img.width = 50;
             img.classList.add('rounded-circle', 'mb-1');
             body.appendChild(img);
-            // Marcar el slot como ocupado
-            // slotSeleccionado.classList.add('ocupado');
-            // slotSeleccionado.classList.remove('vacio');
+            // Marcar el slot como editado
+            slotSeleccionado.classList.remove('ocupado');
+            slotSeleccionado.classList.add('vacio');
 
 
             const nombreEl = document.createElement('small');
@@ -684,6 +682,21 @@
                 return response.json();
             })
             .then(data => {
+                // 1) Marcar visualmente los slots según lo que se acaba de guardar
+                document.querySelectorAll('.slot').forEach(slot => {
+                    const slotNumber = slot.dataset.slot;
+                    const hidden = document.querySelector(`#alineacionInputs input[data-slot="${slotNumber}"]`);
+
+                    if (hidden) {
+                        // Este slot tiene un jugador en la alineación guardada
+                        slot.classList.add('ocupado');
+                        slot.classList.remove('vacio');
+                    } else {
+                        // Este slot se ha quedado vacío en la alineación
+                        slot.classList.add('vacio');
+                        slot.classList.remove('ocupado');
+                    }
+                });
                 Swal.fire({
                     icon: 'success',
                     title: 'Éxito',
