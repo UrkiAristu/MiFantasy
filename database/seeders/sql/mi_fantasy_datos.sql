@@ -168,6 +168,13 @@ INSERT INTO `plantillas` (`id`, `user_id`, `liguilla_id`, `created_at`, `updated
 
 INSERT INTO `torneos` (`id`, `nombre`, `fecha_inicio`, `fecha_fin`, `descripcion`, `logo`, `estado`, `jugadores_por_equipo`, `usa_posiciones`, `created_at`, `updated_at`) VALUES
 (1, 'Onddo Cup 2026', '2026-03-30', '2026-04-04', 'Torneo solidario de Futbol Sala celebrado en semana santa en Elizondo.', NULL, '1', 5, 0, NOW(), NOW());
+
+--
+-- Volcado de datos para la tabla `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `active`, `admin`, `created_at`, `updated_at`) VALUES
+(1, 'Admin','admin@admin.es', NULL, '$2y$12$EEtG8qtCWNjTTSXMwDGDpe1aL78DrxWGP/sXbTivCITZp.HZuyO6m', NULL, '1', '1', NOW(), NOW());
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
