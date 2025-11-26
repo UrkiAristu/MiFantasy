@@ -151,7 +151,7 @@
         <div class="tab-pane fade" id="plantilla" role="tabpanel" aria-labelledby="plantilla-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Tu Plantilla</h5>
+                    <h5 class="card-title">Tu Plantilla  <small>({{ $miPlantilla->count() }} jugadores)</small></h5>
                     <div class="row row-cols-2 row-cols-md-4 g-3">
                         @foreach($miPlantilla as $jugador)
                         <div class="col">
@@ -367,21 +367,14 @@
                                             <table class="table table-sm align-middle">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-center">Fecha</th>
                                                         <th class="text-center">Local</th>
                                                         <th class="text-center">Marcador</th>
                                                         <th class="text-center">Visitante</th>
-                                                        <th class="text-center">Estado</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach($j->partidos as $p)
                                                         <tr>
-                                                            <td class="text-center">
-                                                                {{ $p->fecha_partido
-                                                                    ? \Carbon\Carbon::parse($p->fecha_partido)->format('d/m H:i')
-                                                                    : '-' }}
-                                                            </td>
                                                             <td class="text-center">{{ $p->equipoLocal->nombre ?? '—' }}</td>
                                                             <td class="text-center">
                                                                 @if(!is_null($p->goles_local) && !is_null($p->goles_visitante))
@@ -391,11 +384,6 @@
                                                                 @endif
                                                             </td>
                                                             <td class="text-center">{{ $p->equipoVisitante->nombre ?? '—' }}</td>
-                                                            <td class="text-center">
-                                                                <span class="badge bg-secondary">
-                                                                    {{ ucfirst($p->estado ?? 'programado') }}
-                                                                </span>
-                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -419,18 +407,31 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Participantes de la liguilla</h5>
-                    <div class="list-group">
-                        @foreach($liguilla->plantillas()->with('usuario')->get() as $plantilla)
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ $plantilla->usuario->name ?? 'Usuario' }}</strong><br>
-                                <small class="text-muted">Plantilla: {{ $plantilla->jugadores()->count() }} jugadores</small>
+                    <div class="list-group list-group-flush">
+                        @foreach($liguilla->plantillas as $plantilla)
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center me-3"
+                                        style="width: 36px; height: 36px;">
+                                        {{ strtoupper(substr($plantilla->usuario->name ?? 'U', 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <strong>{{ $plantilla->usuario->name ?? 'Usuario' }}</strong><br>
+                                        <small class="text-muted">
+                                            Plantilla: 
+                                            <span class="badge bg-secondary text-primary">
+                                                {{ $plantilla->jugadores->count() }} jugadores
+                                            </span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <a href="{{ url("/user/liguillas/{$liguilla->id}/usuario/{$plantilla->usuario->id}/plantilla") }}"
+                                        class="btn btn-sm btn-primary">
+                                            Ver plantilla
+                                    </a>
+                                </div>
                             </div>
-                            <div>
-                                <a href="{{ url('/user/perfil/'.$plantilla->usuario->id) }}" class="btn btn-sm btn-secondary me-2">Ver perfil</a>
-                                <a href="{{ url('/user/liguillas/'.$liguilla->id.'/usuario/'.$plantilla->usuario->id) }}" class="btn btn-sm btn-primary">Detalle</a>
-                            </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>

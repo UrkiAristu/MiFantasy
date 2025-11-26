@@ -155,7 +155,7 @@ class LiguillaController extends Controller
         $usuario = Auth::user();
 
         // 1️⃣ Liguilla y torneo
-        $liguilla = Liguilla::with('torneo.jornadas.partidos')
+        $liguilla = Liguilla::with(['torneo.jornadas.partidos','plantillas.jugadores','plantillas.usuario'])
             ->findOrFail($id);
 
         // 2️⃣ Clasificación general
@@ -231,5 +231,17 @@ class LiguillaController extends Controller
             'resultados',
             'bloqueada'
         ));
+    }
+    public function plantilla($idLiguilla, $idUser)
+    {
+        $liguilla = Liguilla::findOrFail($idLiguilla);
+        $user = User::findOrFail($idUser);
+        // Plantilla de ese usuario en esa liguilla
+        $plantilla = $liguilla->plantillas()
+            ->with(['jugadores'])
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        return view('user.plantilla-participante',compact('liguilla', 'user', 'plantilla'));
     }
 }
