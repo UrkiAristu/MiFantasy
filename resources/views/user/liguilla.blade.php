@@ -321,10 +321,10 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Resultados por jornada</h5>
 
-                    @if($jornadasConPartidos->count())
+                    @if($jornadas->count())
                         {{-- Pestañas internas por jornada --}}
                         <ul class="nav nav-pills mb-3" id="resultadosJornadasTabs" role="tablist">
-                            @foreach($jornadasConPartidos as $j)
+                            @foreach($jornadas as $j)
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link @if($loop->first) active @endif"
                                             id="resultados-jornada-tab-{{ $j->id }}"
@@ -344,7 +344,7 @@
                         </ul>
 
                         <div class="tab-content" id="resultadosJornadasContent">
-                            @foreach($jornadasConPartidos as $j)
+                            @foreach($jornadas as $j)
                                 <div class="tab-pane fade @if($loop->first) show active @endif"
                                     id="resultados-jornada-{{ $j->id }}"
                                     role="tabpanel"

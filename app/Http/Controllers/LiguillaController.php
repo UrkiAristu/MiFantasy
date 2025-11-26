@@ -165,6 +165,7 @@ class LiguillaController extends Controller
             ->get()
             ->map(function ($usuario, $index) {
                 return (object) [
+                    'id' => $usuario->id,
                     'posicion' => $index + 1,
                     'name' => $usuario->name,
                     'email' => $usuario->email,
@@ -185,7 +186,7 @@ class LiguillaController extends Controller
                 ->first();
         }
 
-        $jornadasConPartidos = $liguilla->torneo->jornadas()
+        $jornadas = $liguilla->torneo->jornadas()
         ->with(['partidos.equipoLocal', 'partidos.equipoVisitante'])
         ->orderBy('orden')
         ->get();
@@ -223,7 +224,7 @@ class LiguillaController extends Controller
             'liguilla',
             'clasificacion',
             'jornadaActiva',
-            'jornadasConPartidos',
+            'jornadas',
             'usuario',
             'miPlantilla',
             'jugadoresBase',
