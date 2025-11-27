@@ -854,22 +854,27 @@
 
                     const body = slot.querySelector('.card-body');
                     body.innerHTML = '';
+                    body.classList.add('position-relative');
+
+                    const badge = document.createElement('span');
+                    badge.textContent = jug.puntos ?? 0;
+                    badge.classList.add(
+                        'badge', 'bg-warning', 'text-dark',
+                        'position-absolute', 'top-0', 'end-0', 'me-1', 'mt-1'
+                    );
+                    body.appendChild(badge);
 
                     const img = document.createElement('img');
-                    img.src = jug.foto;
+                    img.src = jug.foto  || '/assets/media/images/default-player.png';
                     img.width = 50;
+                    img.height = 50;
                     img.classList.add('rounded-circle', 'mb-1');
                     body.appendChild(img);
 
                     const nombreEl = document.createElement('small');
                     nombreEl.textContent = `${jug.nombre} ${jug.apellido1}`;
-                    nombreEl.classList.add('text-white');
+                    nombreEl.classList.add('text-white','text-center');
                     body.appendChild(nombreEl);
-
-                    const puntosEl = document.createElement('small');
-                    puntosEl.textContent = `Puntos: ${jug.puntos ?? 0}`;
-                    puntosEl.classList.add('text-white');
-                    body.appendChild(puntosEl);
 
                     slot.classList.remove('vacio');
                     slot.classList.add('ocupado');
@@ -1043,12 +1048,14 @@
 
                         slot.innerHTML = `
                             <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                                <span class="badge bg-warning text-dark position-absolute top-0 end-0 me-1 mt-1">
+                                    ${jug.puntos ?? 0}
+                                </span>
                                 <img src="${jug.foto || '/assets/media/images/default-player.png'}"
                                     alt="${jug.nombre} ${jug.apellido1}"
                                     class="rounded-circle mb-1"
                                     width="40" height="40">
                                 <small class="text-white">${jug.nombre} ${jug.apellido1}</small>
-                                <small class="text-white">Puntos: ${jug.puntos ?? 0}</small>
                             </div>
                         `;
                     });
