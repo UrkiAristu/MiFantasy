@@ -112,6 +112,7 @@ class AlineacionController extends Controller
                     'apellido1' => $jugador->apellido1,
                     'apellido2' => $jugador->apellido2,
                     'foto' => $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png'),
+                    'puntos' => $jugador->pivot->puntos ?? 0,
                 ];
             })->values(),
             'total_puntos' => $totalPuntos,

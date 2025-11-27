@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alineacion;
 use App\Models\Estadistica;
 use App\Models\Jornada;
 use App\Models\Partido;
@@ -9,6 +10,7 @@ use App\Models\Torneo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PartidoController extends Controller
@@ -455,6 +457,9 @@ class PartidoController extends Controller
             }
         }
 
+        // Volcar puntos de la jornada a alineacion_jugador
+        $this->volcarPuntosAJugadoresDeJornada($partido);
+
         return redirect()->back()->with('success', 'Resultado y eventos guardados correctamente.');
     }
 
@@ -550,6 +555,62 @@ class PartidoController extends Controller
             }
             $stat->save();
         }
+
+        $this->volcarPuntosAJugadoresDeJornada($partido);
         return response()->json(['status' => 'ok']);
+    }
+    protected function volcarPuntosAJugadoresDeJornada(Partido $partido): void
+    {
+        $jornada   = $partido->jornada;
+        $torneo    = $jornada->torneo;
+        $jornadaId = $jornada->id;
+
+        if (!$torneo) {
+            return;
+        }
+
+        // 1️⃣ Puntos por jugador en ESA jornada (sumando todos sus partidos de la jornada)
+        $puntosPorJugador = DB::table('estadisticas as e')
+            ->join('partidos as p', 'p.id', '=', 'e.partido_id')
+            ->select('e.jugador_id', DB::raw('SUM(e.puntos) as total_puntos'))
+            ->where('p.jornada_id', $jornadaId)
+            ->groupBy('e.jugador_id')
+            ->pluck('total_puntos', 'jugador_id'); // [jugador_id => puntos_jornada]
+
+        if ($puntosPorJugador->isEmpty()) {
+            return;
+        }
+
+        // 2️⃣ Actualizar alineacion_jugador.puntos para TODAS las alineaciones congeladas de esa jornada
+        $alineaciones = Alineacion::with('jugadores')
+            ->whereIn('liguilla_id', $torneo->liguillas->pluck('id'))
+            ->where('jornada_id', $jornadaId)
+            ->get();
+
+        foreach ($alineaciones as $alineacion) {
+            foreach ($alineacion->jugadores as $jugador) {
+                $puntos = $puntosPorJugador[$jugador->id] ?? 0;
+
+                $alineacion->jugadores()
+                    ->updateExistingPivot($jugador->id, ['puntos' => $puntos]);
+            }
+        }
+
+        // 3️⃣ A partir de aquí, recalcular GLOBAL y guardarlo en liguilla_usuario.puntos
+        foreach ($torneo->liguillas as $liguilla) {
+            $puntosGlobalPorUsuario = DB::table('alineaciones as a')
+                ->join('alineacion_jugador as aj', 'aj.alineacion_id', '=', 'a.id')
+                ->select('a.user_id', DB::raw('SUM(aj.puntos) as total_puntos'))
+                ->where('a.liguilla_id', $liguilla->id)
+                ->whereNotNull('a.jornada_id') // solo jornadas (no la base)
+                ->groupBy('a.user_id')
+                ->get();
+
+            foreach ($puntosGlobalPorUsuario as $row) {
+                $liguilla->usuarios()->updateExistingPivot($row->user_id, [
+                    'puntos' => $row->total_puntos,
+                ]);
+            }
+        }
     }
 }

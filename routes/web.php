@@ -191,5 +191,7 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
     Route::post('/user/liguillas/{id}/alineacion/guardar', [AlineacionController::class, 'guardarAlineacion']);
     Route::get('/user/liguillas/{idLiguilla}/alineacion/{idJornada}', [AlineacionController::class, 'obtenerAlineacion']);
     Route::get('/user/jugadores/{idJugador}/info/torneo/{idTorneo}', [JugadorController::class, 'info']);
-    Route::get('/user/liguillas/{idLiguilla}/usuario/{idUser}/plantilla', [LiguillaController::class, 'plantilla']);
+    Route::get('/user/liguillas/{idLiguilla}/usuario/{idUser}/plantilla', [LiguillaController::class, 'plantilla']); 
+    Route::get('/user/liguillas/{liguilla}/clasificacion',[LiguillaController::class, 'clasificacionAjax'])->name('liguillas.clasificacionAjax');
+    Route::get('/user/liguillas/{liguilla}/alineacion-usuario/{user}/jornada/{jornada}',[LiguillaController::class, 'alineacionUsuarioJornada'])->name('liguillas.alineacionUsuarioJornada');
 });

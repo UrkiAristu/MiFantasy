@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alineacion;
 use App\Models\Cuenta;
+use App\Models\Estadistica;
 use App\Models\Jugador;
 use App\Models\Liguilla;
 use App\Models\Plantilla;
@@ -245,4 +246,117 @@ class LiguillaController extends Controller
 
         return view('user.plantilla-participante',compact('liguilla', 'user', 'plantilla'));
     }
+
+    public function clasificacionAjax(Liguilla $liguilla, Request $request)
+    {
+        $modoClasificacion = $request->get('modo_clasificacion', 'global');
+        $jornadaSeleccionada = null;
+
+        if ($modoClasificacion === 'global') {
+            // Clasificación TOTAL usando el pivot 'puntos' de liguilla_usuario
+            $clasificacion = $liguilla->usuarios()
+                ->withPivot('puntos')
+                ->orderByDesc('pivot_puntos')
+                ->get()
+                ->map(function ($usuario, $index) {
+                    return [
+                        'id'       => $usuario->id,
+                        'posicion' => $index + 1,
+                        'name'     => $usuario->name,
+                        'email'    => $usuario->email,
+                        'puntos'   => $usuario->pivot->puntos ?? 0,
+                    ];
+                })
+                ->values();
+        } else {
+            $jornadaSeleccionada = $liguilla->torneo->jornadas()->find($modoClasificacion);
+
+            if ($jornadaSeleccionada) {
+                $puntosPorUsuario = DB::table('alineaciones as a')
+                    ->join('alineacion_jugador as aj', 'aj.alineacion_id', '=', 'a.id')
+                    ->select('a.user_id', DB::raw('SUM(aj.puntos) as total_puntos'))
+                    ->where('a.liguilla_id', $liguilla->id)
+                    ->where('a.jornada_id', $jornadaSeleccionada->id)
+                    ->groupBy('a.user_id')
+                    ->pluck('total_puntos', 'user_id');
+
+                $usuarios = $liguilla->usuarios()
+                    ->whereIn('users.id', $puntosPorUsuario->keys())
+                    ->get();
+
+                $clasificacion = $usuarios
+                    ->sortByDesc(function ($u) use ($puntosPorUsuario) {
+                        return $puntosPorUsuario[$u->id] ?? 0;
+                    })
+                    ->values()
+                    ->map(function ($usuario, $index) use ($puntosPorUsuario) {
+                        return [
+                            'id'       => $usuario->id,
+                            'posicion' => $index + 1,
+                            'name'     => $usuario->name,
+                            'email'    => $usuario->email,
+                            'puntos'   => $puntosPorUsuario[$usuario->id] ?? 0,
+                        ];
+                    })
+                    ->values();
+            } else {
+                $clasificacion = collect();
+            }
+        }
+
+        return response()->json([
+            'modo'         => $modoClasificacion,
+            'jornada'      => $jornadaSeleccionada ? [
+                'id'     => $jornadaSeleccionada->id,
+                'nombre' => $jornadaSeleccionada->nombre,
+                'orden'  => $jornadaSeleccionada->orden,
+            ] : null,
+            'clasificacion' => $clasificacion,
+        ]);
+    }
+
+    public function alineacionUsuarioJornada(Liguilla $liguilla, User $user, $jornadaId)
+    {
+        $alineacion = Alineacion::with('jugadores')
+            ->where('liguilla_id', $liguilla->id)
+            ->where('user_id', $user->id)
+            ->where('jornada_id', $jornadaId)
+            ->first();
+
+        if (!$alineacion) {
+            return response()->json([
+                'status'       => 'ok',
+                'jugadores'    => [],
+                'total_puntos' => 0,
+            ]);
+        }
+
+        $jugadores = $alineacion->jugadores->map(function ($jug) use ($jornadaId) {
+            // suma de puntos de este jugador en los partidos de esa jornada
+            $puntos = Estadistica::where('jugador_id', $jug->id)
+                ->whereHas('partido', function ($q) use ($jornadaId) {
+                    $q->where('jornada_id', $jornadaId);
+                })
+                ->sum('puntos');
+
+            return [
+                'id'        => $jug->id,
+                'nombre'    => $jug->nombre,
+                'apellido1' => $jug->apellido1,
+                'foto'      => $jug->foto
+                    ? asset('storage/' . $jug->foto)
+                    : asset('assets/media/images/default-player.png'),
+                'puntos'    => $puntos,
+            ];
+        });
+
+        $totalPuntos = $jugadores->sum('puntos');
+
+        return response()->json([
+            'status'       => 'ok',
+            'jugadores'    => $jugadores,
+            'total_puntos' => $totalPuntos,
+        ]);
+    }
+
 }

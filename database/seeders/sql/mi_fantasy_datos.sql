@@ -88,11 +88,11 @@ INSERT INTO `equipo_torneo` (`id`, `equipo_id`, `torneo_id`, `created_at`, `upda
 --
 
 INSERT INTO `jornadas` (`id`, `torneo_id`, `nombre`, `orden`, `fecha_inicio`, `fecha_fin`, `fecha_cierre_alineaciones`, `alineaciones_congeladas`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Jornada 1', 1, '2026-03-30', '2026-03-30', '2025-03-30 11:00:00', 0, NOW(), NOW()),
-(2, 1, 'Jornada 2', 2, '2026-03-31', '2026-03-31', '2025-03-31 11:00:00', 0, NOW(), NOW()),
+(1, 1, 'Jornada 1', 1, '2026-03-30', '2026-03-30', '2026-03-30 11:00:00', 0, NOW(), NOW()),
+(2, 1, 'Jornada 2', 2, '2026-03-31', '2026-03-31', '2026-03-31 11:00:00', 0, NOW(), NOW()),
 (3, 1, 'Repesca', 3, '2026-04-01', '2026-04-01', '2026-04-01 11:00:00', 0, NOW(), NOW()),
-(4, 1, 'Cuartos', 4, '2026-04-02', '2026-04-02', '2025-04-02 11:00:00', 0, NOW(), NOW()),
-(5, 1, 'Semifinales', 5, '2026-04-03', '2026-04-03', '2025-04-03 11:00:00', 0, NOW(), NOW()),
+(4, 1, 'Cuartos', 4, '2026-04-02', '2026-04-02', '2026-04-02 11:00:00', 0, NOW(), NOW()),
+(5, 1, 'Semifinales', 5, '2026-04-03', '2026-04-03', '2026-04-03 11:00:00', 0, NOW(), NOW()),
 (6, 1, 'Finales', 6, '2026-04-04', '2026-04-04', '2026-04-04 11:00:00', 0, NOW(), NOW());
 --
 -- Volcado de datos para la tabla `jugadores`

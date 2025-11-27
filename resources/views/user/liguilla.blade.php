@@ -177,7 +177,7 @@
 
         <!-- Modal Jugador -->
         <div class="modal fade" id="modalJugador" tabindex="-1" aria-labelledby="modalJugadorLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-dialog modal-dialog-centered modal-md">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalJugadorLabel">Información del Jugador</h5>
@@ -220,9 +220,6 @@
                             <h4><strong>Puntos:</strong> <span id="modalJugadorPuntos"></span></h4>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -231,33 +228,106 @@
         <div class="tab-pane fade" id="clasificacion" role="tabpanel" aria-labelledby="clasificacion-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Clasificación general</h5>
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">
+                            Clasificación
+                            <small id="clasificacion-subtitle" class="text-muted">
+                                Total liguilla
+                            </small>
+                        </h5>
+
+                        {{-- Selector de tipo de clasificación --}}
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="selectClasificacion" class="small mb-0">Ver:</label>
+                            <select id="selectClasificacion"
+                                    class="form-select form-select-sm"
+                                    data-url-clasificacion="{{ route('liguillas.clasificacionAjax', $liguilla) }}">
+                                <option value="global" selected>
+                                    Global
+                                </option>
+                                @foreach($jornadas as $j)
+                                    <option value="{{ $j->id }}">
+                                        Jornada {{ $j->orden ?? $loop->iteration }}
+                                        @if($j->nombre) – {{ $j->nombre }} @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table id="tablaClasificacion" class="table table-hover align-middle">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Usuario</th>
-                                    <th>Equipo</th>
                                     <th class="text-end">Puntos</th>
+                                    <th id="thAlineacion" class="text-end d-none">Alineación</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {{-- Asumimos que $clasificacion es pasado desde el controlador ordenado por puntos --}}
-                                @foreach($clasificacion ?? $liguilla->usuarios()->withPivot('puntos','posicion')->get() as $u)
-                                <tr>
-                                    <td>{{ $u->pivot->posicion ?? '-' }}</td>
-                                    <td>{{ $u->name ?? $u->email ?? 'Usuario' }}</td>
-                                    <td>{{ $u->pivot->nombre_equipo ?? '-' }}</td>
-                                    <td class="text-end">{{ $u->pivot->puntos ?? 0 }}</td>
-                                </tr>
+                            <tbody id="tbodyClasificacion">
+                                {{-- Clasificación inicial (global) renderizada en servidor --}}
+                                @foreach($clasificacion as $u)
+                                    <tr>
+                                        <td>{{ $u->posicion }}</td>
+                                        <td>
+                                            {{ $u->name ?? $u->email ?? 'Usuario' }}
+                                            @if(isset($usuario) && $usuario->id === $u->id)
+                                                <span class="badge bg-primary ms-1">Tú</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">{{ $u->puntos }}</td>
+                                        <td class="text-end"></td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
+
+        {{-- Modal Alineación --}}    
+        <div class="modal fade" id="modalAlineacionClasificacion" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Alineación de <span id="alineacionModalUsuario"></span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        {{-- Campo de fútbol --}}
+                        <div class="futbol-campo mb-3 position-relative">
+                            <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3"
+                                id="alineacionModalSlots">
+                                @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
+                                    <div class="slot card text-center d-flex align-items-center justify-content-center ocupado"
+                                        data-slot="{{ $i }}"
+                                        data-readonly="1">
+                                        <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                                            <small class="text-white mt-1">Vacío</small>
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <small class="text-primary">
+                                Total puntos jornada: <span id="alineacionModalTotal">0</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Mis Jornadas -->
         <div class="tab-pane fade" id="jornadas" role="tabpanel" aria-labelledby="jornadas-tab">
@@ -289,13 +359,14 @@
 
                         <div class="col-md-8">
                             <div id="panelMisJornadas">
-                                <h6 class="text-muted mb-3">Selecciona una jornada para ver tu alineación y puntos.</h6>
+                                <h6 class="text-muted m-3">Selecciona una jornada para ver tu alineación y puntos.</h6>
 
                                 <div class="futbol-campo mb-3 position-relative d-none" id="campoMisJornadas">
                                     <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3" id="misJornadasSlots">
                                         @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
                                             <div class="slot card text-center d-flex align-items-center justify-content-center vacio"
-                                                data-slot="{{ $i }}">
+                                                data-slot="{{ $i }}"
+                                                data-readonly="1">
                                                 <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
                                                     <small class="text-white mt-1">Vacío</small>
                                                 </div>
@@ -552,6 +623,9 @@
     document.querySelectorAll('.slot').forEach(slot => {
         slot.addEventListener('click', function() {
             slotSeleccionado = this;
+            if (slot.dataset.readonly === '1') {
+                return;
+            }
             actualizarJugadoresDisponibles(); // refrescar para ocultar ocupados
             const modal = new bootstrap.Modal(document.getElementById('modalSeleccionJugador'));
             modal.show();
@@ -727,6 +801,7 @@
             }
         });
     }
+    
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function() {
         actualizarJugadoresDisponibles();
@@ -807,5 +882,184 @@
                 alert('No se pudo cargar la alineación de esa jornada.');
             });
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectClasificacion = document.getElementById('selectClasificacion');
+        const tbodyClasificacion  = document.getElementById('tbodyClasificacion');
+        const subtitleEl          = document.getElementById('clasificacion-subtitle');
+        const thAlineacion        = document.getElementById('thAlineacion');
+        const currentUserId       = {{ auth()->id() ?? 'null' }};
+
+        if (selectClasificacion && tbodyClasificacion) {
+            selectClasificacion.addEventListener('change', function () {
+                const url   = this.dataset.urlClasificacion;
+                const modo  = this.value;
+
+                // Loading
+                tbodyClasificacion.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                fetch(`${url}?modo_clasificacion=${encodeURIComponent(modo)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        // Subtítulo
+                        if (data.modo === 'global') {
+                            subtitleEl.textContent = 'Total liguilla';
+                            thAlineacion.classList.add('d-none');
+                        } else {
+                            const j = data.jornada || {};
+                            subtitleEl.textContent = (`Jornada ${j.orden ?? ''} ${j.nombre ?? ''}`).trim();
+                            thAlineacion.classList.remove('d-none');
+                        }
+
+                        tbodyClasificacion.innerHTML = '';
+
+                        if (!data.clasificacion || data.clasificacion.length === 0) {
+                            tbodyClasificacion.innerHTML = `
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        No hay datos de clasificación para esta selección.
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+
+                        data.clasificacion.forEach(u => {
+                            const tr = document.createElement('tr');
+
+                            // Posición
+                            const tdPos = document.createElement('td');
+                            tdPos.textContent = u.posicion ?? '-';
+                            tr.appendChild(tdPos);
+
+                            // Usuario
+                            const tdUser = document.createElement('td');
+                            const name   = u.name || u.email || 'Usuario';
+                            tdUser.textContent = name;
+
+                            if (currentUserId && Number(currentUserId) === Number(u.id)) {
+                                const badge = document.createElement('span');
+                                badge.className = 'badge bg-primary ms-1';
+                                badge.textContent = 'Tú';
+                                tdUser.appendChild(badge);
+                            }
+
+                            tr.appendChild(tdUser);
+
+                            // Puntos
+                            const tdPts = document.createElement('td');
+                            tdPts.className = 'text-end';
+                            tdPts.textContent = u.puntos ?? 0;
+                            tr.appendChild(tdPts);
+
+                            // Alineación (solo si no es global)
+                            const tdAli = document.createElement('td');
+                            tdAli.className = 'text-end';
+
+                            if (data.modo !== 'global' && data.jornada) {
+                                const btn = document.createElement('button');
+                                btn.type = 'button';
+                                btn.className = 'btn btn-sm btn-primary ver-alineacion-btn';
+                                btn.dataset.userId = u.id;
+                                btn.dataset.jornadaId = data.jornada.id;
+                                btn.dataset.userName = name;
+                                btn.textContent = 'Ver alineación';
+                                tdAli.appendChild(btn);
+                            }
+
+                            tr.appendChild(tdAli);
+
+                            tbodyClasificacion.appendChild(tr);
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        tbodyClasificacion.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center text-danger">
+                                    Error al cargar la clasificación.
+                                </td>
+                            </tr>
+                        `;
+                    });
+            });
+        }
+
+        // Modal único para "Ver alineación"
+       document.body.addEventListener('click', function (e) {
+            const btn = e.target.closest('.ver-alineacion-btn');
+            if (!btn) return;
+
+            const userId    = btn.dataset.userId;
+            const jornadaId = btn.dataset.jornadaId;
+            const userName  = btn.dataset.userName;
+
+            const modalEl   = document.getElementById('modalAlineacionClasificacion');
+            const modal     = new bootstrap.Modal(modalEl);
+            const titleUser = document.getElementById('alineacionModalUsuario');
+            const totalEl   = document.getElementById('alineacionModalTotal');
+            const slotsWrap = document.getElementById('alineacionModalSlots');
+
+            titleUser.textContent = userName;
+            totalEl.textContent   = '...';
+
+            // Resetear todos los slots a "Vacío"
+            slotsWrap.querySelectorAll('.slot').forEach(slot => {
+                slot.classList.add('vacio');
+                slot.innerHTML = `
+                    <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                        <small class="text-white mt-1">Vacío</small>
+                    </div>
+                `;
+            });
+
+            // Mostrar modal ya (para que se vea el campo) mientras carga
+            modal.show();
+
+            fetch(`/user/liguillas/{{ $liguilla->id }}/alineacion-usuario/${userId}/jornada/${jornadaId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
+                        totalEl.textContent = 0;
+                        return;
+                    }
+
+                    let total = 0;
+
+                    data.jugadores.forEach((jug, index) => {
+                        const slot = slotsWrap.querySelector(`[data-slot="${index + 1}"]`);
+                        if (!slot) return;
+
+                        slot.classList.remove('vacio');
+                        slot.classList.add('ocupado');
+
+                        slot.innerHTML = `
+                            <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                                <img src="${jug.foto || '/assets/media/images/default-player.png'}"
+                                    alt="${jug.nombre} ${jug.apellido1}"
+                                    class="rounded-circle mb-1"
+                                    width="40" height="40">
+                                <small class="text-white">${jug.nombre} ${jug.apellido1}</small>
+                                <small class="text-white">Puntos: ${jug.puntos ?? 0}</small>
+                            </div>
+                        `;
+                    });
+
+                    totalEl.textContent = data.total_puntos ?? 0;
+                })
+                .catch(err => {
+                    console.error(err);
+                    totalEl.textContent = 0;
+                });
+    });
+});
 </script>
 @endpush
