@@ -47,9 +47,9 @@
                     </p>
 
                     @php
-                        $jugadoresBase = isset($jugadoresBase)
-                            ? ($jugadoresBase instanceof \Illuminate\Support\Collection ? $jugadoresBase->values() : collect($jugadoresBase)->values())
-                            : collect();
+                    $jugadoresBase = isset($jugadoresBase)
+                    ? ($jugadoresBase instanceof \Illuminate\Support\Collection ? $jugadoresBase->values() : collect($jugadoresBase)->values())
+                    : collect();
                     @endphp
 
                     <!-- Campo de fútbol -->
@@ -57,26 +57,26 @@
                         <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3">
                             @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
                                 @php
-                                    $jug = $jugadoresBase->get($i - 1); // índice 0-based
+                                $jug = $jugadoresBase->get($i - 1); // índice 0-based
                                 @endphp
                                 <div class="slot card text-center d-flex align-items-center justify-content-center {{ $jug ? 'ocupado' : 'vacio' }}"
                                     data-slot="{{ $i }}">
                                     <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
                                         @if($jug)
-                                            <img src="{{ $jug->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
-                                                alt="{{ $jug->nombre }} {{ $jug->apellido1 }}"
-                                                width="50"
-                                                class="rounded-circle mb-1">
-                                            <small class="text-white">
-                                                {{ $jug->nombre }} {{ $jug->apellido1 }}
-                                            </small>
+                                        <img src="{{ $jug->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
+                                            alt="{{ $jug->nombre }} {{ $jug->apellido1 }}"
+                                            width="50"
+                                            class="rounded-circle mb-1">
+                                        <small class="text-white">
+                                            {{ $jug->nombre }} {{ $jug->apellido1 }}
+                                        </small>
                                         @else
-                                            <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
-                                            <small class="text-white mt-1">Vacío</small>
+                                        <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
+                                        <small class="text-white mt-1">Vacío</small>
                                         @endif
                                     </div>
                                 </div>
-                            @endfor
+                                @endfor
                         </div>
                     </div>
 
@@ -88,10 +88,10 @@
 
                         <div id="alineacionInputs">
                             @foreach($jugadoresBase as $index => $jug)
-                                <input type="hidden"
-                                    name="jugadores[]"
-                                    data-slot="{{ $index + 1 }}"
-                                    value="{{ $jug->id }}">
+                            <input type="hidden"
+                                name="jugadores[]"
+                                data-slot="{{ $index + 1 }}"
+                                value="{{ $jug->id }}">
                             @endforeach
                         </div>
 
@@ -151,7 +151,7 @@
         <div class="tab-pane fade" id="plantilla" role="tabpanel" aria-labelledby="plantilla-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Tu Plantilla  <small>({{ $miPlantilla->count() }} jugadores)</small></h5>
+                    <h5 class="card-title">Tu Plantilla <small>({{ $miPlantilla->count() }} jugadores)</small></h5>
                     <div class="row row-cols-2 row-cols-md-4 g-3">
                         @foreach($miPlantilla as $jugador)
                         <div class="col">
@@ -241,16 +241,16 @@
                         <div class="d-flex align-items-center gap-2">
                             <label for="selectClasificacion" class="small mb-0">Ver:</label>
                             <select id="selectClasificacion"
-                                    class="form-select form-select-sm"
-                                    data-url-clasificacion="{{ route('liguillas.clasificacionAjax', $liguilla) }}">
+                                class="form-select form-select-sm"
+                                data-url-clasificacion="{{ route('liguillas.clasificacionAjax', $liguilla) }}">
                                 <option value="global" selected>
                                     Global
                                 </option>
                                 @foreach($jornadas as $j)
-                                    <option value="{{ $j->id }}">
-                                        Jornada {{ $j->orden ?? $loop->iteration }}
-                                        @if($j->nombre) – {{ $j->nombre }} @endif
-                                    </option>
+                                <option value="{{ $j->id }}">
+                                    Jornada {{ $j->orden ?? $loop->iteration }}
+                                    @if($j->nombre) – {{ $j->nombre }} @endif
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -269,17 +269,17 @@
                             <tbody id="tbodyClasificacion">
                                 {{-- Clasificación inicial (global) renderizada en servidor --}}
                                 @foreach($clasificacion as $u)
-                                    <tr>
-                                        <td>{{ $u->posicion }}</td>
-                                        <td>
-                                            {{ $u->name ?? $u->email ?? 'Usuario' }}
-                                            @if(isset($usuario) && $usuario->id === $u->id)
-                                                <span class="badge bg-primary ms-1">Tú</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-end">{{ $u->puntos }}</td>
-                                        <td class="text-end"></td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ $u->posicion }}</td>
+                                    <td>
+                                        {{ $u->name ?? $u->email ?? 'Usuario' }}
+                                        @if(isset($usuario) && $usuario->id === $u->id)
+                                        <span class="badge bg-primary ms-1">Tú</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">{{ $u->puntos }}</td>
+                                    <td class="text-end"></td>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -289,7 +289,7 @@
             </div>
         </div>
 
-        {{-- Modal Alineación --}}    
+        {{-- Modal Alineación --}}
         <div class="modal fade" id="modalAlineacionClasificacion" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
@@ -314,7 +314,7 @@
                                             <small class="text-white mt-1">Vacío</small>
                                         </div>
                                     </div>
-                                @endfor
+                                    @endfor
                             </div>
                         </div>
 
@@ -342,17 +342,17 @@
                         <div class="col-md-4">
                             <div class="list-group" id="listaMisJornadas">
                                 @php
-                                    $misJornadas = $misAlineaciones->pluck('jornada')->filter()->unique('id')->sortBy('orden');
+                                $misJornadas = $misAlineaciones->pluck('jornada')->filter()->unique('id')->sortBy('orden');
                                 @endphp
 
                                 @forelse($misJornadas as $j)
-                                    <button type="button"
-                                            class="list-group-item list-group-item-action mis-jornada-link"
-                                            data-jornada-id="{{ $j->id }}">
-                                        Jornada {{ $j->orden }} - {{ $j->nombre }}
-                                    </button>
+                                <button type="button"
+                                    class="list-group-item list-group-item-action mis-jornada-link"
+                                    data-jornada-id="{{ $j->id }}">
+                                    Jornada {{ $j->orden }} - {{ $j->nombre }}
+                                </button>
                                 @empty
-                                    <div class="text-muted">Todavía no tienes alineaciones congeladas.</div>
+                                <div class="text-muted">Todavía no tienes alineaciones congeladas.</div>
                                 @endforelse
                             </div>
                         </div>
@@ -371,7 +371,7 @@
                                                     <small class="text-white mt-1">Vacío</small>
                                                 </div>
                                             </div>
-                                        @endfor
+                                            @endfor
                                     </div>
                                 </div>
 
@@ -393,81 +393,81 @@
                     <h5 class="card-title mb-3">Resultados por jornada</h5>
 
                     @if($jornadas->count())
-                        {{-- Pestañas internas por jornada --}}
-                        <ul class="nav nav-pills mb-3" id="resultadosJornadasTabs" role="tablist">
-                            @foreach($jornadas as $j)
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link @if($loop->first) active @endif"
-                                            id="resultados-jornada-tab-{{ $j->id }}"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#resultados-jornada-{{ $j->id }}"
-                                            type="button"
-                                            role="tab">
-                                        J{{ $j->orden }}
-                                        @if($j->nombre)
-                                            <small class="d-block text-muted" style="font-size: 0.7rem;">
-                                                {{ $j->nombre }}
-                                            </small>
+                    {{-- Pestañas internas por jornada --}}
+                    <ul class="nav nav-pills mb-3" id="resultadosJornadasTabs" role="tablist">
+                        @foreach($jornadas as $j)
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link @if($loop->first) active @endif"
+                                id="resultados-jornada-tab-{{ $j->id }}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#resultados-jornada-{{ $j->id }}"
+                                type="button"
+                                role="tab">
+                                J{{ $j->orden }}
+                                @if($j->nombre)
+                                <small class="d-block text-muted" style="font-size: 0.7rem;">
+                                    {{ $j->nombre }}
+                                </small>
+                                @endif
+                            </button>
+                        </li>
+                        @endforeach
+                    </ul>
+
+                    <div class="tab-content" id="resultadosJornadasContent">
+                        @foreach($jornadas as $j)
+                        <div class="tab-pane fade @if($loop->first) show active @endif"
+                            id="resultados-jornada-{{ $j->id }}"
+                            role="tabpanel"
+                            aria-labelledby="resultados-jornada-tab-{{ $j->id }}">
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <strong>Jornada {{ $j->orden }} - {{ $j->nombre }}</strong><br>
+                                    <small class="text-muted">
+                                        {{ $j->fecha_inicio ? \Carbon\Carbon::parse($j->fecha_inicio)->format('d/m/Y') : '-' }}
+                                        @if($j->fecha_fin)
+                                        – {{ \Carbon\Carbon::parse($j->fecha_fin)->format('d/m/Y') }}
                                         @endif
-                                    </button>
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        <div class="tab-content" id="resultadosJornadasContent">
-                            @foreach($jornadas as $j)
-                                <div class="tab-pane fade @if($loop->first) show active @endif"
-                                    id="resultados-jornada-{{ $j->id }}"
-                                    role="tabpanel"
-                                    aria-labelledby="resultados-jornada-tab-{{ $j->id }}">
-                                    
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <strong>Jornada {{ $j->orden }} - {{ $j->nombre }}</strong><br>
-                                            <small class="text-muted">
-                                                {{ $j->fecha_inicio ? \Carbon\Carbon::parse($j->fecha_inicio)->format('d/m/Y') : '-' }}
-                                                @if($j->fecha_fin)
-                                                    – {{ \Carbon\Carbon::parse($j->fecha_fin)->format('d/m/Y') }}
-                                                @endif
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    @if($j->partidos->count())
-                                        <div class="table-responsive">
-                                            <table class="table table-sm align-middle">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center">Local</th>
-                                                        <th class="text-center">Marcador</th>
-                                                        <th class="text-center">Visitante</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($j->partidos as $p)
-                                                        <tr>
-                                                            <td class="text-center">{{ $p->equipoLocal->nombre ?? '—' }}</td>
-                                                            <td class="text-center">
-                                                                @if(!is_null($p->goles_local) && !is_null($p->goles_visitante))
-                                                                    <strong>{{ $p->goles_local }} - {{ $p->goles_visitante }}</strong>
-                                                                @else
-                                                                    <span class="text-muted">–</span>
-                                                                @endif
-                                                            </td>
-                                                            <td class="text-center">{{ $p->equipoVisitante->nombre ?? '—' }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    @else
-                                        <p class="text-muted">No hay partidos registrados para esta jornada.</p>
-                                    @endif
+                                    </small>
                                 </div>
-                            @endforeach
+                            </div>
+
+                            @if($j->partidos->count())
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Local</th>
+                                            <th class="text-center">Marcador</th>
+                                            <th class="text-center">Visitante</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($j->partidos as $p)
+                                        <tr>
+                                            <td class="text-center">{{ $p->equipoLocal->nombre ?? '—' }}</td>
+                                            <td class="text-center">
+                                                @if(!is_null($p->goles_local) && !is_null($p->goles_visitante))
+                                                <strong>{{ $p->goles_local }} - {{ $p->goles_visitante }}</strong>
+                                                @else
+                                                <span class="text-muted">–</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{ $p->equipoVisitante->nombre ?? '—' }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            @else
+                            <p class="text-muted">No hay partidos registrados para esta jornada.</p>
+                            @endif
                         </div>
+                        @endforeach
+                    </div>
                     @else
-                        <p class="text-muted">No hay jornadas definidas aún.</p>
+                    <p class="text-muted">No hay jornadas definidas aún.</p>
                     @endif
                 </div>
             </div>
@@ -480,29 +480,29 @@
                     <h5 class="card-title">Participantes de la liguilla</h5>
                     <div class="list-group list-group-flush">
                         @foreach($liguilla->plantillas as $plantilla)
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center me-3"
-                                        style="width: 36px; height: 36px;">
-                                        {{ strtoupper(substr($plantilla->usuario->name ?? 'U', 0, 1)) }}
-                                    </div>
-                                    <div>
-                                        <strong>{{ $plantilla->usuario->name ?? 'Usuario' }}</strong><br>
-                                        <small class="text-muted">
-                                            Plantilla: 
-                                            <span class="badge bg-secondary text-primary">
-                                                {{ $plantilla->jugadores->count() }} jugadores
-                                            </span>
-                                        </small>
-                                    </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center me-3"
+                                    style="width: 36px; height: 36px;">
+                                    {{ strtoupper(substr($plantilla->usuario->name ?? 'U', 0, 1)) }}
                                 </div>
-                                <div class="text-end">
-                                    <a href="{{ url("/user/liguillas/{$liguilla->id}/usuario/{$plantilla->usuario->id}/plantilla") }}"
-                                        class="btn btn-sm btn-primary">
-                                            Ver plantilla
-                                    </a>
+                                <div>
+                                    <strong>{{ $plantilla->usuario->name ?? 'Usuario' }}</strong><br>
+                                    <small class="text-muted">
+                                        Plantilla:
+                                        <span class="badge bg-secondary text-primary">
+                                            {{ $plantilla->jugadores->count() }} jugadores
+                                        </span>
+                                    </small>
                                 </div>
                             </div>
+                            <div class="text-end">
+                                <a href="{{ url("/user/liguillas/{$liguilla->id}/usuario/{$plantilla->usuario->id}/plantilla") }}"
+                                    class="btn btn-sm btn-primary">
+                                    Ver plantilla
+                                </a>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -739,7 +739,6 @@
 
         let form = e.target;
         let formData = new FormData(form);
-
         fetch(form.action, {
                 method: 'POST',
                 headers: {
@@ -801,7 +800,7 @@
             }
         });
     }
-    
+
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function() {
         actualizarJugadoresDisponibles();
@@ -810,7 +809,7 @@
 
         // Click en una jornada de "Mis Jornadas"
         document.querySelectorAll('.mis-jornada-link').forEach(btn => {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function() {
                 const jornadaId = this.dataset.jornadaId;
                 cargarAlineacionJornada(liguillaId, jornadaId);
 
@@ -865,7 +864,7 @@
                     body.appendChild(badge);
 
                     const img = document.createElement('img');
-                    img.src = jug.foto  || '/assets/media/images/default-player.png';
+                    img.src = jug.foto || '/assets/media/images/default-player.png';
                     img.width = 50;
                     img.height = 50;
                     img.classList.add('rounded-circle', 'mb-1');
@@ -873,7 +872,7 @@
 
                     const nombreEl = document.createElement('small');
                     nombreEl.textContent = `${jug.nombre} ${jug.apellido1}`;
-                    nombreEl.classList.add('text-white','text-center');
+                    nombreEl.classList.add('text-white', 'text-center');
                     body.appendChild(nombreEl);
 
                     slot.classList.remove('vacio');
@@ -888,17 +887,17 @@
             });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const selectClasificacion = document.getElementById('selectClasificacion');
-        const tbodyClasificacion  = document.getElementById('tbodyClasificacion');
-        const subtitleEl          = document.getElementById('clasificacion-subtitle');
-        const thAlineacion        = document.getElementById('thAlineacion');
-        const currentUserId       = {{ auth()->id() ?? 'null' }};
+        const tbodyClasificacion = document.getElementById('tbodyClasificacion');
+        const subtitleEl = document.getElementById('clasificacion-subtitle');
+        const thAlineacion = document.getElementById('thAlineacion');
+        const currentUserId = "{{Auth::id() ?? 'null'}}";
 
         if (selectClasificacion && tbodyClasificacion) {
-            selectClasificacion.addEventListener('change', function () {
-                const url   = this.dataset.urlClasificacion;
-                const modo  = this.value;
+            selectClasificacion.addEventListener('change', function() {
+                const url = this.dataset.urlClasificacion;
+                const modo = this.value;
 
                 // Loading
                 tbodyClasificacion.innerHTML = `
@@ -947,7 +946,7 @@
 
                             // Usuario
                             const tdUser = document.createElement('td');
-                            const name   = u.name || u.email || 'Usuario';
+                            const name = u.name || u.email || 'Usuario';
                             tdUser.textContent = name;
 
                             if (currentUserId && Number(currentUserId) === Number(u.id)) {
@@ -999,22 +998,22 @@
         }
 
         // Modal único para "Ver alineación"
-       document.body.addEventListener('click', function (e) {
+        document.body.addEventListener('click', function(e) {
             const btn = e.target.closest('.ver-alineacion-btn');
             if (!btn) return;
 
-            const userId    = btn.dataset.userId;
+            const userId = btn.dataset.userId;
             const jornadaId = btn.dataset.jornadaId;
-            const userName  = btn.dataset.userName;
+            const userName = btn.dataset.userName;
 
-            const modalEl   = document.getElementById('modalAlineacionClasificacion');
-            const modal     = new bootstrap.Modal(modalEl);
+            const modalEl = document.getElementById('modalAlineacionClasificacion');
+            const modal = new bootstrap.Modal(modalEl);
             const titleUser = document.getElementById('alineacionModalUsuario');
-            const totalEl   = document.getElementById('alineacionModalTotal');
+            const totalEl = document.getElementById('alineacionModalTotal');
             const slotsWrap = document.getElementById('alineacionModalSlots');
 
             titleUser.textContent = userName;
-            totalEl.textContent   = '...';
+            totalEl.textContent = '...';
 
             // Resetear todos los slots a "Vacío"
             slotsWrap.querySelectorAll('.slot').forEach(slot => {
@@ -1066,7 +1065,7 @@
                     console.error(err);
                     totalEl.textContent = 0;
                 });
+        });
     });
-});
 </script>
 @endpush
