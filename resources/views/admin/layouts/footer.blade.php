@@ -1,4 +1,4 @@
-<footer class="bg-dark text-white text-center py-3 mt-md-5">
+<footer class="bg-dark text-white text-center py-3">
     <div class="container">
         <p class="mb-0">&copy; {{ date('Y') }} MiFantasy - Panel de Administración</p>
     </div>
