@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <title>Fantasy League - Iniciar sesión</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     {{-- Favicon --}}
-    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy-nobg.png') }}" type="image/png">
 
     <!-- SEO -->
     <meta name="description" content="Accede a tu cuenta para gestionar tu equipo de Fantasy League.">

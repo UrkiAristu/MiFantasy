@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#181c32">
 
     {{-- Favicon --}}
-    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy-nobg.png') }}" type="image/png">
 
     {{-- SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -54,10 +54,12 @@
             color: white;
             font-size: 1.5rem;
         }
+
         main {
             padding-bottom: 50px !important;
         }
-        body{
+
+        body {
             padding-bottom: 0px !important;
         }
 
@@ -75,7 +77,7 @@
 
     @include('user.layouts.header')
 
-    <main class="bg-light flex-fill" >
+    <main class="bg-light flex-fill">
         @yield('content')
     </main>
     @include('user.layouts.menu-movil')

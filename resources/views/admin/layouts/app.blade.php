@@ -8,7 +8,7 @@
     <title>@yield('title', 'Panel de Administración')</title>
 
     {{-- Favicon --}}
-    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy-nobg.png') }}" type="image/png">
 
     {{-- Bootstrap 5 --}}
     {{-- Estilos globales --}}
@@ -53,10 +53,10 @@
 
     {{-- SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     {{-- SortableJS --}}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const toggler = document.querySelector('.navbar-toggler');
@@ -65,7 +65,9 @@
             if (toggler && navbar) {
                 toggler.addEventListener('click', function() {
                     const bsCollapse = bootstrap.Collapse.getInstance(navbar) ||
-                        new bootstrap.Collapse(navbar, { toggle: false });
+                        new bootstrap.Collapse(navbar, {
+                            toggle: false
+                        });
 
                     const isOpen = navbar.classList.contains('show');
 
