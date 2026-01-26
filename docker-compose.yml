@@ -25,8 +25,8 @@ services:
     image: mysql:8.0
     container_name: mifantasy_db
     environment:
-      MYSQL_DATABASE: mi_fantasy
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
@@ -38,11 +38,22 @@ services:
     ports:
       - "8081:80"
     environment:
-      PMA_HOST: db
-      # PMA_USER: root
-      # PMA_PASSWORD: root
+      PMA_HOST: ${PMA_HOST}
+      # PMA_USER: ${PMA_USER}
+      # PMA_PASSWORD: ${PMA_PASSWORD}
     depends_on:
       - db
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: mifantasy_ngrok
+    depends_on:
+      - web
+    command: [ "http", "web:80" ]
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    ports:
+      - "4040:4040"
 
 volumes:
   dbdata:

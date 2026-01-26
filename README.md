@@ -102,16 +102,30 @@ Esto incluye:
 
 ⚠️ Esta acción debe ejecutarse **una única vez** tras la instalación del proyecto.
 
-### 🖥️ Aplicación web:
+### 🖥️ Aplicación web (local):
 **URL:**  
 ```arduino 
 http://localhost:8080
 ```
 
-
 **Credenciales:**
 - Usuario: `Admin`
 - Contraseña: `123456789`
+
+### 🌍 Aplicación web (ngrok)
+
+Al levantar Docker, también se inicia un túnel ngrok que expone la aplicación al exterior.
+
+- **Panel de ngrok (para ver la URL pública):**  
+```arduino 
+http://localhost:4040
+```
+
+La URL pública aparecerá como :
+```arduino 
+https://copesetic-jenelle-snoopily.ngrok-free.dev/
+```  
+Accede a la aplicación usando esa URL.
 
 ### 🗄️ phpMyAdmin:
 **URL:** 
