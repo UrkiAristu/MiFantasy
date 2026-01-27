@@ -1,4 +1,4 @@
-![MiFantasy Logo](public/assets/media/logos/logo-fantasy-nobg.png)
+![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-nobg.png)
 
 # Sobre MiFantasy
 MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy personalizadas a partir de torneos de fútbol no profesionales, como competiciones locales, amateur o solidarias. El proyecto surge como una alternativa flexible a las plataformas fantasy tradicionales, habitualmente limitadas a ligas oficiales, permitiendo adaptar el sistema fantasy a contextos más cercanos y personalizados.
@@ -33,6 +33,8 @@ Las alineaciones funcionan de forma similar a las fantasy convencionales: los us
 - **Frontend:** Blade, Bootstrap y JavaScript
 - **Base de datos:** MySQL
 - **Contenedores:** Docker y Docker Compose
+- **Exposición externa (demo):** ngrok
+- **Aplicación web progresiva (PWA):** Service Workers y Web App Manifest
 - **Gestión de correos:** Mailtrap (entorno de desarrollo)
 - **Testing:** PHPUnit
 
@@ -55,8 +57,7 @@ cd MiFantasy
 ### 2️⃣ Configurar las variables de entorno
 Copiar el archivo de ejemplo de configuración:
 ```bash
-git clone https://github.com/usuario/MiFantasy.git
-cd MiFantasy
+cp .env.example .env
 ```
 
 ### 3️⃣ Levantar los contenedores
@@ -67,7 +68,9 @@ Esto iniciará:
 
 - Aplicación Laravel
 
-- Servidor web (Nginx)
+- Servidor web local (nginx)
+
+- Servidor web externo (ngrok)
 
 - Base de datos MySQL
 
@@ -123,9 +126,16 @@ http://localhost:4040
 
 La URL pública aparecerá como :
 ```arduino 
-https://copesetic-jenelle-snoopily.ngrok-free.dev/
+https://xxxxxx.ngrok-free.dev/
 ```  
 Accede a la aplicación usando esa URL.
+
+### 📱 Aplicación como PWA
+
+MiFantasy soporta instalación como **Aplicación Web Progresiva (PWA)** en dispositivos móviles y de escritorio compatibles.
+
+Desde navegadores modernos (Chrome, Edge, Android), el usuario puede instalar la aplicación en su dispositivo y acceder a ella como si fuera una app nativa, manteniendo la misma funcionalidad que la versión web.
+
 
 ### 🗄️ phpMyAdmin:
 **URL:** 
@@ -138,6 +148,7 @@ http://localhost:8081
 - Contraseña: `root`
 
 ## 🛑 Parar el proyecto
+Para detener el proyecto es necesario **apagar todos los contenedores Docker** mediante el siguiente comando:
 ```bash
 docker compose down
 ```
@@ -152,10 +163,11 @@ Este proyecto se desarrolla como Trabajo Fin de Máster, con el objetivo de dise
 * Aplicabilidad en un entorno real.
 
 ## 🔮 Líneas de trabajo futuro
-* Sistema definitivo de puntuaciones.
-* Despliegue en servidor en producción.
-* Integración de mercado de jugadores.
+* Despliegue en servidor de producción.
+* Animacíon de carga entre pantallas
 * Notificaciones automáticas a usuarios.
+* Integración de mercado de jugadores.
+* Sistema definitivo de puntuaciones.
 * Historial de jornadas y estadísticas avanzadas.
 
 
