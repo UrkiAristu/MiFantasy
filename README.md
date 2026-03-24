@@ -1,6 +1,6 @@
 ![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-nobg.png)
 
-# Sobre MiFantasy
+# Sobre MiFantasy [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aristu138167/MiFantasy)
 MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy personalizadas a partir de torneos de fútbol no profesionales, como competiciones locales, amateur o solidarias. El proyecto surge como una alternativa flexible a las plataformas fantasy tradicionales, habitualmente limitadas a ligas oficiales, permitiendo adaptar el sistema fantasy a contextos más cercanos y personalizados.
 
 Este proyecto se desarrolla como **Trabajo Fin de Máster (TFM)** y plantea, como posible caso de uso real, su aplicación en torneos solidarios de fútbol sala como la **OnddoCup**.
