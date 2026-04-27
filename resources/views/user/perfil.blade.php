@@ -1,4 +1,3 @@
-
 @extends('user.layouts.app')
 
 @section('title', 'Perfil')
@@ -19,10 +18,10 @@
                     {{-- Form verificación email --}}
                     <form id="send-verification" method="post" action="{{ route('user.verification.send') }}">
                         @csrf
-                    </form> 
+                    </form>
                     {{-- Form actualizar perfil --}}
                     <form method="post" action="{{ url('/user/perfil/actualizar') }}">
-                    @csrf
+                        @csrf
 
                         {{-- Nombre --}}
                         <div class="mb-3">
@@ -34,7 +33,7 @@
                                 required>
 
                             @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -48,36 +47,36 @@
                                 required>
 
                             @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         @if (session('success'))
-                            <span class="alert alert-success py-2 px-3 mt-2 mb-0 small d-flex align-items-center gap-2">
-                                {{ session('success') }}
-                            </span>
+                        <span class="alert alert-success py-2 px-3 mt-2 mb-0 small d-flex align-items-center gap-2">
+                            {{ session('success') }}
+                        </span>
                         @endif
                         {{-- Estado de verificación del email --}}
                         @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail)
-                            @if (! $user->hasVerifiedEmail())
-                                <div class="mt-2 mb-5">
-                                    <span class="d-inline-flex align-items-center gap-1 small">
-                                        <i class="bi bi-x-circle-fill text-danger me-1"></i>
-                                        <span class="text-dark">Email no verificado.</span>
-                                    </span>
-                                    @if (session('status') === 'verification-link-sent')
-                                        <span class="alert alert-success py-2 px-3 mt-2 mb-0 small d-flex align-items-center gap-2">
-                                            Se ha enviado un nuevo enlace de verificación al correo electrónico.
-                                        </span>
-                                    @endif
-                                </div>
-                            @else
-                                <div class="mt-2 mb-5">
-                                    <span>
-                                        <i class="bi bi-check-circle-fill me-1 text-success"></i>
-                                        Email verificado
-                                    </span>
-                                </div>
+                        @if (! $user->hasVerifiedEmail())
+                        <div class="mt-2 mb-5">
+                            <span class="d-inline-flex align-items-center gap-1 small">
+                                <i class="bi bi-x-circle-fill text-danger me-1"></i>
+                                <span class="text-dark">Email no verificado.</span>
+                            </span>
+                            @if (session('status') === 'verification-link-sent')
+                            <span class="alert alert-success py-2 px-3 mt-2 mb-0 small d-flex align-items-center gap-2">
+                                Se ha enviado un nuevo enlace de verificación al correo electrónico.
+                            </span>
                             @endif
+                        </div>
+                        @else
+                        <div class="mt-2 mb-5">
+                            <span>
+                                <i class="bi bi-check-circle-fill me-1 text-success"></i>
+                                Email verificado
+                            </span>
+                        </div>
+                        @endif
                         @endif
 
                         <div class="d-flex flex-column flex-md-row align-items-start gap-2 mt-3">
@@ -85,9 +84,9 @@
                                 Guardar cambios
                             </button>
                             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                                <button type="button" id="btn-send-verification" class="btn btn-secondary">
-                                    Enviar email de verificación
-                                </button>
+                            <button type="button" id="btn-send-verification" class="btn btn-secondary">
+                                Enviar email de verificación
+                            </button>
                             @endif
                         </div>
                     </form>
@@ -108,12 +107,12 @@
                         <div class="mb-3">
                             <label class="form-label">Contraseña actual</label>
                             <input type="password"
-                                   name="current_password"
-                                   class="form-control @error('current_password') is-invalid @enderror"
-                                   required>
+                                name="current_password"
+                                class="form-control @error('current_password') is-invalid @enderror"
+                                required>
 
                             @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -121,12 +120,12 @@
                         <div class="mb-3">
                             <label class="form-label">Nueva contraseña</label>
                             <input type="password"
-                                   name="password"
-                                   class="form-control @error('password') is-invalid @enderror"
-                                   required>
+                                name="password"
+                                class="form-control @error('password') is-invalid @enderror"
+                                required>
 
                             @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -134,18 +133,18 @@
                         <div class="mb-3">
                             <label class="form-label">Confirmar contraseña</label>
                             <input type="password"
-                                   name="password_confirmation"
-                                   class="form-control"
-                                   required>
+                                name="password_confirmation"
+                                class="form-control"
+                                required>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Actualizar contraseña</button>
 
                         @if (session('password_success'))
-                            <div class="alert alert-success py-2 px-3 mt-2 mb-0 small d-inline-flex align-items-center gap-2">
-                                <i class="bi bi-check-circle-fill"></i>
-                                {{ session('password_success') }}
-                            </div>
+                        <div class="alert alert-success py-2 px-3 mt-2 mb-0 small d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill"></i>
+                            {{ session('password_success') }}
+                        </div>
                         @endif
                     </form>
                 </div>
@@ -160,10 +159,10 @@
                     </p>
 
                     @if (session('delete_error'))
-                        <div class="alert alert-danger mt-3 py-2 px-3 small d-flex align-items-center gap-2">
-                            <i class="bi bi-exclamation-circle-fill"></i>
-                            {{ session('delete_error') }}
-                        </div>
+                    <div class="alert alert-danger mt-3 py-2 px-3 small d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        {{ session('delete_error') }}
+                    </div>
                     @endif
 
                     {{-- Botón abrir modal --}}
@@ -186,20 +185,20 @@
 
             <div class="modal-header">
                 <h5 class="modal-title text-danger">Eliminar cuenta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body">
                 <p>Introduce tu contraseña para confirmar esta acción.</p>
 
                 <input type="password"
-                       name="password_deletion"
-                       class="form-control @error('password_deletion', 'userDeletion') is-invalid @enderror"
-                       placeholder="Contraseña"
-                       required>
+                    name="password_deletion"
+                    class="form-control @error('password_deletion', 'userDeletion') is-invalid @enderror"
+                    placeholder="Contraseña"
+                    required>
 
                 @error('password_deletion', 'userDeletion')
-                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -214,32 +213,32 @@
 @endsection
 @push('scripts')
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
 
-    const btn = document.getElementById("btn-send-verification");
-    const form = document.getElementById("send-verification");
+        const btn = document.getElementById("btn-send-verification");
+        const form = document.getElementById("send-verification");
 
-    if (btn) {
-        btn.addEventListener("click", function () {
+        if (btn) {
+            btn.addEventListener("click", function() {
 
-            Swal.fire({
-                title: "¿Enviar email de verificación?",
-                text: "Te enviaremos un nuevo enlace a tu correo electrónico.",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Sí, enviar",
-                cancelButtonText: "Cancelar",
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
+                Swal.fire({
+                    title: "¿Enviar email de verificación?",
+                    text: "Te enviaremos un nuevo enlace a tu correo electrónico.",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Sí, enviar",
+                    cancelButtonText: "Cancelar",
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+
             });
+        }
 
-        });
-    }
-
-});
+    });
 </script>
 @endpush

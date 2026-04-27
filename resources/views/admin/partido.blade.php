@@ -9,7 +9,7 @@
         <h1>Detalle del Partido</h1>
         <a href="{{ url('/admin/torneos/'.$partido->jornada->torneo->id.'/jornadas') }}">
             <h3>{{ $partido->jornada->torneo->nombre }}</h3>
-                <h5>{{ $partido->jornada->nombre }}</h5>
+            <h5>{{ $partido->jornada->nombre }}</h5>
         </a>
     </div>
 
@@ -124,9 +124,9 @@
                 <div class="card-header bg-white border-0 pt-3 pb-0">
                     <div class="d-flex align-items-center">
                         @if($partido->equipoLocal?->logo)
-                            <img src="{{ asset($partido->equipoLocal->logo) }}"
-                                alt="Logo {{ $partido->equipoLocal->nombre }}"
-                                class="me-2" style="height:32px">
+                        <img src="{{ asset($partido->equipoLocal->logo) }}"
+                            alt="Logo {{ $partido->equipoLocal->nombre }}"
+                            class="me-2" style="height:32px">
                         @endif
                         <h5 class="mb-0 fw-bold">
                             Estadísticas — {{ $partido->equipoLocal?->nombre }}
@@ -136,42 +136,42 @@
                 {{-- BODY --}}
                 <div class="card-body">
                     @if ($statsLocal->count())
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered rounded-3 overflow-hidden mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Jugador</th>
-                                        <th class="text-center">Pos</th>
-                                        <th class="text-center">Min</th>
-                                        <th class="text-center">G</th>
-                                        <th class="text-center">A</th>
-                                        <th class="text-center">TA</th>
-                                        <th class="text-center">TR</th>
-                                        <th class="text-center">F</th>
-                                        <th class="text-center">Par</th>
-                                        <th class="text-end">Pts</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($statsLocal as $stat)
-                                        <tr>
-                                            <td>{{ $stat->jugador?->nombre }} {{ $stat->jugador?->apellido1 }}</td>
-                                            <td class="text-center">{{ $stat->posicion ?? '—' }}</td>
-                                            <td class="text-center">{{ $stat->minutos }}</td>
-                                            <td class="text-center">{{ $stat->goles }}</td>
-                                            <td class="text-center">{{ $stat->asistencias }}</td>
-                                            <td class="text-center">{{ $stat->tarjetas_amarillas }}</td>
-                                            <td class="text-center">{{ $stat->tarjetas_rojas }}</td>
-                                            <td class="text-center">{{ $stat->faltas }}</td>
-                                            <td class="text-center">{{ $stat->paradas }}</td>
-                                            <td class="text-end fw-bold">{{ $stat->puntos }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered rounded-3 overflow-hidden mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Jugador</th>
+                                    <th class="text-center">Pos</th>
+                                    <th class="text-center">Min</th>
+                                    <th class="text-center">G</th>
+                                    <th class="text-center">A</th>
+                                    <th class="text-center">TA</th>
+                                    <th class="text-center">TR</th>
+                                    <th class="text-center">F</th>
+                                    <th class="text-center">Par</th>
+                                    <th class="text-end">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($statsLocal as $stat)
+                                <tr>
+                                    <td>{{ $stat->jugador?->nombre }} {{ $stat->jugador?->apellido1 }}</td>
+                                    <td class="text-center">{{ $stat->posicion ?? '—' }}</td>
+                                    <td class="text-center">{{ $stat->minutos }}</td>
+                                    <td class="text-center">{{ $stat->goles }}</td>
+                                    <td class="text-center">{{ $stat->asistencias }}</td>
+                                    <td class="text-center">{{ $stat->tarjetas_amarillas }}</td>
+                                    <td class="text-center">{{ $stat->tarjetas_rojas }}</td>
+                                    <td class="text-center">{{ $stat->faltas }}</td>
+                                    <td class="text-center">{{ $stat->paradas }}</td>
+                                    <td class="text-end fw-bold">{{ $stat->puntos }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     @else
-                        <div class="text-muted">No hay estadísticas disponibles.</div>
+                    <div class="text-muted">No hay estadísticas disponibles.</div>
                     @endif
                 </div>
             </div>
@@ -183,9 +183,9 @@
                 <div class="card-header bg-white border-0 pt-3 pb-0">
                     <div class="d-flex align-items-center">
                         @if($partido->equipoVisitante?->logo)
-                            <img src="{{ asset($partido->equipoVisitante->logo) }}"
-                                alt="Logo {{ $partido->equipoVisitante->nombre }}"
-                                class="me-2" style="height:32px">
+                        <img src="{{ asset($partido->equipoVisitante->logo) }}"
+                            alt="Logo {{ $partido->equipoVisitante->nombre }}"
+                            class="me-2" style="height:32px">
                         @endif
                         <h5 class="mb-0 fw-bold">
                             Estadísticas — {{ $partido->equipoVisitante?->nombre }}
@@ -195,42 +195,42 @@
                 {{-- BODY --}}
                 <div class="card-body">
                     @if ($statsVisitante->count())
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered rounded-3 overflow-hidden mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Jugador</th>
-                                        <th class="text-center">Pos</th>
-                                        <th class="text-center">Min</th>
-                                        <th class="text-center">G</th>
-                                        <th class="text-center">A</th>
-                                        <th class="text-center">TA</th>
-                                        <th class="text-center">TR</th>
-                                        <th class="text-center">F</th>
-                                        <th class="text-center">Par</th>
-                                        <th class="text-end">Pts</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($statsVisitante as $stat)
-                                        <tr>
-                                            <td>{{ $stat->jugador?->nombre }} {{ $stat->jugador?->apellido1 }}</td>
-                                            <td class="text-center">{{ $stat->posicion ?? '—' }}</td>
-                                            <td class="text-center">{{ $stat->minutos }}</td>
-                                            <td class="text-center">{{ $stat->goles }}</td>
-                                            <td class="text-center">{{ $stat->asistencias }}</td>
-                                            <td class="text-center">{{ $stat->tarjetas_amarillas }}</td>
-                                            <td class="text-center">{{ $stat->tarjetas_rojas }}</td>
-                                            <td class="text-center">{{ $stat->faltas }}</td>
-                                            <td class="text-center">{{ $stat->paradas }}</td>
-                                            <td class="text-end fw-bold">{{ $stat->puntos }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered rounded-3 overflow-hidden mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Jugador</th>
+                                    <th class="text-center">Pos</th>
+                                    <th class="text-center">Min</th>
+                                    <th class="text-center">G</th>
+                                    <th class="text-center">A</th>
+                                    <th class="text-center">TA</th>
+                                    <th class="text-center">TR</th>
+                                    <th class="text-center">F</th>
+                                    <th class="text-center">Par</th>
+                                    <th class="text-end">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($statsVisitante as $stat)
+                                <tr>
+                                    <td>{{ $stat->jugador?->nombre }} {{ $stat->jugador?->apellido1 }}</td>
+                                    <td class="text-center">{{ $stat->posicion ?? '—' }}</td>
+                                    <td class="text-center">{{ $stat->minutos }}</td>
+                                    <td class="text-center">{{ $stat->goles }}</td>
+                                    <td class="text-center">{{ $stat->asistencias }}</td>
+                                    <td class="text-center">{{ $stat->tarjetas_amarillas }}</td>
+                                    <td class="text-center">{{ $stat->tarjetas_rojas }}</td>
+                                    <td class="text-center">{{ $stat->faltas }}</td>
+                                    <td class="text-center">{{ $stat->paradas }}</td>
+                                    <td class="text-end fw-bold">{{ $stat->puntos }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     @else
-                        <div class="text-muted">No hay estadísticas disponibles.</div>
+                    <div class="text-muted">No hay estadísticas disponibles.</div>
                     @endif
                 </div>
             </div>
@@ -248,7 +248,7 @@
             @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="editarPartidoModalLabel">Editar Partido</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body">
@@ -341,7 +341,7 @@
 
             <div class="modal-header">
                 <h5 class="modal-title" id="eventosPartidoModalLabel">Gestionar Eventos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body">
@@ -421,7 +421,7 @@ $eventosArray = collect(json_decode($partido->eventos, true) ?? [])->sortBy('min
             placeholder: 'Selecciona un equipo',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron equipos";
                 }
             }
@@ -432,7 +432,7 @@ $eventosArray = collect(json_decode($partido->eventos, true) ?? [])->sortBy('min
             placeholder: 'Selecciona un equipo',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron equipos";
                 }
             }
@@ -443,7 +443,7 @@ $eventosArray = collect(json_decode($partido->eventos, true) ?? [])->sortBy('min
             placeholder: 'Selecciona un jugador',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron jugadores";
                 }
             }

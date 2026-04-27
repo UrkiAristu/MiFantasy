@@ -28,55 +28,55 @@
             </p>
 
             @if($plantilla->jugadores->isEmpty())
-                <div class="alert alert-info text-center">
-                    Este usuario todavía no tiene jugadores en su plantilla.
-                </div>
+            <div class="alert alert-info text-center">
+                Este usuario todavía no tiene jugadores en su plantilla.
+            </div>
             @else
 
             {{-- Grid de jugadores --}}
             <div class="row g-3">
                 @foreach($plantilla->jugadores as $jugador)
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card jugador-card h-100 text-center p-2" data-jugador-id="{{ $jugador->id }}">
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card jugador-card h-100 text-center p-2" data-jugador-id="{{ $jugador->id }}">
 
-                            <div class="card-body text-center p-2">
+                        <div class="card-body text-center p-2">
 
-                                {{-- Escudo del equipo en ese torneo --}}
-                                <div class="jugador-avatar mb-2">
-                                    <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo 
+                            {{-- Escudo del equipo en ese torneo --}}
+                            <div class="jugador-avatar mb-2">
+                                <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo 
                                                 ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo)
                                                 : asset('assets/media/images/default-team.png') }}"
-                                        alt="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}"
-                                        class="position-absolute top-0 start-0 m-2"
-                                        width="36" height="36"
-                                        style="object-fit: contain;">
-                                </div>
-
-                                {{-- Foto del jugador --}}
-                                <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
-                                    alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}"
-                                    width="80"
-                                    class="rounded-circle mb-2"
-                                    style="object-fit: cover; height: 80px;">
-
-                                {{-- Nombre --}}
-                                <h3 class="mb-0 fw-bold" style="font-size: 0.95rem;">
-                                    {{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}
-                                </h3>
-
-                                {{-- Equipo --}}
-                                <h5 class="badge bg-primary mt-1">
-                                    {{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}
-                                </h5>
-
-                                {{-- Posición --}}
-                                <h6 class="text-muted mb-0" style="font-size: 0.85rem;">
-                                    {{ $jugador->posicion}}
-                                </h6>
-
+                                    alt="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}"
+                                    class="position-absolute top-0 start-0 m-2"
+                                    width="36" height="36"
+                                    style="object-fit: contain;">
                             </div>
+
+                            {{-- Foto del jugador --}}
+                            <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
+                                alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}"
+                                width="80"
+                                class="rounded-circle mb-2"
+                                style="object-fit: cover; height: 80px;">
+
+                            {{-- Nombre --}}
+                            <h3 class="mb-0 fw-bold" style="font-size: 0.95rem;">
+                                {{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}
+                            </h3>
+
+                            {{-- Equipo --}}
+                            <h5 class="badge bg-primary mt-1">
+                                {{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}
+                            </h5>
+
+                            {{-- Posición --}}
+                            <h6 class="text-muted mb-0" style="font-size: 0.85rem;">
+                                {{ $jugador->posicion}}
+                            </h6>
+
                         </div>
                     </div>
+                </div>
                 @endforeach
             </div>
             <!-- Modal Jugador -->
@@ -85,7 +85,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalJugadorLabel">Información del Jugador</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
                             <!-- Nombre y foto -->
@@ -182,5 +182,5 @@
                 });
         });
     });
-    </script>
+</script>
 @endpush

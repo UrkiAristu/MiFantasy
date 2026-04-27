@@ -25,10 +25,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <!-- Selector de vista (toggle) a la izquierda -->
         <div class="d-flex align-items-center gap-2">
-            <button id="btnVistaTabs" type="button" class="btn btn-primary" title="Vista pestañas">
+            <button id="btnVistaTabs" type="button" class="btn btn-primary" title="Vista pestañas" aria-label="Cambiar a vista de pestañas">
                 <i class="bi bi-card-list fs-5"></i>
             </button>
-            <button id="btnVistaCards" type="button" class="btn btn-outline-primary" title="Vista cards">
+            <button id="btnVistaCards" type="button" class="btn btn-outline-primary" title="Vista cards" aria-label="Cambiar a vista de cuadrícula">
                 <i class="bi bi-grid-3x3-gap fs-5"></i>
             </button>
         </div>
@@ -79,9 +79,9 @@
                             {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
                             . Cierre alineaciones:
                             @if($jornada->fecha_cierre_alineaciones)
-                                {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
+                            {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
                             @else
-                                -
+                            -
                             @endif
                         </small>
                     </div>
@@ -167,11 +167,11 @@
                         {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }} -
                         {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
                         . Cierre alineaciones:
-                            @if($jornada->fecha_cierre_alineaciones)
-                                {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
-                            @else
-                                -
-                            @endif
+                        @if($jornada->fecha_cierre_alineaciones)
+                        {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
+                        @else
+                        -
+                        @endif
                     </small>
                 </div>
                 <div class="d-flex gap-2">
@@ -261,9 +261,9 @@
                             {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
                             . Cierre alineaciones:
                             @if($jornada->fecha_cierre_alineaciones)
-                                {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
+                            {{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}
                             @else
-                                -
+                            -
                             @endif
                         </small>
                     </span>
@@ -292,7 +292,7 @@
             @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="modalCrearPartidoTitle">Nuevo Partido</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -339,7 +339,7 @@
             <input type="hidden" name="torneo_id" value="{{ $torneo->id }}">
             <div class="modal-header">
                 <h5 class="modal-title">Crear Jornada</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -363,8 +363,8 @@
                 <div class="mb-3">
                     <label class="form-label">Fecha y hora de cierre de alineaciones</label>
                     <input type="datetime-local" class="form-control" name="fecha_cierre_alineaciones"
-                     min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->subDay()->format('Y-m-d\TH:i') }}"
-                    max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->endOfDay()->format('Y-m-d\TH:i') }}">
+                        min="{{ \Carbon\Carbon::parse($torneo->fecha_inicio)->subDay()->format('Y-m-d\TH:i') }}"
+                        max="{{ \Carbon\Carbon::parse($torneo->fecha_fin)->endOfDay()->format('Y-m-d\TH:i') }}">
                 </div>
 
             </div>
@@ -383,7 +383,7 @@
             <input type="hidden" name="jornada_id" id="editarJornadaId">
             <div class="modal-header">
                 <h5 class="modal-title">Editar Jornada</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -427,7 +427,7 @@
             <input type="hidden" name="partido_id" id="modalPartidoId">
             <div class="modal-header">
                 <h5 class="modal-title">Editar Resultado</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
                 <p id="modalEquipos" class="fw-bold text-center mb-4"></p>
@@ -482,7 +482,7 @@
             placeholder: 'Selecciona un equipo',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron equipos";
                 }
             }
@@ -493,7 +493,7 @@
             placeholder: 'Selecciona un equipo',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron equipos";
                 }
             }

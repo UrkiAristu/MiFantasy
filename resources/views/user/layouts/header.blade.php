@@ -9,7 +9,7 @@
             MiFantasy
             @endauth
         </a>
-        <button onclick="toggleMenu()" class="btn btn-sm btn-light">
+        <button onclick="toggleMenu()" class="btn btn-sm btn-light" aria-label="Abrir menu lateral">
             <i class="bi bi-arrow-left text-dark fs-4"></i>
         </button>
     </div>
@@ -45,7 +45,7 @@
             MiFantasy
             @endauth
         </a>
-        <button class="hamburger d-lg-none" onclick="toggleMenu()">☰</button>
+        <button class="hamburger d-lg-none" onclick="toggleMenu()" aria-label="Abrir menu lateral">☰</button>
         <div class="collapse navbar-collapse justify-content-end d-none d-lg-block">
             <ul class="navbar-nav">
                 @auth

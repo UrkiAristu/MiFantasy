@@ -61,12 +61,12 @@
                             <h5 class="modal-title" id="modalLiguillaLabel">Configurar Liguilla</h5>
 
                             <!-- Botón info -->
-                            <button class="btn btn-sm btn-clear ps-2" type="button" data-bs-toggle="collapse" data-bs-target="#torneoInfo" aria-expanded="false" aria-controls="torneoInfo">
+                            <button class="btn btn-sm btn-clear ps-2" type="button" data-bs-toggle="collapse" data-bs-target="#torneoInfo" aria-expanded="false" aria-controls="torneoInfo" aria-label="Ver información del torneo">
                                 <i class="bi bi-info-circle"></i>
                             </button>
 
                             <!-- Botón cerrar modal -->
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
                             <div class="collapse mb-3" id="torneoInfo">
@@ -75,7 +75,7 @@
                                         <h6 class="card-title mb-3" style="text-decoration: underline;">
                                             Información
                                         </h6>
-                                        <button class="btn btn-sm btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#torneoInfo" aria-expanded="true" aria-controls="torneoInfo">
+                                        <button class="btn btn-sm btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#torneoInfo" aria-expanded="true" aria-controls="torneoInfo" aria-label="Ver información del torneo">
                                             <i class="bi bi-chevron-up" id="toggleIcon"></i>
                                         </button>
                                     </div>
