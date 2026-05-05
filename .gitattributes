@@ -9,3 +9,14 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Ignorar dependencias, librerías (como Bootstrap) y archivos compilados
+public/build/* linguist-vendored=true
+public/css/* linguist-vendored=true
+public/js/* linguist-vendored=true
+vendor/* linguist-vendored=true
+node_modules/* linguist-vendored=true
+
+# Marcar archivos minificados como generados
+*.min.css linguist-generated=true
+*.min.js linguist-generated=true
