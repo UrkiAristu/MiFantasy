@@ -10,8 +10,8 @@ export default defineConfig({
         }),
         purgecss({
             content: [
-                './resources/**/*.blade.php', // Que busque las clases en tus vistas
-                './resources/**/*.js',        // Y en tus scripts
+                './resources/**/*.blade.php',
+                './resources/**/*.js',
                 './resources/**/*.vue'
             ],
             // safelist: Evita que borre clases dinámicas de Bootstrap (ej: modales o menús desplegables)
