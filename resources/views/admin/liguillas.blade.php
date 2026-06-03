@@ -40,7 +40,7 @@
                     <td class="text-center">
                         <div class="d-flex flex-column align-items-center">
                             @if(!empty($liguilla->torneo->logo))
-                                <img src="{{ asset($liguilla->torneo->logo) }}" alt="Logo" style="width:50px; height:50px; object-fit:contain;" class="mb-2">
+                            <img src="{{ asset($liguilla->torneo->logo) }}" alt="Logo" style="width:50px; height:50px; object-fit:contain;" class="mb-2">
                             @endif
                             <div>{{ $liguilla->torneo->nombre }}</div>
                         </div>
@@ -65,6 +65,7 @@
 <script>
     $(document).ready(function() {
         $('#tablaLiguillas').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,

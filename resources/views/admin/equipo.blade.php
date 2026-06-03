@@ -377,7 +377,7 @@
             placeholder: 'Selecciona un jugador',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron jugadores";
                 }
             }
@@ -388,12 +388,13 @@
             placeholder: 'Selecciona un torneo',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron torneos";
                 }
             }
         });
         $('#tablaTorneosEquipo').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,
@@ -404,6 +405,7 @@
             ]
         });
         $('#tablaJugadoresEquipo').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,

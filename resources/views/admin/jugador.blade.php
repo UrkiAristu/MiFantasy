@@ -294,12 +294,13 @@
             placeholder: 'Selecciona un equipo',
             allowClear: true,
             language: {
-                noResults: function () {
+                noResults: function() {
                     return "No se encontraron equipos";
                 }
             }
         });
         $('#tablaEquiposJugador').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,
@@ -310,6 +311,7 @@
             ]
         });
         $('#tablaTorneosJugador').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,

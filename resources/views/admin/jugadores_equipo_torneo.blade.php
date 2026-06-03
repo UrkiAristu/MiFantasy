@@ -197,6 +197,7 @@
 <script>
     $(document).ready(function() {
         $('#tablaJugadores').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,

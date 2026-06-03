@@ -155,6 +155,7 @@
 <script>
     $(document).ready(function() {
         $('#tablaTorneos').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,
