@@ -55,17 +55,17 @@
                     <td class="text-center">
                         <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="btn btn-sm btn-info">
                             <i class="bi bi-eye"></i> Ver</a>
-                            <form action="{{ url('/admin/usuarios/'.$usuario->id.'/toggle') }}" method="POST" class="d-inline form-toggle-usuario">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit"
-                                        class="btn btn-sm {{ $usuario->active ? 'btn-danger' : 'btn-success' }}"
-                                        data-nombre="{{ $usuario->name }}"
-                                        data-estado="{{ $usuario->active ? 'inhabilitar' : 'habilitar' }}">
-                                    <i class="bi {{ $usuario->active ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
-                                    {{ $usuario->active ? 'Inhabilitar' : 'Habilitar' }}
-                                </button>
-                            </form>
+                        <form action="{{ url('/admin/usuarios/'.$usuario->id.'/toggle') }}" method="POST" class="d-inline form-toggle-usuario">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit"
+                                class="btn btn-sm {{ $usuario->active ? 'btn-danger' : 'btn-success' }}"
+                                data-nombre="{{ $usuario->name }}"
+                                data-estado="{{ $usuario->active ? 'inhabilitar' : 'habilitar' }}">
+                                <i class="bi {{ $usuario->active ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                                {{ $usuario->active ? 'Inhabilitar' : 'Habilitar' }}
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @empty
@@ -80,35 +80,49 @@
 @endsection
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const forms = document.querySelectorAll('.form-toggle-usuario');
+    $(document).ready(function() {
+        $('#tablaUsuarios').DataTable({
+            destroy: true,
+            order: false,
+            locale: "es",
+            colReorder: true,
+            dom: 'Bfrtip',
+            stateSave: true,
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print',
+            ]
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.form-toggle-usuario');
 
-    forms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // Evita envío inmediato
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Evita envío inmediato
 
-            const button = form.querySelector('button[type="submit"]');
-            const nombre = button.dataset.nombre;
-            const estado = button.dataset.estado;
+                const button = form.querySelector('button[type="submit"]');
+                const nombre = button.dataset.nombre;
+                const estado = button.dataset.estado;
 
-            Swal.fire({
-                title: `¿Seguro que deseas ${estado} a ${nombre}?`,
-                text: estado === 'inhabilitar' 
-                      ? 'El usuario no podrá acceder al sistema.' 
-                      : 'El usuario podrá volver a acceder.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: `Sí, ${estado}`,
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit(); // Envía el formulario si confirma
-                }
+                Swal.fire({
+                    title: `¿Seguro que deseas ${estado} a ${nombre}?`,
+                    text: estado === 'inhabilitar' ?
+                        'El usuario no podrá acceder al sistema.' : 'El usuario podrá volver a acceder.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: `Sí, ${estado}`,
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Envía el formulario si confirma
+                    }
+                });
             });
         });
     });
-});
 </script>
 @endpush

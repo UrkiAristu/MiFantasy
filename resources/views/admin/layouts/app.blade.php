@@ -19,6 +19,14 @@
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
 
+<style>
+    html,
+    body {
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+</style>
+
 @stack('styles')
 @endsection
 

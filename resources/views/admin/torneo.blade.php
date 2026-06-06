@@ -300,6 +300,7 @@
             }
         });
         $('#tablaEquiposTorneo').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,
@@ -310,6 +311,7 @@
             ]
         });
         $('#tablaJugadoresTorneo').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,

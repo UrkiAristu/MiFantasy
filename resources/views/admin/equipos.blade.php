@@ -102,6 +102,7 @@
 <script>
     $(document).ready(function() {
         $('#tablaEquipos').DataTable({
+            destroy: true,
             order: false,
             locale: "es",
             colReorder: true,
