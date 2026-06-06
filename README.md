@@ -1,177 +1,73 @@
 ![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-nobg.png)
 
 # Sobre MiFantasy [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/UrkiAirstu/MiFantasy)
+
 MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy personalizadas a partir de torneos de fútbol no profesionales, como competiciones locales, amateur o solidarias. El proyecto surge como una alternativa flexible a las plataformas fantasy tradicionales, habitualmente limitadas a ligas oficiales, permitiendo adaptar el sistema fantasy a contextos más cercanos y personalizados.
 
-Este proyecto se desarrolla como **Trabajo Fin de Máster (TFM)** y plantea, como posible caso de uso real, su aplicación en torneos solidarios de fútbol sala como la **OnddoCup**.
+## ⚙️ Tecnologías utilizadas
 
+El proyecto está construido bajo una arquitectura moderna, garantizando escalabilidad, persistencia de datos y adaptabilidad a dispositivos móviles:
 
-## ⚽ Funcionalidad general
-
-La aplicación distingue dos roles principales:
-
-### 👤 Usuario
-- Registro e inicio de sesión.
-- Creación de liguillas fantasy privadas.
-- Participación en liguillas creadas por otros usuarios.
-- Selección de jugadores de un torneo.
-- Gestión de una alineación guardada.
-- Competición por jornadas.
-- Visualización de clasificaciones.
-
-### 🛠️ Administrador
-- Creación y gestión de torneos.
-- Definición de equipos, jugadores y jornadas.
-- Control del estado de las jornadas.
-- Gestión del sistema de puntuación.
-
-Las alineaciones funcionan de forma similar a las fantasy convencionales: los usuarios configuran una alineación que queda bloqueada al inicio de cada jornada y compiten con ella durante la misma. La puntuación de los jugadores se calcula de forma automática mediante reglas predefinidas, aunque en el estado actual del proyecto dichas puntuaciones son temporales.
-
-
-## 🖥️ Tecnologías utilizadas
 - **Backend:** Laravel (PHP)
 - **Frontend:** Blade, Bootstrap y JavaScript
 - **Base de datos:** MySQL
-- **Contenedores:** Docker y Docker Compose
-- **Exposición externa (demo):** ngrok
-- **Aplicación web progresiva (PWA):** Service Workers y Web App Manifest
-- **Gestión de correos:** Mailtrap (entorno de desarrollo)
-- **Testing:** PHPUnit
+- **Despliegue y Contenedores:** Docker y Docker Compose
+- **Aplicación Web Progresiva (PWA):** Service Workers y Web App Manifest para instalación nativa en dispositivos.
 
-La aplicación está completamente dockerizada, lo que permite ejecutar una demo funcional en cualquier ordenador sin necesidad de instalar PHP, MySQL u otros servicios adicionales.
+## 🖥️ Interfaz y Experiencia de Usuario (UX/UI)
 
+El diseño se ha centrado en ofrecer una experiencia fluida y completamente *responsive*, permitiendo a los usuarios gestionar sus equipos tanto desde el ordenador como desde el teléfono móvil.
 
-## 🚀 Ejecución del proyecto (Demo local con Docker)
+### Panel principal de Liguilla
+Centraliza gran parte de la actividad del usuario: alineación, plantilla, clasificación y resultados mediante un sistema de navegación rápido por pestañas.
 
-### Requisitos
-- Docker Desktop
-- Git (opcional, si se clona el repositorio)
+| Versión Escritorio | Versión Móvil |
+| :---: | :---: |
+| <img src="./docs/img/UserLiguillaPC.png" width="700"> | <img src="./docs/img/UserLiguillaMobile.png" width="250"> |
 
+### Perfil de Usuario y Autenticación
+Gestión completa de la cuenta, seguridad de contraseñas y opciones de persistencia de sesión.
 
-### 1️⃣ Clonar el proyecto o descomprimir el ZIP
-```bash
-git clone https://github.com/usuario/MiFantasy.git
-cd MiFantasy
-```
+| Registro y Autenticación | Gestión de Perfil |
+| :---: | :---: |
+| <img src="./docs/img/SignupPC.png" width="500"> | <img src="./docs/img/UserProfilePC.png" width="500"> |
 
-### 2️⃣ Configurar las variables de entorno
-Copiar el archivo de ejemplo de configuración:
-```bash
-cp .env.example .env
-```
+### Panel de Administración
+Cuadro de mando exclusivo para la gestión de torneos, equipos, jugadores, liguillas y usuarios.
 
-### 3️⃣ Levantar los contenedores
-```bash
-docker compose up -d
-```
-Esto iniciará:
+| Dashboard de Administración |
+| :---: |
+| <img src="./docs/img/AdminHomePC.jpg" width="900"> |
 
-- Aplicación Laravel
+## ⚽ Funcionalidad principal
 
-- Servidor web local (nginx)
+La aplicación distingue dos roles principales de interacción:
 
-- Servidor web externo (ngrok)
+### Usuario (Jugador)
+- **Creación y participación:** Capacidad para unirse a ligas mediante códigos de invitación o crear liguillas privadas propias.
+- **Gestión táctica:** Selección de jugadores, gestión de plantilla y configuración de la alineación titular.
+- **Competición:** Las alineaciones se bloquean al inicio de cada jornada, compitiendo mediante un sistema de puntuación automatizado.
+- **Instalación PWA:** Posibilidad de instalar la aplicación en iOS/Android directamente desde el navegador.
 
-- Base de datos MySQL
-
-- phpMyAdmin
-
-### 4️⃣ Preparar la aplicación Laravel
-```bash
-docker exec -it mifantasy_app composer install
-docker exec -it mifantasy_app php artisan key:generate
-docker exec -it mifantasy_app php artisan migrate
-docker exec -it mifantasy_app php artisan optimize:clear
-```
-
-## 🌐 Acceso a la aplicación
-
-### 📦 Inicialización de datos
-
-MiFantasy dispone de una ruta de inicialización pensada para entornos de desarrollo
-y demostración.
-
-Al acceder a la siguiente URL, el sistema crea automáticamente los datos necesarios
-para poder utilizar la aplicación:
-```arduino 
-http://localhost:8080/poblar
-```
-
-Esto incluye:
-- Usuarios de prueba
-- Torneos base
-- Jugadores
-- Reglas de puntuación iniciales
-
-⚠️ Esta acción debe ejecutarse **una única vez** tras la instalación del proyecto.
-
-### 🖥️ Aplicación web (local):
-**URL:**  
-```arduino 
-http://localhost:8080
-```
-
-**Credenciales:**
-- Usuario: `Admin`
-- Contraseña: `123456789`
-
-### 🌍 Aplicación web (ngrok)
-
-Al levantar Docker, también se inicia un túnel ngrok que expone la aplicación al exterior.
-
-- **Panel de ngrok (para ver la URL pública):**  
-```arduino 
-http://localhost:4040
-```
-
-La URL pública aparecerá como :
-```arduino 
-https://xxxxxx.ngrok-free.dev/
-```  
-Accede a la aplicación usando esa URL.
-
-### 📱 Aplicación como PWA
-
-MiFantasy soporta instalación como **Aplicación Web Progresiva (PWA)** en dispositivos móviles y de escritorio compatibles.
-
-Desde navegadores modernos (Chrome, Edge, Android), el usuario puede instalar la aplicación en su dispositivo y acceder a ella como si fuera una app nativa, manteniendo la misma funcionalidad que la versión web.
-
-
-### 🗄️ phpMyAdmin:
-**URL:** 
-```arduino 
-http://localhost:8081
-```
-**Credenciales:**
-- Usuario: `root`
-
-- Contraseña: `root`
-
-## 🛑 Parar el proyecto
-Para detener el proyecto es necesario **apagar todos los contenedores Docker** mediante el siguiente comando:
-```bash
-docker compose down
-```
-
-## 📚 Contexto académico
-Este proyecto se desarrolla como Trabajo Fin de Máster, con el objetivo de diseñar e implementar una aplicación web completa que combine:
-
-* Lógica de negocio compleja.
-* Gestión de roles.
-* Persistencia de datos.
-* Arquitectura moderna basada en contenedores.
-* Aplicabilidad en un entorno real.
+### Administrador (Gestor)
+- **Mantenimiento de datos:** Creación y gestión de torneos, equipos y jugadores reales de la competición amateur.
+- **Planificación:** Definición del calendario de jornadas y sus fechas límite de cierre.
+- **Control global:** Supervisión del estado general de la competición y el sistema de puntuación.
 
 ## 🔮 Líneas de trabajo futuro
-* Despliegue en servidor de producción.
-* Animacíon de carga entre pantallas
-* Notificaciones automáticas a usuarios.
-* Integración de mercado de jugadores.
-* Sistema definitivo de puntuaciones.
-* Historial de jornadas y estadísticas avanzadas.
 
+El proyecto establece una base sólida para el desarrollo continuo de nuevas funcionalidades:
 
-## ✏️ Autor
-Proyecto desarrollado por Urki Aristu Viela
+* Despliegue en servidor de producción definitivo.
+* Integración de un mercado de fichajes de jugadores dinámico.
+* Sistema definitivo de cálculo de puntuaciones en tiempo real.
+* Historial histórico de jornadas y estadísticas avanzadas para los participantes.
+* Notificaciones automáticas (Push/Email) a usuarios sobre el estado de sus liguillas.
+* Animaciones de transición y carga entre pantallas para mejorar la UX.
 
-Trabajo Fin de Máster – Máster en Ingeniería Informática / UPNA
+## 📚 Contexto académico y Autor
+
+Este proyecto nace como idea de digitalizar un torneo solidario y aportar mayor participación involucrando al público con un juego tipo fantasy. A partir de esa iniciativa, se decidió llevar la idea a la universidad y convertirla en un Trabajo Fin de Máster, construyendo una plataforma real y completa desde cero.
+
+**Autor:** Urki Aristu Viela  
+**Contexto:** Trabajo Fin de Máster – Máster en Ingeniería Informática / UPNA
