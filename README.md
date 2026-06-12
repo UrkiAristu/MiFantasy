@@ -71,3 +71,9 @@ Este proyecto nace como idea de digitalizar un torneo solidario y aportar mayor 
 
 **Autor:** Urki Aristu Viela  
 **Contexto:** Trabajo Fin de Máster – Máster en Ingeniería Informática / UPNA
+
+## 📄 Licencia y Derechos de Autor
+
+Copyright © 2026 Urki Aristu Viela. Todos los derechos reservados.
+
+Este repositorio contiene código protegido por las leyes de propiedad intelectual. Se permite su visualización pública exclusivamente con fines de demostración técnica y portafolio. Queda estrictamente prohibida la copia, reproducción, modificación, distribución o explotación comercial de todo o parte de este software sin la autorización expresa y por escrito del autor.
