@@ -331,13 +331,15 @@ class LiguillaController extends Controller
             ]);
         }
 
-        $jugadores = $alineacion->jugadores->map(function ($jug) use ($jornadaId) {
-            // suma de puntos de este jugador en los partidos de esa jornada
-            $puntos = Estadistica::where('jugador_id', $jug->id)
-                ->whereHas('partido', function ($q) use ($jornadaId) {
-                    $q->where('jornada_id', $jornadaId);
-                })
-                ->sum('puntos');
+        $puntosPorJugador = DB::table('estadisticas as e')
+            ->join('partidos as p', 'p.id', '=', 'e.partido_id')
+            ->select('e.jugador_id', DB::raw('SUM(e.puntos) as total_puntos'))
+            ->where('p.jornada_id', $jornadaId)
+            ->groupBy('e.jugador_id')
+            ->pluck('total_puntos', 'jugador_id');
+
+        $jugadores = $alineacion->jugadores->map(function ($jug) use ($puntosPorJugador) {
+            $puntos = $puntosPorJugador[$jug->id] ?? 0;
 
             return [
                 'id'        => $jug->id,
