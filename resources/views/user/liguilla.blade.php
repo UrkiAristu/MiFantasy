@@ -618,6 +618,10 @@
 @push('scripts')
 <script>
     let slotSeleccionado = null;
+    const cacheModales = {
+        jugadores: {},
+        alineaciones: {}
+    };
 
     // Abrir modal al pulsar el slot
     document.querySelectorAll('.slot').forEach(slot => {
@@ -687,10 +691,34 @@
             const idJugador = this.dataset.jugadorId;
             const idTorneo = "{{ $liguilla->torneo_id }}";
             // Aquí puedes hacer un fetch para traer info completa desde Laravel
+            const cacheKeyJugador = `${idJugador}:${idTorneo}`;
+            if (cacheModales.jugadores[cacheKeyJugador]) {
+                const data = cacheModales.jugadores[cacheKeyJugador];
+
+                document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
+                document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
+                document.getElementById('modalJugadorEquipo').textContent = data.equipo;
+                document.getElementById('modalJugadorPosicion').textContent = data.posicion || 'Jugador';
+                document.getElementById('modalJugadorEdad').textContent = data.edad;
+                document.getElementById('modalJugadorPartidos').textContent = data.partidos;
+                document.getElementById('modalJugadorGoles').textContent = data.goles;
+                document.getElementById('modalJugadorAsistencias').textContent = data.asistencias;
+                document.getElementById('modalJugadorParadas').textContent = data.paradas;
+                document.getElementById('modalJugadorFaltas').textContent = data.faltas;
+                document.getElementById('modalJugadorAmarillas').textContent = data.tarjetas_amarillas;
+                document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
+                document.getElementById('modalJugadorPuntos').textContent = data.puntos;
+
+                const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
+                modal.show();
+                return;
+            }
+
             fetch(`/user/jugadores/${idJugador}/info/torneo/${idTorneo}`)
                 .then(res => res.json())
                 .then(data => {
-                    // Rellenar modal
+                    cacheModales.jugadores[cacheKeyJugador] = data;
+
                     document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
                     document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
                     document.getElementById('modalJugadorEquipo').textContent = data.equipo;
@@ -705,7 +733,6 @@
                     document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
                     document.getElementById('modalJugadorPuntos').textContent = data.puntos;
 
-                    // Mostrar modal
                     const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
                     modal.show();
                 })
@@ -1028,15 +1055,49 @@
             // Mostrar modal ya (para que se vea el campo) mientras carga
             modal.show();
 
+            const cacheKeyAlineacion = `${userId}:${jornadaId}`;
+            if (cacheModales.alineaciones[cacheKeyAlineacion]) {
+                const data = cacheModales.alineaciones[cacheKeyAlineacion];
+
+                if (!data || data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
+                    totalEl.textContent = 0;
+                    return;
+                }
+
+                data.jugadores.forEach((jug, index) => {
+                    const slot = slotsWrap.querySelector(`[data-slot="${index + 1}"]`);
+                    if (!slot) return;
+
+                    slot.classList.remove('vacio');
+                    slot.classList.add('ocupado');
+
+                    slot.innerHTML = `
+                        <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 me-1 mt-1">
+                                ${jug.puntos ?? 0}
+                            </span>
+                            <img src="${jug.foto || '/assets/media/images/default-player.png'}"
+                                alt="${jug.nombre} ${jug.apellido1}"
+                                class="rounded-circle mb-1"
+                                width="40" height="40">
+                            <small class="text-white">${jug.nombre} ${jug.apellido1}</small>
+                        </div>
+                    `;
+                });
+
+                totalEl.textContent = data.total_puntos ?? 0;
+                return;
+            }
+
             fetch(`/user/liguillas/{{ $liguilla->id }}/alineacion-usuario/${userId}/jornada/${jornadaId}`)
                 .then(res => res.json())
                 .then(data => {
+                    cacheModales.alineaciones[cacheKeyAlineacion] = data;
+
                     if (!data || data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
                         totalEl.textContent = 0;
                         return;
                     }
-
-                    let total = 0;
 
                     data.jugadores.forEach((jug, index) => {
                         const slot = slotsWrap.querySelector(`[data-slot="${index + 1}"]`);

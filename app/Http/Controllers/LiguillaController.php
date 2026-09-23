@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -156,7 +157,24 @@ class LiguillaController extends Controller
         $usuario = Auth::user();
 
         // 1️⃣ Liguilla y torneo
-        $liguilla = Liguilla::with(['torneo.jornadas.partidos','plantillas.jugadores','plantillas.usuario'])
+        $liguilla = Liguilla::query()
+            ->select(['id', 'nombre', 'torneo_id', 'codigo_unico', 'max_usuarios', 'creador_id'])
+            ->with([
+                'torneo' => function ($q) {
+                    $q->select(['id', 'nombre', 'logo', 'jugadores_por_equipo']);
+                },
+                'plantillas' => function ($q) {
+                    $q->select(['id', 'liguilla_id', 'user_id'])
+                        ->with([
+                            'usuario' => function ($u) {
+                                $u->select(['id', 'name', 'email']);
+                            },
+                            'jugadores' => function ($j) {
+                                $j->select(['jugadores.id']);
+                            },
+                        ]);
+                },
+            ])
             ->findOrFail($id);
 
         // 2️⃣ Clasificación general
@@ -250,69 +268,77 @@ class LiguillaController extends Controller
     public function clasificacionAjax(Liguilla $liguilla, Request $request)
     {
         $modoClasificacion = $request->get('modo_clasificacion', 'global');
-        $jornadaSeleccionada = null;
 
-        if ($modoClasificacion === 'global') {
-            // Clasificación TOTAL usando el pivot 'puntos' de liguilla_usuario
-            $clasificacion = $liguilla->usuarios()
-                ->withPivot('puntos')
-                ->orderByDesc('pivot_puntos')
-                ->get()
-                ->map(function ($usuario, $index) {
-                    return [
-                        'id'       => $usuario->id,
-                        'posicion' => $index + 1,
-                        'name'     => $usuario->name,
-                        'email'    => $usuario->email,
-                        'puntos'   => $usuario->pivot->puntos ?? 0,
-                    ];
-                })
-                ->values();
-        } else {
-            $jornadaSeleccionada = $liguilla->torneo->jornadas()->find($modoClasificacion);
+        $cacheKey = sprintf(
+            'liguilla:%d:clasificacion:modo:%s',
+            $liguilla->id,
+            (string) $modoClasificacion
+        );
 
-            if ($jornadaSeleccionada) {
-                $puntosPorUsuario = DB::table('alineaciones as a')
-                    ->join('alineacion_jugador as aj', 'aj.alineacion_id', '=', 'a.id')
-                    ->select('a.user_id', DB::raw('SUM(aj.puntos) as total_puntos'))
-                    ->where('a.liguilla_id', $liguilla->id)
-                    ->where('a.jornada_id', $jornadaSeleccionada->id)
-                    ->groupBy('a.user_id')
-                    ->pluck('total_puntos', 'user_id');
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($liguilla, $modoClasificacion) {
+            $jornadaSeleccionada = null;
 
-                $usuarios = $liguilla->usuarios()
-                    ->whereIn('users.id', $puntosPorUsuario->keys())
-                    ->get();
-
-                $clasificacion = $usuarios
-                    ->sortByDesc(function ($u) use ($puntosPorUsuario) {
-                        return $puntosPorUsuario[$u->id] ?? 0;
-                    })
-                    ->values()
-                    ->map(function ($usuario, $index) use ($puntosPorUsuario) {
+            if ($modoClasificacion === 'global') {
+                $clasificacion = $liguilla->usuarios()
+                    ->withPivot('puntos')
+                    ->orderByDesc('pivot_puntos')
+                    ->get()
+                    ->map(function ($usuario, $index) {
                         return [
                             'id'       => $usuario->id,
                             'posicion' => $index + 1,
                             'name'     => $usuario->name,
                             'email'    => $usuario->email,
-                            'puntos'   => $puntosPorUsuario[$usuario->id] ?? 0,
+                            'puntos'   => $usuario->pivot->puntos ?? 0,
                         ];
                     })
                     ->values();
             } else {
-                $clasificacion = collect();
-            }
-        }
+                $jornadaSeleccionada = $liguilla->torneo->jornadas()->find($modoClasificacion);
 
-        return response()->json([
-            'modo'         => $modoClasificacion,
-            'jornada'      => $jornadaSeleccionada ? [
-                'id'     => $jornadaSeleccionada->id,
-                'nombre' => $jornadaSeleccionada->nombre,
-                'orden'  => $jornadaSeleccionada->orden,
-            ] : null,
-            'clasificacion' => $clasificacion,
-        ]);
+                if ($jornadaSeleccionada) {
+                    $puntosPorUsuario = DB::table('alineaciones as a')
+                        ->join('alineacion_jugador as aj', 'aj.alineacion_id', '=', 'a.id')
+                        ->select('a.user_id', DB::raw('SUM(aj.puntos) as total_puntos'))
+                        ->where('a.liguilla_id', $liguilla->id)
+                        ->where('a.jornada_id', $jornadaSeleccionada->id)
+                        ->groupBy('a.user_id')
+                        ->pluck('total_puntos', 'user_id');
+
+                    $usuarios = $liguilla->usuarios()
+                        ->whereIn('users.id', $puntosPorUsuario->keys())
+                        ->get();
+
+                    $clasificacion = $usuarios
+                        ->sortByDesc(function ($u) use ($puntosPorUsuario) {
+                            return $puntosPorUsuario[$u->id] ?? 0;
+                        })
+                        ->values()
+                        ->map(function ($usuario, $index) use ($puntosPorUsuario) {
+                            return [
+                                'id'       => $usuario->id,
+                                'posicion' => $index + 1,
+                                'name'     => $usuario->name,
+                                'email'    => $usuario->email,
+                                'puntos'   => $puntosPorUsuario[$usuario->id] ?? 0,
+                            ];
+                        })
+                        ->values();
+                } else {
+                    $clasificacion = collect();
+                }
+            }
+
+            return response()->json([
+                'modo'         => $modoClasificacion,
+                'jornada'      => $jornadaSeleccionada ? [
+                    'id'     => $jornadaSeleccionada->id,
+                    'nombre' => $jornadaSeleccionada->nombre,
+                    'orden'  => $jornadaSeleccionada->orden,
+                ] : null,
+                'clasificacion' => $clasificacion,
+            ]);
+        });
     }
 
     public function alineacionUsuarioJornada(Liguilla $liguilla, User $user, $jornadaId)
