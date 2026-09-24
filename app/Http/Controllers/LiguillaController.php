@@ -272,10 +272,10 @@ class LiguillaController extends Controller
         $cacheKey = sprintf(
             'liguilla:%d:clasificacion:modo:%s',
             $liguilla->id,
-            (string) $modoClasificacion
+            $modoClasificacion
         );
 
-        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($liguilla, $modoClasificacion) {
+        $data = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($liguilla, $modoClasificacion) {
             $jornadaSeleccionada = null;
 
             if ($modoClasificacion === 'global') {
@@ -329,7 +329,7 @@ class LiguillaController extends Controller
                 }
             }
 
-            return response()->json([
+            return [
                 'modo'         => $modoClasificacion,
                 'jornada'      => $jornadaSeleccionada ? [
                     'id'     => $jornadaSeleccionada->id,
@@ -337,8 +337,10 @@ class LiguillaController extends Controller
                     'orden'  => $jornadaSeleccionada->orden,
                 ] : null,
                 'clasificacion' => $clasificacion,
-            ]);
+            ];
         });
+
+        return response()->json($data);
     }
 
     public function alineacionUsuarioJornada(Liguilla $liguilla, User $user, $jornadaId)
@@ -357,10 +359,13 @@ class LiguillaController extends Controller
             ]);
         }
 
+        $jugadoresIds = $alineacion->jugadores->pluck('id');
+
         $puntosPorJugador = DB::table('estadisticas as e')
             ->join('partidos as p', 'p.id', '=', 'e.partido_id')
             ->select('e.jugador_id', DB::raw('SUM(e.puntos) as total_puntos'))
             ->where('p.jornada_id', $jornadaId)
+            ->whereIn('e.jugador_id', $jugadoresIds)
             ->groupBy('e.jugador_id')
             ->pluck('total_puntos', 'jugador_id');
 

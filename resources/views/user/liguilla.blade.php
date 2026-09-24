@@ -623,6 +623,55 @@
         alineaciones: {}
     };
 
+    function mostrarModalJugador(data) {
+        document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
+        document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
+        document.getElementById('modalJugadorEquipo').textContent = data.equipo;
+        document.getElementById('modalJugadorPosicion').textContent = data.posicion || 'Jugador';
+        document.getElementById('modalJugadorEdad').textContent = data.edad;
+        document.getElementById('modalJugadorPartidos').textContent = data.partidos;
+        document.getElementById('modalJugadorGoles').textContent = data.goles;
+        document.getElementById('modalJugadorAsistencias').textContent = data.asistencias;
+        document.getElementById('modalJugadorParadas').textContent = data.paradas;
+        document.getElementById('modalJugadorFaltas').textContent = data.faltas;
+        document.getElementById('modalJugadorAmarillas').textContent = data.tarjetas_amarillas;
+        document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
+        document.getElementById('modalJugadorPuntos').textContent = data.puntos;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
+        modal.show();
+    }
+
+    function renderAlineacionSlots(data, slotsWrap, totalEl) {
+        if (!data || data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
+            totalEl.textContent = 0;
+            return;
+        }
+
+        data.jugadores.forEach((jug, index) => {
+            const slot = slotsWrap.querySelector(`[data-slot="${index + 1}"]`);
+            if (!slot) return;
+
+            slot.classList.remove('vacio');
+            slot.classList.add('ocupado');
+
+            slot.innerHTML = `
+                <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 me-1 mt-1">
+                        ${jug.puntos ?? 0}
+                    </span>
+                    <img src="${jug.foto || '/assets/media/images/default-player.png'}"
+                        alt="${jug.nombre} ${jug.apellido1}"
+                        class="rounded-circle mb-1"
+                        width="40" height="40">
+                    <small class="text-white">${jug.nombre} ${jug.apellido1}</small>
+                </div>
+            `;
+        });
+
+        totalEl.textContent = data.total_puntos ?? 0;
+    }
+
     // Abrir modal al pulsar el slot
     document.querySelectorAll('.slot').forEach(slot => {
         slot.addEventListener('click', function() {
@@ -690,27 +739,10 @@
         card.addEventListener('click', function() {
             const idJugador = this.dataset.jugadorId;
             const idTorneo = "{{ $liguilla->torneo_id }}";
-            // Aquí puedes hacer un fetch para traer info completa desde Laravel
             const cacheKeyJugador = `${idJugador}:${idTorneo}`;
+
             if (cacheModales.jugadores[cacheKeyJugador]) {
-                const data = cacheModales.jugadores[cacheKeyJugador];
-
-                document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
-                document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
-                document.getElementById('modalJugadorEquipo').textContent = data.equipo;
-                document.getElementById('modalJugadorPosicion').textContent = data.posicion || 'Jugador';
-                document.getElementById('modalJugadorEdad').textContent = data.edad;
-                document.getElementById('modalJugadorPartidos').textContent = data.partidos;
-                document.getElementById('modalJugadorGoles').textContent = data.goles;
-                document.getElementById('modalJugadorAsistencias').textContent = data.asistencias;
-                document.getElementById('modalJugadorParadas').textContent = data.paradas;
-                document.getElementById('modalJugadorFaltas').textContent = data.faltas;
-                document.getElementById('modalJugadorAmarillas').textContent = data.tarjetas_amarillas;
-                document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
-                document.getElementById('modalJugadorPuntos').textContent = data.puntos;
-
-                const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
-                modal.show();
+                mostrarModalJugador(cacheModales.jugadores[cacheKeyJugador]);
                 return;
             }
 
@@ -718,23 +750,7 @@
                 .then(res => res.json())
                 .then(data => {
                     cacheModales.jugadores[cacheKeyJugador] = data;
-
-                    document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
-                    document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
-                    document.getElementById('modalJugadorEquipo').textContent = data.equipo;
-                    document.getElementById('modalJugadorPosicion').textContent = data.posicion || 'Jugador';
-                    document.getElementById('modalJugadorEdad').textContent = data.edad;
-                    document.getElementById('modalJugadorPartidos').textContent = data.partidos;
-                    document.getElementById('modalJugadorGoles').textContent = data.goles;
-                    document.getElementById('modalJugadorAsistencias').textContent = data.asistencias;
-                    document.getElementById('modalJugadorParadas').textContent = data.paradas;
-                    document.getElementById('modalJugadorFaltas').textContent = data.faltas;
-                    document.getElementById('modalJugadorAmarillas').textContent = data.tarjetas_amarillas;
-                    document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
-                    document.getElementById('modalJugadorPuntos').textContent = data.puntos;
-
-                    const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
-                    modal.show();
+                    mostrarModalJugador(data);
                 })
                 .catch(err => {
                     console.error(err);
@@ -1057,35 +1073,7 @@
 
             const cacheKeyAlineacion = `${userId}:${jornadaId}`;
             if (cacheModales.alineaciones[cacheKeyAlineacion]) {
-                const data = cacheModales.alineaciones[cacheKeyAlineacion];
-
-                if (!data || data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
-                    totalEl.textContent = 0;
-                    return;
-                }
-
-                data.jugadores.forEach((jug, index) => {
-                    const slot = slotsWrap.querySelector(`[data-slot="${index + 1}"]`);
-                    if (!slot) return;
-
-                    slot.classList.remove('vacio');
-                    slot.classList.add('ocupado');
-
-                    slot.innerHTML = `
-                        <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 me-1 mt-1">
-                                ${jug.puntos ?? 0}
-                            </span>
-                            <img src="${jug.foto || '/assets/media/images/default-player.png'}"
-                                alt="${jug.nombre} ${jug.apellido1}"
-                                class="rounded-circle mb-1"
-                                width="40" height="40">
-                            <small class="text-white">${jug.nombre} ${jug.apellido1}</small>
-                        </div>
-                    `;
-                });
-
-                totalEl.textContent = data.total_puntos ?? 0;
+                renderAlineacionSlots(cacheModales.alineaciones[cacheKeyAlineacion], slotsWrap, totalEl);
                 return;
             }
 
@@ -1093,34 +1081,7 @@
                 .then(res => res.json())
                 .then(data => {
                     cacheModales.alineaciones[cacheKeyAlineacion] = data;
-
-                    if (!data || data.status !== 'ok' || !data.jugadores || data.jugadores.length === 0) {
-                        totalEl.textContent = 0;
-                        return;
-                    }
-
-                    data.jugadores.forEach((jug, index) => {
-                        const slot = slotsWrap.querySelector(`[data-slot="${index + 1}"]`);
-                        if (!slot) return;
-
-                        slot.classList.remove('vacio');
-                        slot.classList.add('ocupado');
-
-                        slot.innerHTML = `
-                            <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                                <span class="badge bg-warning text-dark position-absolute top-0 end-0 me-1 mt-1">
-                                    ${jug.puntos ?? 0}
-                                </span>
-                                <img src="${jug.foto || '/assets/media/images/default-player.png'}"
-                                    alt="${jug.nombre} ${jug.apellido1}"
-                                    class="rounded-circle mb-1"
-                                    width="40" height="40">
-                                <small class="text-white">${jug.nombre} ${jug.apellido1}</small>
-                            </div>
-                        `;
-                    });
-
-                    totalEl.textContent = data.total_puntos ?? 0;
+                    renderAlineacionSlots(data, slotsWrap, totalEl);
                 })
                 .catch(err => {
                     console.error(err);
