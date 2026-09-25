@@ -269,4 +269,50 @@ class CalculoPuntosTest extends TestCase
         $this->assertEquals(1, $statLocal->puntos);
         $this->assertEquals('empatado', $statLocal->resultado);
     }
+
+    public function test_resumen_estadisticas_en_torneo_calcula_agregaciones_sql_correctamente(): void
+    {
+        // Crear un partido con estadísticas para el jugador local
+        $partido = new Partido();
+        $partido->jornada_id = $this->jornada->id;
+        $partido->equipo_local_id = $this->equipoLocal->id;
+        $partido->equipo_visitante_id = $this->equipoVisitante->id;
+        $partido->fecha_partido = now();
+        $partido->goles_local = 2;
+        $partido->goles_visitante = 1;
+        $partido->estado = 'jugado';
+        $partido->eventos = json_encode([
+            ['jugador_id' => $this->jugadorLocal->id, 'tipo' => 'Gol'],
+            ['jugador_id' => $this->jugadorLocal->id, 'tipo' => 'Gol'],
+            ['jugador_id' => $this->jugadorLocal->id, 'tipo' => 'Asistencia'],
+            ['jugador_id' => $this->jugadorLocal->id, 'tipo' => 'Parada'],
+            ['jugador_id' => $this->jugadorLocal->id, 'tipo' => 'Tarjeta Amarilla'],
+        ]);
+        $partido->save();
+        $partido->actualizarEstadisticas();
+
+        $resumen = $this->jugadorLocal->resumenEstadisticasEnTorneo($this->torneo->id);
+
+        $this->assertEquals(1, $resumen['partidos_jugados']);
+        $this->assertEquals(2, $resumen['goles']);
+        $this->assertEquals(1, $resumen['asistencias']);
+        $this->assertEquals(1, $resumen['paradas']);
+        $this->assertEquals(1, $resumen['amarillas']);
+        $this->assertEquals(0, $resumen['rojas']);
+        $this->assertEquals(15, $resumen['puntos']); // 3 victoria + 10 goles + 3 asistencia + 2 parada - 3 amarilla = 15
+    }
+
+    public function test_equipo_en_torneo_retorna_equipo_y_memoiza(): void
+    {
+        $equipo = $this->jugadorLocal->equipoEnTorneo($this->torneo->id);
+        $this->assertNotNull($equipo);
+        $this->assertEquals($this->equipoLocal->id, $equipo->id);
+        $this->assertEquals($this->equipoLocal->nombre, $equipo->nombre);
+
+        // Probar que usando participaciones pre-cargadas también funciona
+        $jugadorConRelacion = Jugador::with('participaciones')->find($this->jugadorLocal->id);
+        $equipoPreCargado = $jugadorConRelacion->equipoEnTorneo($this->torneo->id);
+        $this->assertNotNull($equipoPreCargado);
+        $this->assertEquals($this->equipoLocal->id, $equipoPreCargado->id);
+    }
 }

@@ -36,6 +36,9 @@
             {{-- Grid de jugadores --}}
             <div class="row g-3">
                 @foreach($plantilla->jugadores as $jugador)
+                @php
+                    $equipoTorneo = $jugador->equipoEnTorneo($liguilla->torneo_id);
+                @endphp
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="card jugador-card h-100 text-center p-2" data-jugador-id="{{ $jugador->id }}">
 
@@ -43,10 +46,10 @@
 
                             {{-- Escudo del equipo en ese torneo --}}
                             <div class="jugador-avatar mb-2">
-                                <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo
-                                                ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo)
+                                <img src="{{ $equipoTorneo && $equipoTorneo->logo
+                                                ? asset($equipoTorneo->logo)
                                                 : asset('assets/media/images/default-team.png') }}"
-                                    alt="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}"
+                                    alt="{{ $equipoTorneo ? $equipoTorneo->nombre : 'Sin equipo' }}"
                                     class="position-absolute top-0 start-0 m-2"
                                     width="36" height="36"
                                     loading="lazy"
@@ -71,12 +74,12 @@
 
                             {{-- Equipo --}}
                             <h5 class="badge bg-primary mt-1">
-                                {{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}
+                                {{ $equipoTorneo ? $equipoTorneo->nombre : 'Sin equipo' }}
                             </h5>
 
                             {{-- Posición --}}
                             <h6 class="text-muted mb-0" style="font-size: 0.85rem;">
-                                {{ $jugador->posicion}}
+                                {{ $jugador->posicion }}
                             </h6>
 
                         </div>
@@ -198,7 +201,5 @@
                 });
         });
     });
-</script>
-@endpush
 </script>
 @endpush

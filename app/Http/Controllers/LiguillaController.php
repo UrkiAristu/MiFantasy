@@ -258,11 +258,11 @@ class LiguillaController extends Controller
         $user = User::findOrFail($idUser);
         // Plantilla de ese usuario en esa liguilla
         $plantilla = $liguilla->plantillas()
-            ->with(['jugadores'])
+            ->with(['jugadores.participaciones'])
             ->where('user_id', $user->id)
             ->firstOrFail();
 
-        return view('user.plantilla-participante',compact('liguilla', 'user', 'plantilla'));
+        return view('user.plantilla-participante', compact('liguilla', 'user', 'plantilla'));
     }
 
     public function clasificacionAjax(Liguilla $liguilla, Request $request)

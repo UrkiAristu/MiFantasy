@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Jugador extends Model
 {
     protected $table = 'jugadores';
     public $timestamps = true;
+
+    protected array $equiposTorneoMemo = [];
+
     public function equipos()
     {
         return $this->belongsToMany(Equipo::class, 'equipo_jugador')
@@ -21,14 +25,30 @@ class Jugador extends Model
             ->withPivot('equipo_id', 'goles', 'asistencias', 'puntos')
             ->withTimestamps();
     }
+
     public function equipoEnTorneo($torneoId)
     {
-        $participacion = $this->participaciones()->where('torneo_id', $torneoId)->first();;
-        if ($participacion) {
-            return Equipo::find($participacion->pivot->equipo_id);
+        if (isset($this->equiposTorneoMemo[$torneoId])) {
+            return $this->equiposTorneoMemo[$torneoId];
         }
-        return null;
+
+        if ($this->relationLoaded('participaciones')) {
+            $participacion = $this->participaciones->firstWhere('id', $torneoId);
+            if ($participacion && isset($participacion->pivot->equipo_id)) {
+                $equipo = Equipo::find($participacion->pivot->equipo_id);
+                return $this->equiposTorneoMemo[$torneoId] = $equipo;
+            }
+        }
+
+        $equipo = Equipo::join('equipo_jugador_torneo', 'equipos.id', '=', 'equipo_jugador_torneo.equipo_id')
+            ->where('equipo_jugador_torneo.jugador_id', $this->id)
+            ->where('equipo_jugador_torneo.torneo_id', $torneoId)
+            ->select('equipos.*')
+            ->first();
+
+        return $this->equiposTorneoMemo[$torneoId] = $equipo;
     }
+
     public function estadisticas()
     {
         return $this->hasMany(Estadistica::class);
@@ -36,29 +56,34 @@ class Jugador extends Model
 
     public function resumenEstadisticasEnTorneo($torneoId)
     {
-        // Buscar el torneo con sus jornadas y partidos
-        $torneo = Torneo::with('jornadas.partidos')->findOrFail($torneoId);
-
-        // Recoger todos los partidos de todas las jornadas
-        $partidos = $torneo->jornadas->flatMap->partidos;
-
-        // Obtener las estadísticas del jugador solo para esos partidos
-        $estadisticas = $this->estadisticas()
-            ->whereIn('partido_id', $partidos->pluck('id'))
-            ->get();
+        $res = DB::table('estadisticas as e')
+            ->join('partidos as p', 'p.id', '=', 'e.partido_id')
+            ->join('jornadas as j', 'j.id', '=', 'p.jornada_id')
+            ->where('j.torneo_id', $torneoId)
+            ->where('e.jugador_id', $this->id)
+            ->selectRaw('
+                COUNT(e.id) as partidos_jugados,
+                COALESCE(SUM(e.goles), 0) as goles,
+                COALESCE(SUM(e.asistencias), 0) as asistencias,
+                COALESCE(SUM(e.paradas), 0) as paradas,
+                COALESCE(SUM(e.faltas), 0) as faltas,
+                COALESCE(SUM(e.tarjetas_amarillas), 0) as amarillas,
+                COALESCE(SUM(e.tarjetas_rojas), 0) as rojas,
+                COALESCE(SUM(e.puntos), 0) as puntos
+            ')
+            ->first();
 
         return [
-            'partidos_jugados' => $estadisticas->count(),
-            'goles'            => $estadisticas->sum('goles'),
-            'asistencias'      => $estadisticas->sum('asistencias'),
-            'paradas'          => $estadisticas->sum('paradas'),
-            'faltas'           => $estadisticas->sum('faltas'),
-            'amarillas'        => $estadisticas->sum('tarjetas_amarillas'),
-            'rojas'            => $estadisticas->sum('tarjetas_rojas'),
-            'puntos'           => $estadisticas->sum('puntos'),
+            'partidos_jugados' => (int) ($res->partidos_jugados ?? 0),
+            'goles'            => (int) ($res->goles ?? 0),
+            'asistencias'      => (int) ($res->asistencias ?? 0),
+            'paradas'          => (int) ($res->paradas ?? 0),
+            'faltas'           => (int) ($res->faltas ?? 0),
+            'amarillas'        => (int) ($res->amarillas ?? 0),
+            'rojas'            => (int) ($res->rojas ?? 0),
+            'puntos'           => (int) ($res->puntos ?? 0),
         ];
     }
-
 
     public function plantillas()
     {

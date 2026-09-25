@@ -196,8 +196,7 @@
                 <tbody>
                     @foreach($torneo->jugadores as $index => $jugador)
                     @php
-                    // Buscar equipo desde el equipo_id de la pivote
-                    $equipo = \App\Models\Equipo::find($jugador->pivot->equipo_id);
+                    $equipo = $torneo->equipos->firstWhere('id', $jugador->pivot->equipo_id);
                     @endphp
                     <tr>
                         <td>{{ $index + 1 }}</td>
