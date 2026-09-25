@@ -27,6 +27,9 @@
 
     @yield('body')
 
+    {{-- Global Loading Overlay & Interceptor --}}
+    @include('layouts.partials.global-loader')
+
     {{-- Service Worker (GLOBAL) --}}
     <script>
         if ('serviceWorker' in navigator) {
