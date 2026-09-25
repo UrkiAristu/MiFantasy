@@ -368,94 +368,9 @@ class PartidoController extends Controller
             $partido->estado = 'jugado';
         }
         $partido->save();
-        // 👉 Limpia estadísticas previas de este partido
-        Estadistica::where('partido_id', $partido->id)->delete();
 
-        // 👉 Determina resultado base y puntos por equipo
-        if ($partido->estado === 'jugado') {
-            if ($partido->goles_local > $partido->goles_visitante) {
-                $resultadoLocal = 'ganado';
-                $resultadoVisitante = 'perdido';
-                $puntosLocal = 3;
-                $puntosVisitante = 0;
-            } elseif ($partido->goles_local < $partido->goles_visitante) {
-                $resultadoLocal = 'perdido';
-                $resultadoVisitante = 'ganado';
-                $puntosLocal = 0;
-                $puntosVisitante = 3;
-            } else {
-                $resultadoLocal = $resultadoVisitante = 'empatado';
-                $puntosLocal = $puntosVisitante = 1;
-            }
-
-            // Crea stats para Local
-            foreach ($partido->equipoLocal->jugadoresEnTorneo($partido->jornada->torneo->id) as $jugador) {
-                Estadistica::create([
-                    'jugador_id' => $jugador->id,
-                    'partido_id' => $partido->id,
-                    'resultado' => $resultadoLocal,
-                    'puntos' => $puntosLocal,
-                ]);
-            }
-
-            //  Crea stats para Visitante
-            foreach ($partido->equipoVisitante->jugadoresEnTorneo($partido->jornada->torneo->id) as $jugador) {
-                Estadistica::create([
-                    'jugador_id' => $jugador->id,
-                    'partido_id' => $partido->id,
-                    'resultado' => $resultadoVisitante,
-                    'puntos' => $puntosVisitante,
-                ]);
-            }
-        }
-
-        // Sumar goles, asistencias y tarjetas a cada jugador a partir de los eventos JSON
-        $eventos = json_decode($partido->eventos, true);
-
-        if ($eventos && is_array($eventos)) {
-            foreach ($eventos as $evento) {
-                if (empty($evento['jugador_id'])) continue;
-
-                $stat = Estadistica::firstOrCreate([
-                    'jugador_id' => $evento['jugador_id'],
-                    'partido_id' => $partido->id,
-                ]);
-
-                switch ($evento['tipo']) {
-                    case 'Gol':
-                        $stat->goles += 1;
-                        $stat->puntos += 5; // Por gol
-                        break;
-
-                    case 'Asistencia':
-                        $stat->asistencias += 1;
-                        $stat->puntos += 3; // Por asistencia
-                        break;
-
-                    case 'Tarjeta Amarilla':
-                        $stat->tarjetas_amarillas += 1;
-                        $stat->puntos -= 3;
-                        break;
-
-                    case 'Tarjeta Roja':
-                        $stat->tarjetas_rojas += 1;
-                        $stat->puntos -= 5;
-                        break;
-
-                    case 'Falta':
-                        $stat->faltas += 1;
-                        $stat->puntos -= 1;
-                        break;
-
-                    case 'Parada':
-                        $stat->paradas += 1;
-                        $stat->puntos += 2;
-                        break;
-                }
-
-                $stat->save();
-            }
-        }
+        // Recalcular estadísticas del partido con inserciones masivas
+        $partido->actualizarEstadisticas();
 
         // Volcar puntos de la jornada a alineacion_jugador
         $this->volcarPuntosAJugadoresDeJornada($partido);
@@ -467,7 +382,6 @@ class PartidoController extends Controller
     {
         $partido = Partido::findOrFail($id);
 
-        $request->validate([],);
         // Validar los datos del formulario
         $validator = Validator::make(
             $request->all(),
@@ -482,79 +396,8 @@ class PartidoController extends Controller
         $partido->eventos = json_encode($request->eventos);
         $partido->save();
 
-        // Limpiar estadísticas de ese partido
-        foreach ($partido->estadisticas as $stat) {
-            $stat->goles = 0;
-            $stat->asistencias = 0;
-            $stat->tarjetas_amarillas = 0;
-            $stat->tarjetas_rojas = 0;
-            $stat->faltas = 0;
-            $stat->puntos = 0;
-
-            $equipoJugador = $stat->jugador->participaciones->firstWhere('id', $partido->jornada->torneo->id);
-            $equipo_id = $equipoJugador ? $equipoJugador->pivot->equipo_id : null;
-            // Puntos base por resultado
-            if ($partido->goles_local > $partido->goles_visitante) {
-                if ($equipo_id == $partido->equipo_local_id) {
-                    $stat->resultado = 'ganado';
-                    $stat->puntos = 3;
-                } elseif ($equipo_id == $partido->equipo_visitante_id) {
-                    $stat->resultado = 'perdido';
-                    $stat->puntos = 0;
-                }
-            } elseif ($partido->goles_local < $partido->goles_visitante) {
-                if ($equipo_id == $partido->equipo_visitante_id) {
-                    $stat->resultado = 'ganado';
-                    $stat->puntos = 3;
-                } elseif ($equipo_id == $partido->equipo_local_id) {
-                    $stat->resultado = 'perdido';
-                    $stat->puntos = 0;
-                }
-            } else {
-                $stat->resultado = 'empatado';
-                $stat->puntos = 1;
-            }
-            $stat->save();
-        }
-        // Guardar estadísticas de los jugadores involucrados en los eventos
-        foreach ($request->eventos as $evento) {
-            $stat = Estadistica::firstOrCreate([
-                'jugador_id' => $evento['jugador_id'],
-                'partido_id' => $partido->id,
-            ]);
-            switch ($evento['tipo']) {
-                case 'Gol':
-                    $stat->goles += 1;
-                    $stat->puntos += 5;
-                    break;
-
-                case 'Asistencia':
-                    $stat->asistencias += 1;
-                    $stat->puntos += 3;
-                    break;
-
-                case 'Tarjeta Amarilla':
-                    $stat->tarjetas_amarillas += 1;
-                    $stat->puntos -= 3;
-                    break;
-
-                case 'Tarjeta Roja':
-                    $stat->tarjetas_rojas += 1;
-                    $stat->puntos -= 5;
-                    break;
-
-                case 'Falta':
-                    $stat->faltas += 1;
-                    $stat->puntos -= 1;
-                    break;
-
-                case 'Parada':
-                    $stat->paradas += 1;
-                    $stat->puntos += 2;
-                    break;
-            }
-            $stat->save();
-        }
+        // Recalcular estadísticas del partido con inserciones masivas
+        $partido->actualizarEstadisticas();
 
         $this->volcarPuntosAJugadoresDeJornada($partido);
         return response()->json(['status' => 'ok']);
@@ -577,22 +420,24 @@ class PartidoController extends Controller
             ->groupBy('e.jugador_id')
             ->pluck('total_puntos', 'jugador_id'); // [jugador_id => puntos_jornada]
 
-        if ($puntosPorJugador->isEmpty()) {
-            return;
-        }
-
         // 2️⃣ Actualizar alineacion_jugador.puntos para TODAS las alineaciones congeladas de esa jornada
-        $alineaciones = Alineacion::with('jugadores')
-            ->whereIn('liguilla_id', $torneo->liguillas->pluck('id'))
+        $liguillaIds = $torneo->liguillas->pluck('id');
+        $alineacionIds = Alineacion::whereIn('liguilla_id', $liguillaIds)
             ->where('jornada_id', $jornadaId)
-            ->get();
+            ->pluck('id');
 
-        foreach ($alineaciones as $alineacion) {
-            foreach ($alineacion->jugadores as $jugador) {
-                $puntos = $puntosPorJugador[$jugador->id] ?? 0;
+        if ($alineacionIds->isNotEmpty()) {
+            DB::table('alineacion_jugador')
+                ->whereIn('alineacion_id', $alineacionIds)
+                ->update(['puntos' => 0]);
 
-                $alineacion->jugadores()
-                    ->updateExistingPivot($jugador->id, ['puntos' => $puntos]);
+            if ($puntosPorJugador->isNotEmpty()) {
+                foreach ($puntosPorJugador as $jugadorId => $puntos) {
+                    DB::table('alineacion_jugador')
+                        ->whereIn('alineacion_id', $alineacionIds)
+                        ->where('jugador_id', $jugadorId)
+                        ->update(['puntos' => $puntos]);
+                }
             }
         }
 
@@ -607,9 +452,12 @@ class PartidoController extends Controller
                 ->get();
 
             foreach ($puntosGlobalPorUsuario as $row) {
-                $liguilla->usuarios()->updateExistingPivot($row->user_id, [
-                    'puntos' => $row->total_puntos,
-                ]);
+                DB::table('liguilla_usuario')
+                    ->where('liguilla_id', $liguilla->id)
+                    ->where('user_id', $row->user_id)
+                    ->update([
+                        'puntos' => $row->total_puntos,
+                    ]);
             }
         }
     }

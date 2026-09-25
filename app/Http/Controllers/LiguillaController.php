@@ -143,13 +143,19 @@ class LiguillaController extends Controller
             ->inRandomOrder()
             ->limit(value: $liguilla->torneo->jugadores_por_equipo + 3)
             ->get();
-        foreach ($jugadores as $jugador) {
-            DB::table('jugador_plantilla')->insert([
-                'plantilla_id' => $plantilla->id,
-                'jugador_id' => $jugador->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+
+        if ($jugadores->isNotEmpty()) {
+            $now = now();
+            $registros = $jugadores->map(function ($jugador) use ($plantilla, $now) {
+                return [
+                    'plantilla_id' => $plantilla->id,
+                    'jugador_id'   => $jugador->id,
+                    'created_at'   => $now,
+                    'updated_at'   => $now,
+                ];
+            })->all();
+
+            DB::table('jugador_plantilla')->insert($registros);
         }
     }
     public function mostrarPaginaLiguillaUser($id)
