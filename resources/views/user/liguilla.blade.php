@@ -66,7 +66,11 @@
                                         <img src="{{ $jug->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
                                             alt="{{ $jug->nombre }} {{ $jug->apellido1 }}"
                                             width="50"
-                                            class="rounded-circle mb-1">
+                                            height="50"
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="rounded-circle mb-1"
+                                            style="object-fit: cover; width: 50px; height: 50px;">
                                         <small class="text-white">
                                             {{ $jug->nombre }} {{ $jug->apellido1 }}
                                         </small>
@@ -126,11 +130,22 @@
                                 <div class="card jugador-card selectable" data-jugador-id="{{ $jugador->id }}">
                                     <div class="card-body text-center p-2">
                                         <div class="jugador-avatar mb-2">
-                                            <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo) : asset('assets/media/images/default-team.png') }}" alt="logo equipo">
+                                            <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo) : asset('assets/media/images/default-team.png') }}"
+                                                alt="logo equipo"
+                                                width="30"
+                                                height="30"
+                                                loading="lazy"
+                                                decoding="async"
+                                                style="object-fit: contain; width: 30px; height: 30px;">
                                         </div>
                                         <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
                                             alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }}"
-                                            width="60" class="rounded-circle mb-2">
+                                            width="60"
+                                            height="60"
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="rounded-circle mb-2"
+                                            style="object-fit: cover; width: 60px; height: 60px;">
                                         <h6 class="mb-0">{{ $jugador->nombre }} {{ $jugador->apellido1 }}</h6>
                                         <small class="text-muted">{{ $jugador->posicion ?? 'Jugador' }}</small>
                                     </div>
@@ -159,10 +174,21 @@
                                 <div class="card-body text-center p-2">
                                     <div class="jugador-avatar mb-2">
                                         <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo) : asset('assets/media/images/default-team.png') }}"
-                                            alt="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}">
+                                            alt="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}"
+                                            width="30"
+                                            height="30"
+                                            loading="lazy"
+                                            decoding="async"
+                                            style="object-fit: contain; width: 30px; height: 30px;">
                                     </div>
                                     <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
-                                        alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}" width="80" class="rounded-circle mb-2">
+                                        alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}"
+                                        width="80"
+                                        height="80"
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="rounded-circle mb-2"
+                                        style="object-fit: cover; width: 80px; height: 80px;">
                                     <h4 class="mb-0">{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}</h4>
                                     <h6 class="text-muted mb-0">{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}</h6>
                                     <small class="text-muted">{{ $jugador->posicion ?? 'Jugador' }}</small>
@@ -186,7 +212,7 @@
                     <div class="modal-body">
                         <!-- Nombre y foto -->
                         <div class="text-center mb-4">
-                            <img id="modalJugadorFoto" src="" alt="Foto jugador" class="rounded-circle mb-3" width="120">
+                            <img id="modalJugadorFoto" src="" alt="Foto jugador" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
                             <h2 id="modalJugadorNombre" class="fw-bold"></h2>
                         </div>
 

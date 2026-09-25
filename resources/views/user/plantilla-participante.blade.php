@@ -43,12 +43,14 @@
 
                             {{-- Escudo del equipo en ese torneo --}}
                             <div class="jugador-avatar mb-2">
-                                <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo 
+                                <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo
                                                 ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo)
                                                 : asset('assets/media/images/default-team.png') }}"
                                     alt="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->nombre }}"
                                     class="position-absolute top-0 start-0 m-2"
                                     width="36" height="36"
+                                    loading="lazy"
+                                    decoding="async"
                                     style="object-fit: contain;">
                             </div>
 
@@ -56,8 +58,11 @@
                             <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
                                 alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}"
                                 width="80"
+                                height="80"
+                                loading="lazy"
+                                decoding="async"
                                 class="rounded-circle mb-2"
-                                style="object-fit: cover; height: 80px;">
+                                style="object-fit: cover; height: 80px; width: 80px;">
 
                             {{-- Nombre --}}
                             <h3 class="mb-0 fw-bold" style="font-size: 0.95rem;">
@@ -90,7 +95,7 @@
                         <div class="modal-body">
                             <!-- Nombre y foto -->
                             <div class="text-center mb-4">
-                                <img id="modalJugadorFoto" src="" alt="Foto jugador" class="rounded-circle mb-3" width="120">
+                                <img id="modalJugadorFoto" src="" alt="Foto jugador" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
                                 <h2 id="modalJugadorNombre" class="fw-bold"></h2>
                             </div>
 
@@ -148,33 +153,44 @@
 @endpush
 @push('scripts')
 <script>
+    const cacheJugadores = {};
+
+    function renderModalJugador(data) {
+        document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
+        document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
+        document.getElementById('modalJugadorEquipo').textContent = data.equipo;
+        document.getElementById('modalJugadorPosicion').textContent = data.posicion || 'Jugador';
+        document.getElementById('modalJugadorEdad').textContent = data.edad;
+        document.getElementById('modalJugadorPartidos').textContent = data.partidos;
+        document.getElementById('modalJugadorGoles').textContent = data.goles;
+        document.getElementById('modalJugadorAsistencias').textContent = data.asistencias;
+        document.getElementById('modalJugadorParadas').textContent = data.paradas;
+        document.getElementById('modalJugadorFaltas').textContent = data.faltas;
+        document.getElementById('modalJugadorAmarillas').textContent = data.tarjetas_amarillas;
+        document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
+        document.getElementById('modalJugadorPuntos').textContent = data.puntos;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
+        modal.show();
+    }
+
     //Seleccionar jugador en plantilla modal
     document.querySelectorAll('.jugador-card').forEach(card => {
         card.addEventListener('click', function() {
             const idJugador = this.dataset.jugadorId;
             const idTorneo = "{{ $liguilla->torneo_id }}";
-            // Aquí puedes hacer un fetch para traer info completa desde Laravel
+            const cacheKey = `${idJugador}:${idTorneo}`;
+
+            if (cacheJugadores[cacheKey]) {
+                renderModalJugador(cacheJugadores[cacheKey]);
+                return;
+            }
+
             fetch(`/user/jugadores/${idJugador}/info/torneo/${idTorneo}`)
                 .then(res => res.json())
                 .then(data => {
-                    // Rellenar modal
-                    document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
-                    document.getElementById('modalJugadorNombre').textContent = `${data.nombre} ${data.apellido1} ${data.apellido2}`;
-                    document.getElementById('modalJugadorEquipo').textContent = data.equipo;
-                    document.getElementById('modalJugadorPosicion').textContent = data.posicion || 'Jugador';
-                    document.getElementById('modalJugadorEdad').textContent = data.edad;
-                    document.getElementById('modalJugadorPartidos').textContent = data.partidos;
-                    document.getElementById('modalJugadorGoles').textContent = data.goles;
-                    document.getElementById('modalJugadorAsistencias').textContent = data.asistencias;
-                    document.getElementById('modalJugadorParadas').textContent = data.paradas;
-                    document.getElementById('modalJugadorFaltas').textContent = data.faltas;
-                    document.getElementById('modalJugadorAmarillas').textContent = data.tarjetas_amarillas;
-                    document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
-                    document.getElementById('modalJugadorPuntos').textContent = data.puntos;
-
-                    // Mostrar modal
-                    const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
-                    modal.show();
+                    cacheJugadores[cacheKey] = data;
+                    renderModalJugador(data);
                 })
                 .catch(err => {
                     console.error(err);
@@ -182,5 +198,7 @@
                 });
         });
     });
+</script>
+@endpush
 </script>
 @endpush

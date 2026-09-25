@@ -1,23 +1,12 @@
 @extends('layouts.base')
 
 @section('head')
-<title>MiFantasy - Inicio</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#181c32">
+<title>@yield('title', 'MiFantasy - Inicio')</title>
 
-{{-- SweetAlert2 --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<!-- Fuentes y Estilos -->
-<link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700" rel="stylesheet" />
+<!-- Estilos globales -->
 <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" />
 <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" />
 <link href="{{ asset('assets/css/fantasy.css') }}" rel="stylesheet" />
-<!-- Swiper CSS -->
-<link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
 <style>
     .mobile-menu {

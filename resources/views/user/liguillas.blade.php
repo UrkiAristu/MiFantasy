@@ -13,14 +13,20 @@
         <div class="swiper-wrapper">
             @foreach($liguillasUsuario as $liguilla)
             <div class="swiper-slide d-flex justify-content-center">
-                <div class="card card-pulsable text-center shadow p-5" style="width: 320px; " onclick="window.location='{{ url('/user/liguillas/'.$liguilla->id) }}'">
-                        @if($liguilla->torneo->logo && file_exists(public_path($liguilla->torneo->logo)))
-                        <img src="{{ asset($liguilla->torneo->logo) }}" alt="{{ $liguilla->torneo->nombre }}" style="height: 180px; object-fit: contain; padding: 20px;">
+                <div class="card card-pulsable text-center shadow p-5" style="width: 320px;" onclick="window.location='{{ url('/user/liguillas/'.$liguilla->id) }}'">
+                        @if(!empty($liguilla->torneo->logo))
+                        <img src="{{ asset($liguilla->torneo->logo) }}"
+                             alt="{{ $liguilla->torneo->nombre }}"
+                             width="180"
+                             height="180"
+                             loading="lazy"
+                             decoding="async"
+                             style="height: 180px; width: 100%; object-fit: contain; padding: 20px;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <i class="fa fa-trophy" style="font-size: 6rem; color: gold; padding: 20px; display: none;"></i>
                         @else
-                        <!-- Aquí pones la copa grande como fallback -->
+                        <!-- Fallback copa grande -->
                         <i class="fa fa-trophy" style="font-size: 6rem; color: gold; padding: 20px;"></i>
-                        {{-- O una imagen local: --}}
-                        {{-- <img src="{{ asset('images/copa-grande.png') }}" alt="Copa" style="height: 180px; object-fit: contain; padding: 20px;"> --}}
                         @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ $liguilla->nombre }}</h5>
@@ -49,6 +55,7 @@
 </div>
 @endsection
 @push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 <style>
     .mySwiper {
         width: 100%;
@@ -103,7 +110,6 @@
     var swiper = new Swiper(".mySwiper", {
         effect: "coverflow",
         grabCursor: true,
-        loop: true,
         autoplay: false,
         slidesPerView: 1,
         centeredSlides: true,

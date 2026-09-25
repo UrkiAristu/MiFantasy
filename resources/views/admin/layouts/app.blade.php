@@ -2,19 +2,14 @@
 
 @section('head')
 <title>@yield('title', 'Panel de Administración')</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#181c32">
 
-{{-- Bootstrap 5 --}}
 {{-- Estilos globales --}}
 <link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/fantasy.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}">
 
-{{-- DataTables + Bootstrap 5 --}}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-<link href="/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+{{-- DataTables + Bootstrap 5 (Metronic Bundle) --}}
+<link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -49,11 +44,8 @@
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 
-{{-- jQuery y DataTables --}}
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+{{-- DataTables Bundle --}}
+<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
 {{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -106,6 +98,4 @@
         });
     });
 </script>
-
-@stack('scripts')
 @endsection

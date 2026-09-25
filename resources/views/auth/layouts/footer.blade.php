@@ -1,17 +1,21 @@
 <script>
     function toggleMenu() {
         const menu = document.getElementById('mobileMenu');
-        menu.classList.toggle('show');
+        if (menu) menu.classList.toggle('show');
     }
 
+    let resizeTimerAuth;
     window.addEventListener('resize', () => {
-        const menu = document.getElementById('mobileMenu');
-        if (window.innerWidth >= 992) {
-            menu.classList.remove('show');
-        }
+        clearTimeout(resizeTimerAuth);
+        resizeTimerAuth = setTimeout(() => {
+            const menu = document.getElementById('mobileMenu');
+            if (menu && window.innerWidth >= 992) {
+                menu.classList.remove('show');
+            }
+        }, 100);
     });
 </script>
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-
-@stack('scripts')
+{{-- SweetAlert2 cargado al final del DOM antes de los scripts de vista --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
