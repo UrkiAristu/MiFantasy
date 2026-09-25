@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Liguilla extends Model
 {
+    use HasFactory;
+
     protected $table = 'liguillas';
     public $timestamps = true;
     public function torneo()

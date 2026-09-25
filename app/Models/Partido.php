@@ -2,13 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Partido extends Model
 {
+    use HasFactory;
+
     protected $table = 'partidos';
     public $timestamps = true;
+    protected $guarded = [];
+
+    protected $casts = [
+        'eventos' => 'array',
+        'fecha_partido' => 'datetime',
+    ];
 
     public function jornada()
     {

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Alineacion extends Model
 {
+    use HasFactory;
+
     protected $table = 'alineaciones';
     public $timestamps = true;
     protected $fillable = [
