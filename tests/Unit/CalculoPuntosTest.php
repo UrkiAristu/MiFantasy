@@ -315,4 +315,28 @@ class CalculoPuntosTest extends TestCase
         $this->assertNotNull($equipoPreCargado);
         $this->assertEquals($this->equipoLocal->id, $equipoPreCargado->id);
     }
+
+    public function test_estadisticas_restriccion_unica_partido_jugador(): void
+    {
+        $partido = new Partido();
+        $partido->jornada_id = $this->jornada->id;
+        $partido->equipo_local_id = $this->equipoLocal->id;
+        $partido->equipo_visitante_id = $this->equipoVisitante->id;
+        $partido->fecha_partido = now();
+        $partido->save();
+
+        Estadistica::create([
+            'partido_id' => $partido->id,
+            'jugador_id' => $this->jugadorLocal->id,
+            'puntos'     => 3,
+        ]);
+
+        $this->expectException(\Illuminate\Database\QueryException::class);
+
+        Estadistica::create([
+            'partido_id' => $partido->id,
+            'jugador_id' => $this->jugadorLocal->id,
+            'puntos'     => 5,
+        ]);
+    }
 }
