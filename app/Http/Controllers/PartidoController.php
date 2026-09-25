@@ -559,7 +559,7 @@ class PartidoController extends Controller
         $this->volcarPuntosAJugadoresDeJornada($partido);
         return response()->json(['status' => 'ok']);
     }
-    protected function volcarPuntosAJugadoresDeJornada(Partido $partido): void
+    public function volcarPuntosAJugadoresDeJornada(Partido $partido): void
     {
         $jornada   = $partido->jornada;
         $torneo    = $jornada->torneo;
