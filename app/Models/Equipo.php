@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Equipo extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $table = 'equipos';
     public $timestamps = true;
+    protected $guarded = [];
     public function jugadores()
     {
         return $this->belongsToMany(Jugador::class, 'equipo_jugador')

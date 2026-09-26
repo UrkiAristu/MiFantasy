@@ -14,27 +14,31 @@
 <style>
     .global-loading-overlay {
         position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         inset: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(15, 23, 42, 0.65);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        z-index: 999999;
+        z-index: 999999 !important;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
+        pointer-events: none !important;
     }
 
     .global-loading-overlay.active {
         opacity: 1;
         visibility: visible;
-        pointer-events: auto;
+        pointer-events: auto !important;
     }
 
     .global-loading-card {
@@ -70,117 +74,182 @@
 
     let activeAsyncCount = 0;
     let overlayTimer = null;
+    let watchdogTimer = null;
     const OVERLAY_DELAY_MS = 500;
+    const WATCHDOG_TIMEOUT_MS = 10000;
     const overlayEl = document.getElementById('global-loading-overlay');
 
     function showOverlay() {
-        if (overlayEl) {
-            overlayEl.classList.add('active');
-            overlayEl.setAttribute('aria-hidden', 'false');
+        try {
+            if (overlayEl) {
+                overlayEl.classList.add('active');
+                overlayEl.setAttribute('aria-hidden', 'false');
+            }
+            resetWatchdog();
+        } catch (e) {
+            console.error('Error mostrando overlay:', e);
         }
     }
 
     function hideOverlay() {
-        if (overlayEl) {
-            overlayEl.classList.remove('active');
-            overlayEl.setAttribute('aria-hidden', 'true');
+        try {
+            if (overlayEl) {
+                overlayEl.classList.remove('active');
+                overlayEl.setAttribute('aria-hidden', 'true');
+            }
+            if (watchdogTimer) {
+                clearTimeout(watchdogTimer);
+                watchdogTimer = null;
+            }
+        } catch (e) {
+            console.error('Error ocultando overlay:', e);
         }
     }
 
-    function requestStarted() {
-        activeAsyncCount++;
-        if (activeAsyncCount === 1 && !overlayTimer) {
-            overlayTimer = setTimeout(function() {
-                if (activeAsyncCount > 0) {
-                    showOverlay();
-                }
-            }, OVERLAY_DELAY_MS);
-        }
-    }
-
-    function requestEnded() {
-        activeAsyncCount = Math.max(0, activeAsyncCount - 1);
-        if (activeAsyncCount === 0) {
+    function resetWatchdog() {
+        if (watchdogTimer) clearTimeout(watchdogTimer);
+        watchdogTimer = setTimeout(function() {
+            activeAsyncCount = 0;
             if (overlayTimer) {
                 clearTimeout(overlayTimer);
                 overlayTimer = null;
             }
             hideOverlay();
+            document.querySelectorAll('[data-btn-loading-active="true"]').forEach(resetButtonState);
+        }, WATCHDOG_TIMEOUT_MS);
+    }
+
+    function requestStarted() {
+        try {
+            activeAsyncCount++;
+            if (activeAsyncCount === 1 && !overlayTimer) {
+                overlayTimer = setTimeout(function() {
+                    if (activeAsyncCount > 0) {
+                        showOverlay();
+                    }
+                }, OVERLAY_DELAY_MS);
+            }
+        } catch (e) {
+            console.error('Error en requestStarted:', e);
+        }
+    }
+
+    function requestEnded() {
+        try {
+            activeAsyncCount = Math.max(0, activeAsyncCount - 1);
+            if (activeAsyncCount === 0) {
+                if (overlayTimer) {
+                    clearTimeout(overlayTimer);
+                    overlayTimer = null;
+                }
+                hideOverlay();
+            }
+        } catch (e) {
+            console.error('Error en requestEnded:', e);
+            hideOverlay();
         }
     }
 
     function disableButtonWithSpinner(btn) {
-        if (!btn || btn.dataset.btnLoadingActive === 'true') return;
-        if (btn.hasAttribute('data-no-loading') || (btn.form && btn.form.hasAttribute('data-no-loading'))) return;
+        try {
+            if (!btn || btn.dataset.btnLoadingActive === 'true') return;
+            if (btn.hasAttribute('data-no-loading') || (btn.form && btn.form.hasAttribute('data-no-loading'))) return;
 
-        const originalWidth = btn.offsetWidth;
-        if (originalWidth > 0) {
-            btn.style.minWidth = originalWidth + 'px';
+            const originalWidth = btn.offsetWidth;
+            if (originalWidth > 0) {
+                btn.style.minWidth = originalWidth + 'px';
+            }
+
+            btn.dataset.btnLoadingActive = 'true';
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.classList.add('disabled');
+            btn.setAttribute('aria-disabled', 'true');
+
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cargando...';
+
+            setTimeout(function() {
+                try {
+                    btn.disabled = true;
+                } catch (e) {}
+            }, 0);
+        } catch (e) {
+            console.error('Error al deshabilitar botón:', e);
         }
-
-        btn.dataset.btnLoadingActive = 'true';
-        btn.dataset.originalHtml = btn.innerHTML;
-        btn.classList.add('disabled');
-        btn.setAttribute('aria-disabled', 'true');
-
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cargando...';
-
-        setTimeout(function() {
-            btn.disabled = true;
-        }, 0);
     }
 
     function resetButtonState(btn) {
-        if (!btn || btn.dataset.btnLoadingActive !== 'true') return;
-        if (btn.dataset.originalHtml) {
-            btn.innerHTML = btn.dataset.originalHtml;
-            delete btn.dataset.originalHtml;
+        try {
+            if (!btn || btn.dataset.btnLoadingActive !== 'true') return;
+            if (btn.dataset.originalHtml) {
+                btn.innerHTML = btn.dataset.originalHtml;
+                delete btn.dataset.originalHtml;
+            }
+            btn.style.minWidth = '';
+            btn.classList.remove('disabled');
+            btn.removeAttribute('aria-disabled');
+            btn.disabled = false;
+            delete btn.dataset.btnLoadingActive;
+        } catch (e) {
+            console.error('Error al resetear botón:', e);
         }
-        btn.style.minWidth = '';
-        btn.classList.remove('disabled');
-        btn.removeAttribute('aria-disabled');
-        btn.disabled = false;
-        delete btn.dataset.btnLoadingActive;
     }
 
     function handleFormSubmission(form, submitter) {
-        if (!form || form.hasAttribute('data-no-loading')) return;
+        try {
+            if (!form || form.hasAttribute('data-no-loading')) return;
 
-        const submitBtn = submitter || form.querySelector('button[type="submit"], input[type="submit"]') || document.activeElement;
-        if (submitBtn && (submitBtn.tagName === 'BUTTON' || (submitBtn.tagName === 'INPUT' && submitBtn.type === 'submit'))) {
-            disableButtonWithSpinner(submitBtn);
-        }
+            const submitBtn = submitter || form.querySelector('button[type="submit"], input[type="submit"]') || document.activeElement;
+            if (submitBtn && (submitBtn.tagName === 'BUTTON' || (submitBtn.tagName === 'INPUT' && submitBtn.type === 'submit'))) {
+                disableButtonWithSpinner(submitBtn);
+            }
 
-        requestStarted();
+            requestStarted();
 
-        // Limpieza de seguridad tras 15 segundos si no hubo recarga/navegación de página
-        setTimeout(function() {
-            if (submitBtn) resetButtonState(submitBtn);
+            setTimeout(function() {
+                try {
+                    if (submitBtn) resetButtonState(submitBtn);
+                    requestEnded();
+                } catch (e) {}
+            }, 10000);
+        } catch (e) {
+            console.error('Error en handleFormSubmission:', e);
             requestEnded();
-        }, 15000);
+        }
     }
 
-    // Interceptar envíos de formularios en fase de burbujeo para respetar preventDefault() de validaciones o SweetAlert
+    // Interceptar envíos de formularios en fase de burbujeo
     document.addEventListener('submit', function(e) {
-        if (e.defaultPrevented) return;
+        try {
+            if (e.defaultPrevented) return;
 
-        const form = e.target;
-        if (!form || form.tagName !== 'FORM') return;
+            const form = e.target;
+            if (!form || form.tagName !== 'FORM') return;
 
-        // Si la validación HTML5 falla, el navegador cancela el envío automáticamente
-        if (form.checkValidity && !form.checkValidity()) {
-            return;
+            if (form.checkValidity && !form.checkValidity()) {
+                return;
+            }
+
+            handleFormSubmission(form, e.submitter);
+        } catch (err) {
+            console.error('Error en listener de submit:', err);
+            requestEnded();
         }
-
-        handleFormSubmission(form, e.submitter);
     }, false);
 
-    // Interceptar form.submit() programático (usado tras confirmaciones de SweetAlert, etc.)
-    const originalFormSubmit = HTMLFormElement.prototype.submit;
-    HTMLFormElement.prototype.submit = function() {
-        handleFormSubmission(this);
-        return originalFormSubmit.apply(this, arguments);
-    };
+    // Interceptar form.submit() programático
+    try {
+        const originalFormSubmit = HTMLFormElement.prototype.submit;
+        HTMLFormElement.prototype.submit = function() {
+            try {
+                handleFormSubmission(this);
+            } catch (err) {
+                console.error('Error en form.submit wrapper:', err);
+            }
+            return originalFormSubmit.apply(this, arguments);
+        };
+    } catch (e) {
+        console.error('Error al parchear HTMLFormElement.prototype.submit:', e);
+    }
 
     // Interceptar Fetch global
     if (window.fetch) {
@@ -206,13 +275,15 @@
         };
     }
 
-    // Interceptar XMLHttpRequest global con un único listener en loadend (garantizado por estándar WHATWG)
+    // Interceptar XMLHttpRequest global
     if (window.XMLHttpRequest) {
         const originalXhrOpen = XMLHttpRequest.prototype.open;
         const originalXhrSend = XMLHttpRequest.prototype.send;
 
         XMLHttpRequest.prototype.open = function() {
-            this._loadingTracked = true;
+            try {
+                this._loadingTracked = true;
+            } catch (e) {}
             return originalXhrOpen.apply(this, arguments);
         };
 
@@ -221,8 +292,12 @@
                 requestStarted();
                 const self = this;
                 this.addEventListener('loadend', function() {
-                    if (self._loadingTracked) {
-                        self._loadingTracked = false;
+                    try {
+                        if (self._loadingTracked) {
+                            self._loadingTracked = false;
+                            requestEnded();
+                        }
+                    } catch (e) {
                         requestEnded();
                     }
                 }, { once: true });
@@ -230,6 +305,27 @@
             return originalXhrSend.apply(this, arguments);
         };
     }
+
+    // Listeners globales para errores JS no capturados
+    window.addEventListener('error', function() {
+        activeAsyncCount = 0;
+        if (overlayTimer) {
+            clearTimeout(overlayTimer);
+            overlayTimer = null;
+        }
+        hideOverlay();
+        document.querySelectorAll('[data-btn-loading-active="true"]').forEach(resetButtonState);
+    });
+
+    window.addEventListener('unhandledrejection', function() {
+        activeAsyncCount = 0;
+        if (overlayTimer) {
+            clearTimeout(overlayTimer);
+            overlayTimer = null;
+        }
+        hideOverlay();
+        document.querySelectorAll('[data-btn-loading-active="true"]').forEach(resetButtonState);
+    });
 
     // Restaurar estado al regresar vía historial / BFCache
     window.addEventListener('pageshow', function(event) {

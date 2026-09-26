@@ -29,7 +29,7 @@ class TorneoFactory extends Factory
             'descripcion' => fake()->paragraph(),
             'logo' => '/assets/media/images/default-tournament.png',
             'estado' => 'activo',
-            'jugadores_por_equipo' => 5,
+            'modalidad' => 'sala',
             'usa_posiciones' => true,
         ];
     }
@@ -45,6 +45,27 @@ class TorneoFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'estado' => 'finalizado',
+        ]);
+    }
+
+    public function f11(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'modalidad' => '11',
+        ]);
+    }
+
+    public function f7(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'modalidad' => '7',
+        ]);
+    }
+
+    public function sala(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'modalidad' => 'sala',
         ]);
     }
 }

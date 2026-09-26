@@ -459,9 +459,13 @@ class TorneoController extends Controller
     ///////////////////////////USER////////////////////
     public function mostrarPaginaTorneosUser()
     {
-        // Aquí deberías obtener los torneos desde la base de datos
-        $torneos = Torneo::where('estado', 1)->get();
-        // Retornar la vista con los datos de los torneos
+        $torneos = Torneo::where('estado', 'activo')
+            ->orWhere('estado', '1')
+            ->orWhere('estado', 1)
+            ->orWhere('estado', true)
+            ->with('equipos')
+            ->get();
+
         return view('user.torneos', compact('torneos'));
     }
 }

@@ -15,6 +15,7 @@ class Alineacion extends Model
         'user_id',
         'liguilla_id',
         'jornada_id',
+        'formacion',
     ];
     public function usuario()
     {

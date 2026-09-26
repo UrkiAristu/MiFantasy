@@ -315,7 +315,7 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Torneo oficial de fútbol fantasy de LaLiga 2025/2026 en formato 5 contra 5.',
             'logo' => '/assets/media/images/default-tournament.png',
             'estado' => 'activo',
-            'jugadores_por_equipo' => 5,
+            'modalidad' => 'sala',
             'usa_posiciones' => true,
         ]);
 
@@ -654,6 +654,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'liguilla_id' => $liguilla->id,
                 'jornada_id' => null,
+                'formacion' => '1-2-1',
             ]);
             foreach ($titulares as $titular) {
                 $alineacionJugadorInserts[] = [
@@ -670,6 +671,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'liguilla_id' => $liguilla->id,
                 'jornada_id' => $jornada1->id,
+                'formacion' => '1-2-1',
             ]);
             foreach ($titulares as $titular) {
                 $alineacionJugadorInserts[] = [
@@ -686,6 +688,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'liguilla_id' => $liguilla->id,
                 'jornada_id' => $jornada2->id,
+                'formacion' => '1-2-1',
             ]);
             foreach ($titulares as $titular) {
                 $alineacionJugadorInserts[] = [
@@ -702,6 +705,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'liguilla_id' => $liguilla->id,
                 'jornada_id' => $jornada3->id,
+                'formacion' => '1-2-1',
             ]);
             foreach ($titulares as $titular) {
                 $alineacionJugadorInserts[] = [

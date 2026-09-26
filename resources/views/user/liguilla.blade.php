@@ -42,45 +42,95 @@
         <div class="tab-pane fade show active" id="alineacion" role="tabpanel" aria-labelledby="alineacion-tab">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Alineación actual</h5>
-                    <p class="text-muted"> Selecciona {{ $liguilla->torneo->jugadores_por_equipo }} jugadores de tu plantilla.
-                    </p>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                        <div>
+                            <h5 class="card-title mb-0">Alineación actual</h5>
+                            <small class="text-muted">
+                                Modalidad: <strong>Fútbol {{ $liguilla->torneo->modalidad === 'sala' ? 'Sala (5)' : $liguilla->torneo->modalidad }}</strong>
+                            </small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="selectFormacion" class="form-label mb-0 fw-bold">Táctica / Formación:</label>
+                            <select id="selectFormacion" class="form-select form-select-sm w-auto" {{ $bloqueada ? 'disabled' : '' }}>
+                                @foreach($formacionesDisponibles as $formacionKey => $cuotas)
+                                    <option value="{{ $formacionKey }}" {{ $formacionActiva === $formacionKey ? 'selected' : '' }}>
+                                        {{ $formacionKey }} ({{ implode('-', array_filter([$cuotas['Defensa'] ?? 0, $cuotas['Centrocampista'] ?? 0, $cuotas['Delantero'] ?? 0], fn($v) => $v > 0)) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
                     @php
                     $jugadoresBase = isset($jugadoresBase)
-                    ? ($jugadoresBase instanceof \Illuminate\Support\Collection ? $jugadoresBase->values() : collect($jugadoresBase)->values())
-                    : collect();
+                        ? ($jugadoresBase instanceof \Illuminate\Support\Collection ? $jugadoresBase->values() : collect($jugadoresBase)->values())
+                        : collect();
+
+                    $cuotasActiva = $formacionesDisponibles[$formacionActiva] ?? reset($formacionesDisponibles);
+                    $lineasTacticas = [
+                        'Delantero'      => ['label' => 'Delanteros', 'abbr' => 'DEL', 'count' => $cuotasActiva['Delantero'] ?? 0],
+                        'Centrocampista' => ['label' => 'Centrocampistas', 'abbr' => 'MED', 'count' => $cuotasActiva['Centrocampista'] ?? 0],
+                        'Defensa'        => ['label' => 'Defensas', 'abbr' => 'DEF', 'count' => $cuotasActiva['Defensa'] ?? 0],
+                        'Portero'        => ['label' => 'Portero', 'abbr' => 'POR', 'count' => $cuotasActiva['Portero'] ?? 1],
+                    ];
+
+                    $jugadoresPorPos = $jugadoresBase->groupBy('posicion');
+                    $jugadoresUsadosIds = [];
+                    $slotIndex = 1;
                     @endphp
 
-                    <!-- Campo de fútbol -->
-                    <div class="futbol-campo mb-4 position-relative">
-                        <div class="alineacion-slots d-flex flex-wrap justify-content-center gap-3">
-                            @for($i = 1; $i <= $liguilla->torneo->jugadores_por_equipo; $i++)
-                                @php
-                                $jug = $jugadoresBase->get($i - 1); // índice 0-based
-                                @endphp
-                                <div class="slot card text-center d-flex align-items-center justify-content-center {{ $jug ? 'ocupado' : 'vacio' }}"
-                                    data-slot="{{ $i }}">
-                                    <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                                        @if($jug)
-                                        <img src="{{ $jug->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
-                                            alt="{{ $jug->nombre }} {{ $jug->apellido1 }}"
-                                            width="50"
-                                            height="50"
-                                            loading="lazy"
-                                            decoding="async"
-                                            class="rounded-circle mb-1"
-                                            style="object-fit: cover; width: 50px; height: 50px;">
-                                        <small class="text-white">
-                                            {{ $jug->nombre }} {{ $jug->apellido1 }}
-                                        </small>
-                                        @else
-                                        <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
-                                        <small class="text-white mt-1">Vacío</small>
-                                        @endif
+                    <!-- Campo de fútbol táctico dinámico -->
+                    <div id="campoAlineacion" class="futbol-campo mb-4 position-relative">
+                        <div class="alineacion-slots d-flex flex-column justify-content-between h-100 gap-3">
+                            @foreach($lineasTacticas as $posKey => $info)
+                                @if($info['count'] > 0)
+                                    <div class="tactical-row d-flex justify-content-center gap-3" data-linea="{{ $posKey }}">
+                                        @for($i = 0; $i < $info['count']; $i++)
+                                            @php
+                                                $candidatos = $jugadoresPorPos->get($posKey, collect());
+                                                $jug = $candidatos->whereNotIn('id', $jugadoresUsadosIds)->first();
+                                                if (!$jug) {
+                                                    $jug = $jugadoresBase->whereNotIn('id', $jugadoresUsadosIds)->first();
+                                                }
+                                                if ($jug) {
+                                                    $jugadoresUsadosIds[] = $jug->id;
+                                                }
+                                                $currentSlot = $slotIndex++;
+                                            @endphp
+                                            <div class="slot card text-center d-flex align-items-center justify-content-center {{ $jug ? 'ocupado' : 'vacio' }}"
+                                                data-slot="{{ $currentSlot }}"
+                                                data-posicion="{{ $posKey }}"
+                                                data-jugador-id="{{ $jug?->id }}"
+                                                data-jugador-nombre="{{ $jug ? $jug->nombre . ' ' . $jug->apellido1 : '' }}"
+                                                data-jugador-foto="{{ $jug?->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
+                                                data-jugador-posicion="{{ $jug?->posicion ?? $posKey }}"
+                                                {{ $bloqueada ? 'data-readonly="1"' : '' }}>
+                                                <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center position-relative w-100">
+                                                    <span class="badge {{ $jug ? 'bg-dark bg-opacity-75' : 'bg-secondary bg-opacity-50' }} text-white position-absolute top-0 start-0 m-1" style="font-size: 0.65rem;">
+                                                        {{ $info['abbr'] }}
+                                                    </span>
+                                                    @if($jug)
+                                                        <img src="{{ $jug->foto ? asset($jug->foto) : asset('assets/media/images/default-player.png') }}"
+                                                            alt="{{ $jug->nombre }} {{ $jug->apellido1 }}"
+                                                            width="50"
+                                                            height="50"
+                                                            loading="lazy"
+                                                            decoding="async"
+                                                            class="rounded-circle mb-1"
+                                                            style="object-fit: cover; width: 50px; height: 50px;">
+                                                        <small class="text-white text-truncate w-100 px-1" style="font-size: 0.75rem;">
+                                                            {{ $jug->nombre }} {{ $jug->apellido1 }}
+                                                        </small>
+                                                    @else
+                                                        <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
+                                                        <small class="text-white mt-1" style="font-size: 0.75rem;">{{ $posKey }}</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endfor
                                     </div>
-                                </div>
-                                @endfor
+                                @endif
+                            @endforeach
                         </div>
                     </div>
 
@@ -89,13 +139,14 @@
                         action="{{ url('/user/liguillas/'.$liguilla->id.'/alineacion/guardar') }}"
                         class="mt-4">
                         @csrf
+                        <input type="hidden" id="formacionInput" name="formacion" value="{{ $formacionActiva }}">
 
                         <div id="alineacionInputs">
-                            @foreach($jugadoresBase as $index => $jug)
+                            @foreach($jugadoresUsadosIds as $index => $idJug)
                             <input type="hidden"
                                 name="jugadores[]"
                                 data-slot="{{ $index + 1 }}"
-                                value="{{ $jug->id }}">
+                                value="{{ $idJug }}">
                             @endforeach
                         </div>
 
@@ -103,7 +154,7 @@
                             <button type="submit" class="btn btn-success" {{ $bloqueada ? 'disabled' : '' }}>
                                 Guardar alineación
                             </button>
-                            <button type="button" class="btn btn-secondary">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Cancelar</button>
                         </div>
                     </form>
 
@@ -127,7 +178,11 @@
                         <div class="row row-cols-2 row-cols-md-4 g-3">
                             @foreach($miPlantilla as $jugador)
                             <div class="col">
-                                <div class="card jugador-card selectable" data-jugador-id="{{ $jugador->id }}">
+                                <div class="card jugador-card selectable"
+                                    data-jugador-id="{{ $jugador->id }}"
+                                    data-nombre="{{ $jugador->nombre }} {{ $jugador->apellido1 }}"
+                                    data-posicion="{{ $jugador->posicion ?? 'Jugador' }}"
+                                    data-foto="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}">
                                     <div class="card-body text-center p-2">
                                         <div class="jugador-avatar mb-2">
                                             <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo) : asset('assets/media/images/default-team.png') }}"
@@ -698,90 +753,203 @@
         totalEl.textContent = data.total_puntos ?? 0;
     }
 
-    // Abrir modal al pulsar el slot
-    document.querySelectorAll('.slot').forEach(slot => {
-        slot.addEventListener('click', function() {
-            slotSeleccionado = this;
-            if (slot.dataset.readonly === '1') {
-                return;
+    const formacionesDisponibles = @json($formacionesDisponibles);
+    let formacionActual = "{{ $formacionActiva }}";
+
+    function recolectarJugadoresAsignados() {
+        const lista = [];
+        document.querySelectorAll('#campoAlineacion .slot').forEach(slot => {
+            if (slot.dataset.jugadorId) {
+                lista.push({
+                    id: slot.dataset.jugadorId,
+                    nombre: slot.dataset.jugadorNombre || '',
+                    foto: slot.dataset.jugadorFoto || '',
+                    posicion: slot.dataset.jugadorPosicion || slot.dataset.posicion || ''
+                });
             }
-            actualizarJugadoresDisponibles(); // refrescar para ocultar ocupados
-            const modal = new bootstrap.Modal(document.getElementById('modalSeleccionJugador'));
-            modal.show();
         });
-    });
+        return lista;
+    }
+
+    function sincronizarInputsDesdeCampo() {
+        const inputsContainer = document.getElementById('alineacionInputs');
+        if (!inputsContainer) return;
+        inputsContainer.innerHTML = '';
+
+        document.querySelectorAll('#campoAlineacion .slot.ocupado').forEach(slot => {
+            const jugadorId = slot.dataset.jugadorId;
+            const slotNum = slot.dataset.slot;
+            if (jugadorId) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'jugadores[]';
+                input.dataset.slot = slotNum;
+                input.value = jugadorId;
+                inputsContainer.appendChild(input);
+            }
+        });
+    }
+
+    function vincularSlotsClicks() {
+        document.querySelectorAll('#campoAlineacion .slot').forEach(slot => {
+            slot.onclick = function() {
+                if (this.dataset.readonly === '1') return;
+                slotSeleccionado = this;
+                const posSlot = this.dataset.posicion || '';
+                const modalTitle = document.getElementById('modalSeleccionJugadorLabel');
+                if (modalTitle) {
+                    modalTitle.textContent = posSlot ? `Selecciona jugador (${posSlot})` : 'Selecciona jugador';
+                }
+                actualizarJugadoresDisponibles();
+                const modal = new bootstrap.Modal(document.getElementById('modalSeleccionJugador'));
+                modal.show();
+            };
+        });
+    }
+
+    function renderCampoTactico(formacionKey) {
+        const cuotas = formacionesDisponibles[formacionKey];
+        if (!cuotas) return;
+
+        formacionActual = formacionKey;
+        const formacionInput = document.getElementById('formacionInput');
+        if (formacionInput) formacionInput.value = formacionKey;
+
+        const container = document.querySelector('#campoAlineacion .alineacion-slots');
+        if (!container) return;
+
+        const jugadoresAsignados = recolectarJugadoresAsignados();
+        container.innerHTML = '';
+
+        const lineas = [
+            { key: 'Delantero', label: 'Delanteros', abbr: 'DEL', count: cuotas['Delantero'] || 0 },
+            { key: 'Centrocampista', label: 'Centrocampistas', abbr: 'MED', count: cuotas['Centrocampista'] || 0 },
+            { key: 'Defensa', label: 'Defensas', abbr: 'DEF', count: cuotas['Defensa'] || 0 },
+            { key: 'Portero', label: 'Portero', abbr: 'POR', count: cuotas['Portero'] || 1 },
+        ];
+
+        let slotIndex = 1;
+        const asignadosRestantes = [...jugadoresAsignados];
+
+        lineas.forEach(linea => {
+            if (linea.count <= 0) return;
+
+            const row = document.createElement('div');
+            row.className = 'tactical-row d-flex justify-content-center gap-3';
+            row.dataset.linea = linea.key;
+
+            for (let i = 0; i < linea.count; i++) {
+                const currentSlot = slotIndex++;
+                let jug = null;
+
+                const matchIdx = asignadosRestantes.findIndex(j => j.posicion === linea.key);
+                if (matchIdx !== -1) {
+                    jug = asignadosRestantes.splice(matchIdx, 1)[0];
+                } else if (asignadosRestantes.length > 0) {
+                    jug = asignadosRestantes.shift();
+                }
+
+                const slot = document.createElement('div');
+                slot.className = `slot card text-center d-flex align-items-center justify-content-center ${jug ? 'ocupado' : 'vacio'}`;
+                slot.dataset.slot = currentSlot;
+                slot.dataset.posicion = linea.key;
+
+                if (jug) {
+                    slot.dataset.jugadorId = jug.id;
+                    slot.dataset.jugadorNombre = jug.nombre;
+                    slot.dataset.jugadorFoto = jug.foto;
+                    slot.dataset.jugadorPosicion = jug.posicion || linea.key;
+                }
+
+                @if($bloqueada)
+                slot.dataset.readonly = '1';
+                @endif
+
+                slot.innerHTML = `
+                    <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center position-relative w-100">
+                        <span class="badge ${jug ? 'bg-dark bg-opacity-75' : 'bg-secondary bg-opacity-50'} text-white position-absolute top-0 start-0 m-1" style="font-size: 0.65rem;">
+                            ${linea.abbr}
+                        </span>
+                        ${jug ? `
+                            <img src="${jug.foto || '/assets/media/images/default-player.png'}"
+                                alt="${jug.nombre}"
+                                width="50"
+                                height="50"
+                                loading="lazy"
+                                decoding="async"
+                                class="rounded-circle mb-1"
+                                style="object-fit: cover; width: 50px; height: 50px;">
+                            <small class="text-white text-truncate w-100 px-1" style="font-size: 0.75rem;">
+                                ${jug.nombre}
+                            </small>
+                        ` : `
+                            <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
+                            <small class="text-white mt-1" style="font-size: 0.75rem;">${linea.key}</small>
+                        `}
+                    </div>
+                `;
+
+                row.appendChild(slot);
+            }
+
+            container.appendChild(row);
+        });
+
+        sincronizarInputsDesdeCampo();
+        vincularSlotsClicks();
+        actualizarJugadoresDisponibles();
+    }
 
     // Seleccionar jugador en alineación modal
-    document.querySelectorAll('.jugador-card.selectable').forEach(jugador => {
-        jugador.addEventListener('click', function() {
+    document.querySelectorAll('.jugador-card.selectable').forEach(jugadorCard => {
+        jugadorCard.addEventListener('click', function() {
             if (!slotSeleccionado) return;
 
             const jugadorId = this.dataset.jugadorId;
-            const nombre = this.querySelector('h6').textContent;
-            const foto = this.querySelector('img.rounded-circle').src;
+            const nombre = this.dataset.nombre || this.querySelector('h6')?.textContent || '';
+            const foto = this.dataset.foto || this.querySelector('img.rounded-circle')?.src || '/assets/media/images/default-player.png';
+            const posicion = this.dataset.posicion || slotSeleccionado.dataset.posicion || '';
 
-            // Evitar duplicados: comprobar si ya está en inputs
-            if (document.querySelector(`#alineacionInputs input[value="${jugadorId}"]`)) {
-                alert("Ese jugador ya está en la alineación.");
-                return;
-            }
-
-            // Rellenar el slot
-            const body = slotSeleccionado.querySelector('.card-body');
-            body.innerHTML = '';
-            const img = document.createElement('img');
-            img.src = foto;
-            img.width = 50;
-            img.classList.add('rounded-circle', 'mb-1');
-            body.appendChild(img);
-            // Marcar el slot como editado
-            slotSeleccionado.classList.remove('ocupado');
-            slotSeleccionado.classList.add('vacio');
-
-
-            const nombreEl = document.createElement('small');
-            nombreEl.textContent = nombre;
-            nombreEl.classList.add('text-white');
-            body.appendChild(nombreEl);
-
-            // Añadir / actualizar input hidden
-            let slotNumber = slotSeleccionado.dataset.slot;
-            let formInput = document.querySelector(`#alineacionInputs input[data-slot="${slotNumber}"]`);
-            if (!formInput) {
-                formInput = document.createElement('input');
-                formInput.type = 'hidden';
-                formInput.name = 'jugadores[]';
-                formInput.dataset.slot = slotNumber;
-                document.getElementById('alineacionInputs').appendChild(formInput);
-            }
-            formInput.value = jugadorId;
-
-            bootstrap.Modal.getInstance(document.getElementById('modalSeleccionJugador')).hide();
-        });
-    });
-
-    //Seleccionar jugador en plantilla modal
-    document.querySelectorAll('#plantilla .jugador-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const idJugador = this.dataset.jugadorId;
-            const idTorneo = "{{ $liguilla->torneo_id }}";
-            const cacheKeyJugador = `${idJugador}:${idTorneo}`;
-
-            if (cacheModales.jugadores[cacheKeyJugador]) {
-                mostrarModalJugador(cacheModales.jugadores[cacheKeyJugador]);
-                return;
-            }
-
-            fetch(`/user/jugadores/${idJugador}/info/torneo/${idTorneo}`)
-                .then(res => res.json())
-                .then(data => {
-                    cacheModales.jugadores[cacheKeyJugador] = data;
-                    mostrarModalJugador(data);
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('No se pudo cargar la información del jugador.');
+            // Evitar duplicados: comprobar si ya está en otro slot
+            const existente = document.querySelector(`#campoAlineacion .slot[data-jugador-id="${jugadorId}"]`);
+            if (existente && existente !== slotSeleccionado) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Ese jugador ya está seleccionado en otra posición de tu alineación.',
                 });
+                return;
+            }
+
+            slotSeleccionado.dataset.jugadorId = jugadorId;
+            slotSeleccionado.dataset.jugadorNombre = nombre;
+            slotSeleccionado.dataset.jugadorFoto = foto;
+            slotSeleccionado.dataset.jugadorPosicion = posicion;
+            slotSeleccionado.classList.remove('vacio');
+            slotSeleccionado.classList.add('ocupado');
+
+            const abbr = (slotSeleccionado.dataset.posicion || 'JUG').substring(0, 3).toUpperCase();
+            const body = slotSeleccionado.querySelector('.card-body');
+            body.innerHTML = `
+                <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 start-0 m-1" style="font-size: 0.65rem;">
+                    ${abbr}
+                </span>
+                <img src="${foto}"
+                    alt="${nombre}"
+                    width="50"
+                    height="50"
+                    loading="lazy"
+                    decoding="async"
+                    class="rounded-circle mb-1"
+                    style="object-fit: cover; width: 50px; height: 50px;">
+                <small class="text-white text-truncate w-100 px-1" style="font-size: 0.75rem;">
+                    ${nombre}
+                </small>
+            `;
+
+            sincronizarInputsDesdeCampo();
+            actualizarJugadoresDisponibles();
+            bootstrap.Modal.getInstance(document.getElementById('modalSeleccionJugador')).hide();
         });
     });
 
@@ -789,81 +957,81 @@
     document.getElementById('btnVaciarSlot').addEventListener('click', function() {
         if (!slotSeleccionado) return;
 
-        const body = slotSeleccionado.querySelector('.card-body');
-        body.innerHTML = '<i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i><small class="text-white mt-1">Vacío</small>';
+        const posKey = slotSeleccionado.dataset.posicion || 'Jugador';
+        const abbr = posKey.substring(0, 3).toUpperCase();
 
-        let slotNumber = slotSeleccionado.dataset.slot;
-        const input = document.querySelector(`#alineacionInputs input[data-slot="${slotNumber}"]`);
-        if (input) input.remove();
+        delete slotSeleccionado.dataset.jugadorId;
+        delete slotSeleccionado.dataset.jugadorNombre;
+        delete slotSeleccionado.dataset.jugadorFoto;
+        delete slotSeleccionado.dataset.jugadorPosicion;
 
-        bootstrap.Modal.getInstance(document.getElementById('modalSeleccionJugador')).hide();
-        // Marcar el slot como vacío
         slotSeleccionado.classList.add('vacio');
         slotSeleccionado.classList.remove('ocupado');
+
+        const body = slotSeleccionado.querySelector('.card-body');
+        body.innerHTML = `
+            <span class="badge bg-secondary bg-opacity-50 text-white position-absolute top-0 start-0 m-1" style="font-size: 0.65rem;">
+                ${abbr}
+            </span>
+            <i class="bi bi-plus-circle-fill text-white fs-3 slot-plus" style="cursor: pointer;"></i>
+            <small class="text-white mt-1" style="font-size: 0.75rem;">${posKey}</small>
+        `;
+
+        sincronizarInputsDesdeCampo();
+        actualizarJugadoresDisponibles();
+        bootstrap.Modal.getInstance(document.getElementById('modalSeleccionJugador')).hide();
     });
 
-    //Submit
+    // Submit alineación
     document.getElementById('formAlineacion').addEventListener('submit', function(e) {
-        e.preventDefault(); // evitar recarga
+        e.preventDefault();
 
-        let form = e.target;
-        let formData = new FormData(form);
+        const form = e.target;
+        const formData = new FormData(form);
+
         fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    'Accept': 'application/json' // para que Laravel devuelva JSON
-                },
-                body: formData
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    // error de validación u otro
-                    let errorData = await response.json();
-                    throw errorData;
-                }
-                return response.json();
-            })
-            .then(data => {
-                // 1) Marcar visualmente los slots según lo que se acaba de guardar
-                document.querySelectorAll('.slot').forEach(slot => {
-                    const slotNumber = slot.dataset.slot;
-                    const hidden = document.querySelector(`#alineacionInputs input[data-slot="${slotNumber}"]`);
-
-                    if (hidden) {
-                        // Este slot tiene un jugador en la alineación guardada
-                        slot.classList.add('ocupado');
-                        slot.classList.remove('vacio');
-                    } else {
-                        // Este slot se ha quedado vacío en la alineación
-                        slot.classList.add('vacio');
-                        slot.classList.remove('ocupado');
-                    }
-                });
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: data.message || 'La alineación se guardó correctamente',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            })
-            .catch(error => {
-                let message = error.message || 'Ocurrió un error al guardar la alineación';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: message
-                });
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(async response => {
+            const data = await response.json();
+            if (!response.ok || data.status === 'error') {
+                throw data;
+            }
+            return data;
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: data.message || 'La alineación se guardó correctamente',
+                timer: 2000,
+                showConfirmButton: false
             });
+        })
+        .catch(error => {
+            const message = error.message || 'Ocurrió un error al guardar la alineación';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al guardar',
+                text: message
+            });
+        });
     });
 
     // Ocultar jugadores ya ocupados
     function actualizarJugadoresDisponibles() {
-        const usados = Array.from(document.querySelectorAll('#alineacionInputs input')).map(i => i.value);
+        const usados = Array.from(document.querySelectorAll('#campoAlineacion .slot.ocupado'))
+            .map(s => s.dataset.jugadorId)
+            .filter(Boolean);
+
         document.querySelectorAll('.jugador-card.selectable').forEach(card => {
             if (usados.includes(card.dataset.jugadorId)) {
-                card.classList.add('opacity-50', 'pe-none'); // desactiva
+                card.classList.add('opacity-50', 'pe-none');
             } else {
                 card.classList.remove('opacity-50', 'pe-none');
             }
@@ -872,7 +1040,40 @@
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function() {
+        // 1. Selector de formación táctica
+        const selectFormacion = document.getElementById('selectFormacion');
+        if (selectFormacion) {
+            selectFormacion.addEventListener('change', function() {
+                renderCampoTactico(this.value);
+            });
+        }
+
+        // 2. Vincular clicks en slots iniciales del campo
+        vincularSlotsClicks();
         actualizarJugadoresDisponibles();
+
+        // 3. Modal de información del jugador en la pestaña Plantilla
+        const torneoId = "{{ $liguilla->torneo_id }}";
+        document.querySelectorAll('#plantilla .jugador-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function() {
+                const jugadorId = this.dataset.jugadorId;
+                if (!jugadorId) return;
+
+                if (cacheModales.jugadores[jugadorId]) {
+                    mostrarModalJugador(cacheModales.jugadores[jugadorId]);
+                    return;
+                }
+
+                fetch(`/user/jugadores/${jugadorId}/info/torneo/${torneoId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        cacheModales.jugadores[jugadorId] = data;
+                        mostrarModalJugador(data);
+                    })
+                    .catch(err => console.error('Error cargando datos del jugador:', err));
+            });
+        });
 
         const liguillaId = "{{ $liguilla->id }}";
 

@@ -167,7 +167,7 @@ class LiguillaController extends Controller
             ->select(['id', 'nombre', 'torneo_id', 'codigo_unico', 'max_usuarios', 'creador_id'])
             ->with([
                 'torneo' => function ($q) {
-                    $q->select(['id', 'nombre', 'logo', 'jugadores_por_equipo']);
+                    $q->select(['id', 'nombre', 'logo', 'modalidad']);
                 },
                 'plantillas' => function ($q) {
                     $q->select(['id', 'liguilla_id', 'user_id'])
@@ -242,6 +242,13 @@ class LiguillaController extends Controller
             ->first();
         $miPlantilla = $plantilla?->jugadores ?? collect();
 
+        // 6️⃣ Formaciones disponibles según la modalidad del torneo
+        $modalidad = (string) ($liguilla->torneo->modalidad ?? 'sala');
+        $formacionesDisponibles = AlineacionController::obtenerFormacionesPorModalidad($modalidad);
+        $formacionActiva = $alineacionBase->formacion
+            ?? $liguilla->torneo->formacion_por_defecto
+            ?? array_key_first($formacionesDisponibles);
+
         // 7️⃣ Comprobar si la jornada ya ha empezado
         $bloqueada = false;
 
@@ -253,9 +260,12 @@ class LiguillaController extends Controller
             'usuario',
             'miPlantilla',
             'jugadoresBase',
+            'alineacionBase',
             'misAlineaciones',
             'resultados',
-            'bloqueada'
+            'bloqueada',
+            'formacionesDisponibles',
+            'formacionActiva'
         ));
     }
     public function plantilla($idLiguilla, $idUser)
