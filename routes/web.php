@@ -105,17 +105,23 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [PasswordController::class, 'reset'])
         ->name('password.update');
 });
+
+// Ruta pública de bienvenida / Landing Page SaaS
+Route::get('/', function () {
+    if (auth()->check()) {
+        return view('user/home');
+    }
+    return view('welcome');
+})->name('welcome');
+
 //LOGOUT
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 
 ////////////MIDLEWARE VERIFICAR SESION/////////
 Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verificar email
-    Route::get('/', function () {
-        return view('user/home');
-    });
     Route::get('/home', function () {
         return view('user/home');
-    });
+    })->name('home');
     
     ///////////////MIDLEWARE VERIFICAR ADMIN/////////
     Route::middleware('verificar.admin')->group(function () {
