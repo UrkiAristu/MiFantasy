@@ -15,9 +15,11 @@ class RegisterController extends Controller
     {
        $validated = $request->validate(
             [
-                'nombreUsuario' => 'required|unique:cuentas',
-                'email' => 'required|unique:cuentas',
+                'nombreUsuario' => 'required|string|max:255|unique:users,name',
+                'email' => 'required|string|email|max:255|unique:users,email',
                 'password' => 'required|confirmed|min:8',
+                'plan' => 'nullable|string|in:basico,pro,enterprise',
+                'organizacion' => 'nullable|string|max:150',
             ],
             [
                 'nombreUsuario.required' => 'El nombre de usuario es obligatorio.',
@@ -40,9 +42,17 @@ class RegisterController extends Controller
         ]);
 
         event(new Registered($user));
-        
+
         Auth::login($user);
         $request->session()->regenerate();
+
+        // Si el registro incluye selección de plan SaaS B2B, iniciar Checkout de Stripe Cashier
+        if (!empty($validated['plan'])) {
+            return redirect()->route('subscription.checkout', [
+                'plan' => $validated['plan'],
+                'org' => $validated['organizacion'] ?? ('Liga de ' . $user->name),
+            ]);
+        }
 
         return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, '.$user->name.'!');
     }

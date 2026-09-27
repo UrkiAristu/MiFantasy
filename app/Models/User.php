@@ -70,6 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function liguillas()
     {
         return $this->belongsToMany(Liguilla::class, 'liguilla_usuario',  'user_id', 'liguilla_id')
+            ->withPivot('puesto', 'puntos')
             ->withTimestamps();
     }
     public function plantillaLiguilla($liguillaId)

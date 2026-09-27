@@ -43,6 +43,35 @@
                                 </div>
                             </div>
 
+                            @php
+                                $selectedPlan = request()->query('plan', old('plan'));
+                                $plansConfig = config('saas.plans', []);
+                                $planInfo = $plansConfig[$selectedPlan] ?? null;
+                            @endphp
+
+                            @if ($planInfo)
+                                <div class="alert alert-dismissible bg-light-success d-flex flex-column p-4 mb-6 border border-success border-dashed rounded">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <h5 class="mb-0 text-success fw-bolder">Plan Seleccionado: {{ $planInfo['name'] }}</h5>
+                                        <span class="badge bg-success text-white fw-bold fs-7">€{{ $planInfo['price'] }}/mes</span>
+                                    </div>
+                                    <span class="text-gray-600 fs-7">{{ $planInfo['description'] }}. Al registrarte se iniciará el aprovisionamiento de tu liga.</span>
+                                </div>
+                                <input type="hidden" name="plan" value="{{ $selectedPlan }}">
+
+                                <div class="fv-row mb-3">
+                                    <label class="form-label fs-6 fw-bolder text-dark" for="organizacion">Nombre de tu Liga / Organización</label>
+                                    <input
+                                        type="text"
+                                        id="organizacion"
+                                        name="organizacion"
+                                        placeholder="Ej: Liga Municipal Norte, Torneo Premier..."
+                                        class="form-control form-control-lg form-control-solid {{ $errors->has('organizacion') ? 'is-invalid' : '' }}"
+                                        value="{{ old('organizacion') }}">
+                                    <div class="text-muted fs-8 mt-1">Nombre del espacio de trabajo que se creará para tu liga.</div>
+                                </div>
+                            @endif
+
                             <div class="fv-row mb-3">
                                 <div class="col-md-12">
                                     <label class="form-label fs-6 fw-bolder text-dark" for="nombreUsuario">Nombre de usuario</label>

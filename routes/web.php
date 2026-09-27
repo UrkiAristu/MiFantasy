@@ -9,6 +9,7 @@ use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\LiguillaController;
 use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -200,4 +201,9 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
     Route::get('/user/liguillas/{idLiguilla}/usuario/{idUser}/plantilla', [LiguillaController::class, 'plantilla']); 
     Route::get('/user/liguillas/{liguilla}/clasificacion',[LiguillaController::class, 'clasificacionAjax'])->name('liguillas.clasificacionAjax');
     Route::get('/user/liguillas/{liguilla}/alineacion-usuario/{user}/jornada/{jornada}',[LiguillaController::class, 'alineacionUsuarioJornada'])->name('liguillas.alineacionUsuarioJornada');
+
+    // Suscripciones SaaS B2B y Gestión de Tenants
+    Route::get('/suscripcion/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/suscripcion/exito', [SubscriptionController::class, 'success'])->name('subscription.success');
+    Route::get('/suscripcion/cancelado', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
 });

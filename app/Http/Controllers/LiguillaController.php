@@ -78,8 +78,22 @@ class LiguillaController extends Controller
             return redirect('/login')->withErrors('Usuario no encontrado.');
         }
 
-        // Obtener las liguillas con el torneo y datos del pivot
-        $liguillasUsuario = $usuario->liguillas()->with('torneo')->get();
+        // Obtener las liguillas con el torneo, datos del pivot y ranking de participantes
+        $liguillasUsuario = $usuario->liguillas()
+            ->with(['torneo', 'usuarios' => function ($q) {
+                $q->withPivot('puntos')->orderByDesc('pivot_puntos');
+            }])
+            ->get()
+            ->map(function ($liguilla) use ($usuario) {
+                $usuariosOrdenados = $liguilla->usuarios->sortByDesc(fn($u) => $u->pivot->puntos ?? 0)->values();
+                $posicion = $usuariosOrdenados->search(fn($u) => $u->id === $usuario->id);
+
+                $liguilla->posicion_usuario = $posicion !== false ? ($posicion + 1) : ($liguilla->pivot->puesto ?? 'N/D');
+                $liguilla->puntos_usuario = $liguilla->pivot->puntos ?? 0;
+
+                return $liguilla;
+            });
+
         return view('user.liguillas', compact('liguillasUsuario'));
     }
     public function mostrarPaginaUnirseLiguillasUser(Request $request)

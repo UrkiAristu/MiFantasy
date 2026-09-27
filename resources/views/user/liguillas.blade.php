@@ -31,8 +31,8 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $liguilla->nombre }}</h5>
                             <p class="card-text mb-1"><strong>Torneo:</strong> {{ $liguilla->torneo->nombre }}</p>
-                            <p class="card-text mb-1"><strong>Posición:</strong> {{ $liguilla->pivot->posicion ?? 'N/D' }}</p>
-                            <p class="card-text"><strong>Puntos:</strong> {{ $liguilla->pivot->puntos ?? 0 }}</p>
+                            <p class="card-text mb-1"><strong>Posición:</strong> {{ $liguilla->posicion_usuario ?? $liguilla->pivot->puesto ?? 'N/D' }}</p>
+                            <p class="card-text"><strong>Puntos:</strong> {{ $liguilla->puntos_usuario ?? $liguilla->pivot->puntos ?? 0 }}</p>
                             <button
                                 class="btn btn-primary btn-sm mt-3"
                                 onclick="event.stopPropagation();compartirEnlace('{{ $liguilla->codigo_unico }}')">

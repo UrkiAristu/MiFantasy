@@ -175,14 +175,19 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row row-cols-2 row-cols-md-4 g-3">
+                        <div id="avisoSinJugadoresPosicion" class="alert alert-warning d-none text-center mb-3">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="textoAvisoSinJugadores">No tienes jugadores disponibles para esta posición.</span>
+                        </div>
+                        <div class="row row-cols-2 row-cols-md-4 g-3" id="contenedorPlantillaModal">
                             @foreach($miPlantilla as $jugador)
-                            <div class="col">
-                                <div class="card jugador-card selectable"
+                            <div class="col jugador-modal-col" data-posicion="{{ $jugador->posicion ?? 'Jugador' }}">
+                                <div class="card jugador-card selectable position-relative"
                                     data-jugador-id="{{ $jugador->id }}"
                                     data-nombre="{{ $jugador->nombre }} {{ $jugador->apellido1 }}"
                                     data-posicion="{{ $jugador->posicion ?? 'Jugador' }}"
                                     data-foto="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}">
+                                    <span class="badge-estado-jugador position-absolute top-0 end-0 m-1" style="font-size: 0.65rem;"></span>
                                     <div class="card-body text-center p-2">
                                         <div class="jugador-avatar mb-2">
                                             <img src="{{ $jugador->equipoEnTorneo($liguilla->torneo_id)->logo ? asset($jugador->equipoEnTorneo($liguilla->torneo_id)->logo) : asset('assets/media/images/default-team.png') }}"
@@ -643,11 +648,17 @@
 
     .jugador-card {
         cursor: pointer;
-        transition: transform .2s;
+        transition: transform .2s, box-shadow .2s, border-color .2s;
     }
 
     .jugador-card:hover {
         transform: scale(1.05);
+    }
+
+    .jugador-card.jugador-actual-slot {
+        border: 2px solid #0d6efd !important;
+        background-color: rgba(13, 110, 253, 0.05) !important;
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.25) !important;
     }
 
     .jugador-avatar {
@@ -1023,19 +1034,92 @@
         });
     });
 
-    // Ocultar jugadores ya ocupados
+    // Filtrar y actualizar disponibilidad de jugadores en modal por posición táctica
     function actualizarJugadoresDisponibles() {
-        const usados = Array.from(document.querySelectorAll('#campoAlineacion .slot.ocupado'))
-            .map(s => s.dataset.jugadorId)
+        const posRequerida = (slotSeleccionado?.dataset?.posicion || '').trim().toLowerCase();
+        const jugadorActualSlotId = slotSeleccionado?.dataset?.jugadorId ? String(slotSeleccionado.dataset.jugadorId) : null;
+
+        // Obtener todos los IDs de jugadores colocados en el campo (titulares)
+        const titularesEnCampo = Array.from(document.querySelectorAll('#campoAlineacion .slot'))
+            .map(s => s.dataset.jugadorId ? String(s.dataset.jugadorId) : null)
             .filter(Boolean);
 
-        document.querySelectorAll('.jugador-card.selectable').forEach(card => {
-            if (usados.includes(card.dataset.jugadorId)) {
-                card.classList.add('opacity-50', 'pe-none');
+        // Controlar visibilidad del botón de vaciar slot
+        const btnVaciar = document.getElementById('btnVaciarSlot');
+        if (btnVaciar) {
+            btnVaciar.style.display = jugadorActualSlotId ? '' : 'none';
+        }
+
+        let countDisponibles = 0;
+
+        document.querySelectorAll('#modalSeleccionJugador .jugador-modal-col').forEach(col => {
+            const card = col.querySelector('.jugador-card.selectable');
+            const badgeEstado = card?.querySelector('.badge-estado-jugador');
+            const posJugador = (col.dataset.posicion || card?.dataset?.posicion || '').trim().toLowerCase();
+            const jugadorId = card?.dataset?.jugadorId ? String(card.dataset.jugadorId) : null;
+
+            // Filtrar estrictamente: solo jugadores cuya posición coincide con el slot
+            const coincide = !posRequerida || posJugador === posRequerida;
+
+            if (coincide) {
+                col.style.display = '';
+
+                // Limpiar clases y estados previos
+                card.classList.remove('opacity-50', 'pe-none', 'jugador-actual-slot');
+                if (badgeEstado) {
+                    badgeEstado.innerHTML = '';
+                    badgeEstado.className = 'badge-estado-jugador position-absolute top-0 end-0 m-1';
+                }
+
+                if (jugadorId && jugadorId === jugadorActualSlotId) {
+                    // Jugador que ocupa actualmente este slot (deshabilitado para no seleccionarse a sí mismo + borde distintivo)
+                    card.classList.add('pe-none', 'jugador-actual-slot');
+                    if (badgeEstado) {
+                        badgeEstado.className = 'badge bg-dark text-white position-absolute top-0 end-0 m-1';
+                        badgeEstado.innerHTML = '<i class="bi bi-shield-lock-fill me-1"></i> Titular';
+                    }
+                } else if (jugadorId && titularesEnCampo.includes(jugadorId)) {
+                    // Otro jugador titular ya alineado en otro slot (deshabilitado y atenuado)
+                    card.classList.add('opacity-50', 'pe-none');
+                    if (badgeEstado) {
+                        badgeEstado.className = 'badge bg-dark text-white position-absolute top-0 end-0 m-1';
+                        badgeEstado.innerHTML = '<i class="bi bi-shield-lock-fill me-1"></i> Titular';
+                    }
+                } else {
+                    // Suplente libre y disponible para ser alineado
+                    countDisponibles++;
+                    if (badgeEstado) {
+                        badgeEstado.className = 'badge bg-success text-white position-absolute top-0 end-0 m-1';
+                        badgeEstado.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i> Suplente';
+                    }
+                }
             } else {
-                card.classList.remove('opacity-50', 'pe-none');
+                col.style.display = 'none';
             }
         });
+
+        // Mostrar u ocultar alerta si no hay jugadores suplentes disponibles para la posición
+        const aviso = document.getElementById('avisoSinJugadoresPosicion');
+        const textoAviso = document.getElementById('textoAvisoSinJugadores');
+        if (aviso && textoAviso) {
+            if (posRequerida && countDisponibles === 0) {
+                const plurales = {
+                    'portero': 'porteros',
+                    'defensa': 'defensas',
+                    'centrocampista': 'centrocampistas',
+                    'delantero': 'delanteros'
+                };
+                const plural = plurales[posRequerida] || (posRequerida + 's');
+                if (jugadorActualSlotId) {
+                    textoAviso.textContent = `No tienes otros ${plural} suplentes disponibles en tu plantilla para intercambiar.`;
+                } else {
+                    textoAviso.textContent = `No tienes ${plural} disponibles en tu plantilla para esta posición.`;
+                }
+                aviso.classList.remove('d-none');
+            } else {
+                aviso.classList.add('d-none');
+            }
+        }
     }
 
     // Inicializar al cargar
