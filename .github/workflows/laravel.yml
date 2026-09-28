@@ -57,6 +57,7 @@ jobs:
           DB_DATABASE: mi_fantasy
           DB_USERNAME: root
           DB_PASSWORD: root
+          CACHE_STORE: array
         run: php artisan migrate --force
 
       - name: Execute Tests
@@ -67,6 +68,7 @@ jobs:
           DB_DATABASE: mi_fantasy
           DB_USERNAME: root
           DB_PASSWORD: root
+          CACHE_STORE: array
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
           QUEUE_CONNECTION: redis
