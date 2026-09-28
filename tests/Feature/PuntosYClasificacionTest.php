@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\PartidoController;
+use App\Jobs\CongelarJornadaJob;
 use App\Models\Alineacion;
 use App\Models\Equipo;
 use App\Models\Estadistica;
@@ -16,8 +17,10 @@ use App\Models\User;
 use App\Services\CongelarAlineacionesService;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class PuntosYClasificacionTest extends TestCase
@@ -130,6 +133,56 @@ class PuntosYClasificacionTest extends TestCase
         $this->jornada2->fecha_inicio = now()->subDay();
         $this->jornada2->fecha_fin = now()->addDays(2);
         $this->jornada2->save();
+    }
+
+    public function test_congelar_alineaciones_service_dispatches_congelar_jornada_job(): void
+    {
+        Queue::fake();
+
+        app(CongelarAlineacionesService::class)->congelarJornada($this->jornada1);
+
+        Queue::assertPushed(CongelarJornadaJob::class, function (CongelarJornadaJob $job) {
+            return $job->jornada->id === $this->jornada1->id;
+        });
+    }
+
+    public function test_congelar_alineaciones_command_dispatches_job_for_pending_jornadas(): void
+    {
+        Queue::fake();
+
+        $this->jornada1->fecha_cierre_alineaciones = now()->subMinutes(10);
+        $this->jornada1->alineaciones_congeladas = false;
+        $this->jornada1->save();
+
+        Artisan::call('fantasy:congelar-alineaciones');
+
+        Queue::assertPushed(CongelarJornadaJob::class, function (CongelarJornadaJob $job) {
+            return $job->jornada->id === $this->jornada1->id;
+        });
+    }
+
+    public function test_congelar_jornada_job_is_idempotent_and_creates_bulk_frozen_lineups(): void
+    {
+        // Ejecutar Job síncronamente
+        CongelarJornadaJob::dispatchSync($this->jornada1);
+
+        $this->assertTrue((bool) $this->jornada1->fresh()->alineaciones_congeladas);
+
+        $alineacionesCount = Alineacion::where('liguilla_id', $this->liguilla->id)
+            ->where('jornada_id', $this->jornada1->id)
+            ->count();
+        $this->assertEquals(2, $alineacionesCount);
+
+        // Reejecutar el Job (comprobar idempotencia)
+        CongelarJornadaJob::dispatchSync($this->jornada1);
+
+        $this->assertEquals(
+            2,
+            Alineacion::where('liguilla_id', $this->liguilla->id)
+                ->where('jornada_id', $this->jornada1->id)
+                ->count(),
+            'El Job debe ser idempotente y no duplicar alineaciones ya congeladas.'
+        );
     }
 
     public function test_congelar_alineaciones_duplica_alineaciones_base_correctamente(): void
