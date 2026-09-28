@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RecalcularPuntosJornadaJob;
 use App\Models\Alineacion;
 use App\Models\Estadistica;
 use App\Models\Jornada;
@@ -353,6 +354,9 @@ class PartidoController extends Controller
         // Recalcula desde cero
         $partido->actualizarEstadisticas();
 
+        // Despachar recálculo asíncrono masivo de puntos de la jornada
+        RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
+
         return redirect("/admin/partidos/{$id}")->with('success', 'Partido actualizado correctamente.');
     }
     public function actualizarResultado(Request $request)
@@ -372,8 +376,8 @@ class PartidoController extends Controller
         // Recalcular estadísticas del partido con inserciones masivas
         $partido->actualizarEstadisticas();
 
-        // Volcar puntos de la jornada a alineacion_jugador
-        $this->volcarPuntosAJugadoresDeJornada($partido);
+        // Volcar puntos de la jornada de forma asíncrona mediante Job atómico
+        RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
 
         return redirect()->back()->with('success', 'Resultado y eventos guardados correctamente.');
     }
@@ -399,66 +403,12 @@ class PartidoController extends Controller
         // Recalcular estadísticas del partido con inserciones masivas
         $partido->actualizarEstadisticas();
 
-        $this->volcarPuntosAJugadoresDeJornada($partido);
+        // Volcar puntos de la jornada de forma asíncrona mediante Job atómico
+        RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
         return response()->json(['status' => 'ok']);
     }
     public function volcarPuntosAJugadoresDeJornada(Partido $partido): void
     {
-        $jornada   = $partido->jornada;
-        $torneo    = $jornada->torneo;
-        $jornadaId = $jornada->id;
-
-        if (!$torneo) {
-            return;
-        }
-
-        // 1️⃣ Puntos por jugador en ESA jornada (sumando todos sus partidos de la jornada)
-        $puntosPorJugador = DB::table('estadisticas as e')
-            ->join('partidos as p', 'p.id', '=', 'e.partido_id')
-            ->select('e.jugador_id', DB::raw('SUM(e.puntos) as total_puntos'))
-            ->where('p.jornada_id', $jornadaId)
-            ->groupBy('e.jugador_id')
-            ->pluck('total_puntos', 'jugador_id'); // [jugador_id => puntos_jornada]
-
-        // 2️⃣ Actualizar alineacion_jugador.puntos para TODAS las alineaciones congeladas de esa jornada
-        $liguillaIds = $torneo->liguillas->pluck('id');
-        $alineacionIds = Alineacion::whereIn('liguilla_id', $liguillaIds)
-            ->where('jornada_id', $jornadaId)
-            ->pluck('id');
-
-        if ($alineacionIds->isNotEmpty()) {
-            DB::table('alineacion_jugador')
-                ->whereIn('alineacion_id', $alineacionIds)
-                ->update(['puntos' => 0]);
-
-            if ($puntosPorJugador->isNotEmpty()) {
-                foreach ($puntosPorJugador as $jugadorId => $puntos) {
-                    DB::table('alineacion_jugador')
-                        ->whereIn('alineacion_id', $alineacionIds)
-                        ->where('jugador_id', $jugadorId)
-                        ->update(['puntos' => $puntos]);
-                }
-            }
-        }
-
-        // 3️⃣ A partir de aquí, recalcular GLOBAL y guardarlo en liguilla_usuario.puntos
-        foreach ($torneo->liguillas as $liguilla) {
-            $puntosGlobalPorUsuario = DB::table('alineaciones as a')
-                ->join('alineacion_jugador as aj', 'aj.alineacion_id', '=', 'a.id')
-                ->select('a.user_id', DB::raw('SUM(aj.puntos) as total_puntos'))
-                ->where('a.liguilla_id', $liguilla->id)
-                ->whereNotNull('a.jornada_id') // solo jornadas (no la base)
-                ->groupBy('a.user_id')
-                ->get();
-
-            foreach ($puntosGlobalPorUsuario as $row) {
-                DB::table('liguilla_usuario')
-                    ->where('liguilla_id', $liguilla->id)
-                    ->where('user_id', $row->user_id)
-                    ->update([
-                        'puntos' => $row->total_puntos,
-                    ]);
-            }
-        }
+        RecalcularPuntosJornadaJob::dispatchSync($partido->jornada_id);
     }
 }

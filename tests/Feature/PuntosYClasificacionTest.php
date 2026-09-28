@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\PartidoController;
 use App\Jobs\CongelarJornadaJob;
+use App\Jobs\RecalcularPuntosJornadaJob;
 use App\Models\Alineacion;
 use App\Models\Equipo;
 use App\Models\Estadistica;
@@ -416,4 +417,81 @@ class PuntosYClasificacionTest extends TestCase
             ->assertViewIs('user.plantilla-participante')
             ->assertViewHas('plantilla');
     }
+
+    public function test_actualizar_resultado_dispatches_recalcular_puntos_jornada_job(): void
+    {
+        Queue::fake();
+
+        $admin = User::factory()->create(['name' => 'Admin', 'email' => 'admin@test.com', 'active' => true, 'admin' => true]);
+
+        $partido = new Partido();
+        $partido->jornada_id = $this->jornada1->id;
+        $partido->equipo_local_id = $this->equipo1->id;
+        $partido->equipo_visitante_id = $this->equipo2->id;
+        $partido->fecha_partido = now()->subDays(1);
+        $partido->goles_local = 2;
+        $partido->goles_visitante = 1;
+        $partido->estado = 'jugado';
+        $partido->save();
+
+        $response = $this->actingAs($admin)->post('/admin/partidos/actualizar-resultado', [
+            'partido_id' => $partido->id,
+            'goles_local' => 3,
+            'goles_visitante' => 1,
+            'estado' => 'jugado', // from select
+        ]);
+
+        $response->assertRedirect();
+        
+        Queue::assertPushed(RecalcularPuntosJornadaJob::class, function ($job) use ($partido) {
+            return $job->jornadaId === $partido->jornada_id;
+        });
+    }
+
+    public function test_recalcular_puntos_jornada_job_is_idempotent_and_calculates_bulk_points(): void
+    {
+        // Set up alignments and stats directly
+        $alA = Alineacion::create(['user_id' => $this->userA->id, 'liguilla_id' => $this->liguilla->id, 'jornada_id' => $this->jornada1->id]);
+        $alA->jugadores()->attach([
+            $this->jugadores[0]->id => ['puntos' => 0],
+            $this->jugadores[1]->id => ['puntos' => 0],
+        ]);
+        
+        $partido = new Partido();
+        $partido->jornada_id = $this->jornada1->id;
+        $partido->equipo_local_id = $this->equipo1->id;
+        $partido->equipo_visitante_id = $this->equipo2->id;
+        $partido->fecha_partido = now()->subDays(1);
+        $partido->estado = 'jugado';
+        $partido->save();
+        $partidoId = $partido->id;
+        
+        Estadistica::create(['partido_id' => $partidoId, 'jugador_id' => $this->jugadores[0]->id, 'puntos' => 6, 'goles' => 1, 'resultado' => 'empatado']);
+        Estadistica::create(['partido_id' => $partidoId, 'jugador_id' => $this->jugadores[1]->id, 'puntos' => 4, 'asistencias' => 1, 'resultado' => 'empatado']);
+
+        // First run
+        $job = new RecalcularPuntosJornadaJob($this->jornada1->id);
+        $job->handle();
+
+        $puntosPivot = DB::table('alineacion_jugador')->where('alineacion_id', $alA->id)->pluck('puntos', 'jugador_id');
+        $this->assertEquals(6, $puntosPivot[$this->jugadores[0]->id]);
+        $this->assertEquals(4, $puntosPivot[$this->jugadores[1]->id]);
+
+        $ligGlobalA = DB::table('liguilla_usuario')->where('liguilla_id', $this->liguilla->id)->where('user_id', $this->userA->id)->first();
+        $this->assertEquals(10, $ligGlobalA->puntos);
+
+        // Edit stats directly
+        Estadistica::where('jugador_id', $this->jugadores[0]->id)->update(['puntos' => 10]);
+
+        // Second run (Idempotency + Bulk updates catching new numbers correctly without appending)
+        $job->handle();
+
+        $puntosPivot2 = DB::table('alineacion_jugador')->where('alineacion_id', $alA->id)->pluck('puntos', 'jugador_id');
+        $this->assertEquals(10, $puntosPivot2[$this->jugadores[0]->id]);
+        $this->assertEquals(4, $puntosPivot2[$this->jugadores[1]->id]);
+
+        $ligGlobalA2 = DB::table('liguilla_usuario')->where('liguilla_id', $this->liguilla->id)->where('user_id', $this->userA->id)->first();
+        $this->assertEquals(14, $ligGlobalA2->puntos);
+    }
 }
+
