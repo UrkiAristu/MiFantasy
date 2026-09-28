@@ -9,6 +9,7 @@ use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\LiguillaController;
 use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
@@ -207,3 +208,6 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
     Route::get('/suscripcion/exito', [SubscriptionController::class, 'success'])->name('subscription.success');
     Route::get('/suscripcion/cancelado', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
 });
+
+// Webhooks de Stripe / Cashier (Exento de CSRF y fuera del grupo auth)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])->name('cashier.webhook');

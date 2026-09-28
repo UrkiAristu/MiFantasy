@@ -61,7 +61,7 @@ class SubscriptionOnboardingTest extends TestCase
         ]));
     }
 
-    public function test_success_provisions_tenant_and_assigns_admin_local_role_with_spatie_teams(): void
+    public function test_success_url_is_read_only_and_does_not_provision_tenant_synchronously(): void
     {
         $user = User::factory()->create();
 
@@ -73,10 +73,37 @@ class SubscriptionOnboardingTest extends TestCase
         $response->assertRedirect(route('home'));
         $response->assertSessionHas('success');
 
-        // 1. Comprobar que el Tenant fue creado y vinculado al usuario
+        // Seguridad SEC-01: La ruta GET síncrona NO debe crear Tenants ni mutar base de datos
+        $tenant = Tenant::where('user_id', $user->id)->first();
+        $this->assertNull($tenant, 'La ruta GET de retorno no debe aprovisionar el Tenant de forma síncrona.');
+    }
+
+    public function test_stripe_webhook_checkout_session_completed_provisions_tenant_and_spatie_rbac(): void
+    {
+        $user = User::factory()->create();
+
+        $payload = [
+            'type' => 'checkout.session.completed',
+            'data' => [
+                'object' => [
+                    'id' => 'cs_test_abc123',
+                    'customer' => 'cus_test_123',
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'plan' => 'pro',
+                        'org_name' => 'Liga Metropolitana Webhook',
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/stripe/webhook', $payload);
+        $response->assertStatus(200);
+
+        // 1. Comprobar que el Tenant fue creado y vinculado al usuario vía Webhook asíncrono
         $tenant = Tenant::where('user_id', $user->id)->first();
         $this->assertNotNull($tenant);
-        $this->assertEquals('Liga Metropolitana', $tenant->name);
+        $this->assertEquals('Liga Metropolitana Webhook', $tenant->name);
         $this->assertEquals('pro', $tenant->plan);
 
         // 2. Comprobar RBAC multi-tenant con Spatie Teams
@@ -96,6 +123,38 @@ class SubscriptionOnboardingTest extends TestCase
         $this->assertTrue($role->hasPermissionTo('gestionar_equipos'));
         $this->assertTrue($role->hasPermissionTo('gestionar_jugadores'));
         $this->assertTrue($role->hasPermissionTo('ver_metricas_liga'));
+    }
+
+    public function test_stripe_webhook_is_idempotent_and_does_not_duplicate_tenant(): void
+    {
+        $user = User::factory()->create();
+
+        $payload = [
+            'type' => 'checkout.session.completed',
+            'data' => [
+                'object' => [
+                    'id' => 'cs_test_abc123',
+                    'customer' => 'cus_test_123',
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'plan' => 'pro',
+                        'org_name' => 'Liga Idempotente',
+                    ],
+                ],
+            ],
+        ];
+
+        // Primer envío del webhook
+        $response1 = $this->postJson('/stripe/webhook', $payload);
+        $response1->assertStatus(200);
+        $this->assertEquals(1, Tenant::where('user_id', $user->id)->count());
+
+        // Segundo envío duplicado por reintento de Stripe
+        $response2 = $this->postJson('/stripe/webhook', $payload);
+        $response2->assertStatus(200);
+
+        // Debe mantenerse exactamente 1 Tenant (idempotencia)
+        $this->assertEquals(1, Tenant::where('user_id', $user->id)->count());
     }
 
     public function test_cancel_redirects_to_home_with_info_notice(): void
