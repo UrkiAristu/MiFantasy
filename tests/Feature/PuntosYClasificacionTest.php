@@ -345,4 +345,22 @@ class PuntosYClasificacionTest extends TestCase
                 'total_puntos' => 0,
             ]);
     }
+
+    public function test_usuario_fuera_de_liguilla_no_puede_ver_plantilla_de_participante_por_idor(): void
+    {
+        $usuarioExterno = User::factory()->create(['name' => 'Usuario Externo', 'email' => 'externo@test.com', 'active' => true]);
+
+        $response = $this->actingAs($usuarioExterno)->get("/user/liguillas/{$this->liguilla->id}/usuario/{$this->userA->id}/plantilla");
+
+        $response->assertStatus(403);
+    }
+
+    public function test_usuario_miembro_de_liguilla_puede_ver_plantilla_de_participante(): void
+    {
+        $response = $this->actingAs($this->userB)->get("/user/liguillas/{$this->liguilla->id}/usuario/{$this->userA->id}/plantilla");
+
+        $response->assertStatus(200)
+            ->assertViewIs('user.plantilla-participante')
+            ->assertViewHas('plantilla');
+    }
 }

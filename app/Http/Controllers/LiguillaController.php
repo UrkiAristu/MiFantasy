@@ -286,6 +286,11 @@ class LiguillaController extends Controller
     {
         $liguilla = Liguilla::findOrFail($idLiguilla);
         $user = User::findOrFail($idUser);
+
+        if (!$liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
+            abort(403, 'No tienes permiso para ver esta liguilla');
+        }
+
         // Plantilla de ese usuario en esa liguilla
         $plantilla = $liguilla->plantillas()
             ->with(['jugadores.participaciones'])
