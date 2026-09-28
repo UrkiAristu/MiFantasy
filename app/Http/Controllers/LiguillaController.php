@@ -111,30 +111,38 @@ class LiguillaController extends Controller
         ]);
 
         $codigo = strtoupper($validated['codigo']); // uniformizar mayúsculas
-
-        // Buscar liguilla por código único
-        $liguilla = Liguilla::where('codigo_unico', $codigo)->first();
-
-        if (!$liguilla) {
-            return redirect()->back()->withErrors(['codigo' => 'Código de liguilla no válido.'])->withInput();
-        }
-
         $usuarioId = Auth::id();
 
-        // Comprobar si el usuario ya está en esa liguilla
-        if ($liguilla->usuarios()->where('user_id', $usuarioId)->exists()) {
-            return redirect()->back()->withErrors(['codigo' => 'Ya estás inscrito en esta liguilla.'])->withInput();
-        }
+        $resultado = DB::transaction(function () use ($codigo, $usuarioId) {
+            // Cargar liguilla con bloqueo pesimista para prevenir condiciones de carrera en cupo
+            $liguilla = Liguilla::where('codigo_unico', $codigo)->lockForUpdate()->first();
 
-        // Comprobar si la liguilla está llena
-        if ($liguilla->usuarios()->count() >= $liguilla->max_usuarios) {
-            return redirect()->back()->withErrors(['codigo' => 'La liguilla ya está completa.'])->withInput();
-        }
+            if (!$liguilla) {
+                return ['status' => 'error', 'message' => 'Código de liguilla no válido.'];
+            }
 
-        // Añadir usuario a la liguilla
-        $liguilla->usuarios()->attach($usuarioId);
-        // Crear plantilla aleatoria para este usuario en la liguilla
-        $this->crearPlantillaAleatoria($liguilla->id, $usuarioId);
+            // Comprobar si el usuario ya está en esa liguilla
+            if ($liguilla->usuarios()->where('user_id', $usuarioId)->exists()) {
+                return ['status' => 'error', 'message' => 'Ya estás inscrito en esta liguilla.'];
+            }
+
+            // Comprobar si la liguilla está llena
+            if ($liguilla->usuarios()->count() >= $liguilla->max_usuarios) {
+                return ['status' => 'error', 'message' => 'La liguilla ya está completa.'];
+            }
+
+            // Añadir usuario a la liguilla
+            $liguilla->usuarios()->attach($usuarioId);
+
+            // Crear plantilla aleatoria para este usuario en la liguilla
+            $this->crearPlantillaAleatoria($liguilla->id, $usuarioId);
+
+            return ['status' => 'success'];
+        });
+
+        if ($resultado['status'] === 'error') {
+            return redirect()->back()->withErrors(['codigo' => $resultado['message']])->withInput();
+        }
 
         return redirect('/user/liguillas')->with('success', 'Te has unido correctamente a la liguilla.');
     }
