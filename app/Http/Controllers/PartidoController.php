@@ -153,14 +153,16 @@ class PartidoController extends Controller
 
     public function guardarOrdenJornadas(Request $request, $idTorneo)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $ordenData = json_decode($request->input('orden'), true);
 
-        foreach ($ordenData as $item) {
-            Jornada::where('id', $item['id'])->update(['orden' => $item['orden']]);
+        if (is_array($ordenData)) {
+            foreach ($ordenData as $item) {
+                if (isset($item['id'], $item['orden'])) {
+                    Jornada::where('id', $item['id'])
+                        ->where('torneo_id', $idTorneo)
+                        ->update(['orden' => $item['orden']]);
+                }
+            }
         }
 
         return redirect()->back()->with('success', 'Orden de jornadas actualizado correctamente.');

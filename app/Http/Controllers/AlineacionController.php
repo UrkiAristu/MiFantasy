@@ -10,6 +10,7 @@ use App\Models\Plantilla;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AlineacionController extends Controller
 {

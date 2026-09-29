@@ -296,8 +296,9 @@ class LiguillaController extends Controller
         $liguilla = Liguilla::findOrFail($idLiguilla);
         $user = User::findOrFail($idUser);
 
-        if (!$liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
-            abort(403, 'No tienes permiso para ver esta liguilla');
+        if (!$liguilla->usuarios()->where('users.id', Auth::id())->exists() ||
+            !$liguilla->usuarios()->where('users.id', $user->id)->exists()) {
+            abort(403, 'No tienes permiso para ver esta plantilla');
         }
 
         // Plantilla de ese usuario en esa liguilla
@@ -311,6 +312,10 @@ class LiguillaController extends Controller
 
     public function clasificacionAjax(Liguilla $liguilla, Request $request)
     {
+        if (!$liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $modoClasificacion = $request->get('modo_clasificacion', 'global');
 
         $cacheKey = sprintf(
@@ -389,6 +394,12 @@ class LiguillaController extends Controller
 
     public function alineacionUsuarioJornada(Liguilla $liguilla, User $user, $jornadaId)
     {
+        $authId = Auth::id();
+        if (!$liguilla->usuarios()->where('users.id', $authId)->exists() ||
+            !$liguilla->usuarios()->where('users.id', $user->id)->exists()) {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 403);
+        }
+
         $alineacion = Alineacion::with('jugadores')
             ->where('liguilla_id', $liguilla->id)
             ->where('user_id', $user->id)

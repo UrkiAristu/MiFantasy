@@ -502,6 +502,24 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const createAndSubmitDeleteForm = (url) => {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(csrfInput);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        };
+
         const botonesEliminar = document.querySelectorAll('.btn-eliminar-jornada');
         botonesEliminar.forEach(boton => {
             boton.addEventListener('click', function(e) {
@@ -518,7 +536,7 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = url;
+                        createAndSubmitDeleteForm(url);
                     }
                 });
             });

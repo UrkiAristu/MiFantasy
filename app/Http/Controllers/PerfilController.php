@@ -110,6 +110,9 @@ class PerfilController extends Controller
         // Eliminar perfil
         $user->delete();
 
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/')->with('success', 'Tu perfil ha sido eliminado.');
     }
 }

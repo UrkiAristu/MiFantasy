@@ -16,45 +16,6 @@ use App\Http\Controllers\UsuarioController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-
-Route::get('/test', function () {
-    dd(session()->all());
-});
-Route::get('/poblar', function () {
-    // Seguridad: SOLO permite en local
-    if (!app()->isLocal()) {
-        abort(403, 'Solo disponible en entorno local.');
-    }
-
-    // Ruta del archivo SQL
-    $path = database_path('seeders/sql/mi_fantasy_datos.sql');
-
-    if (!File::exists($path)) {
-        return 'ERROR: No se encuentra el archivo SQL.';
-    }
-
-    $sql = File::get($path);
-
-    try {
-        // Desactivamos FK para evitar errores de orden
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
-        // Ejecutar SQL completo
-        DB::unprepared($sql);
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-        return '<h2>Base de datos poblada correctamente ✔</h2>';
-
-    } catch (Throwable $e) {
-        DB::rollBack();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-        return '<h2>Error ❌</h2><pre>' . $e->getMessage() . '</pre>';
-    }
-});
 
 ///////////MIDLEWARE REDIRIGIR SI VERIFICADO/////////
 Route::middleware('redirigir.si.verificado')->group(function () {
@@ -139,35 +100,35 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
         Route::get('/admin/torneos', [TorneoController::class, 'mostrarPaginaTorneos']);
         Route::get('/admin/torneos/{id}', [TorneoController::class, 'mostrarPaginaTorneo']);
         Route::post('/admin/torneos/crear', [TorneoController::class, 'crearTorneo']);
-        Route::get('/admin/torneos/{id}/eliminar', [TorneoController::class, 'eliminarTorneo']);
+        Route::delete('/admin/torneos/{id}/eliminar', [TorneoController::class, 'eliminarTorneo']);
         Route::post('/admin/torneos/{id}/editar', [TorneoController::class, 'editarTorneo']);
         Route::post('/admin/torneos/{id}/equipos/agregar', [TorneoController::class, 'agregarEquipoATorneo']);
-        Route::get('/admin/torneos/{id}/equipos/{equipoId}/eliminar', [TorneoController::class, 'eliminarEquipoDeTorneo']);
+        Route::delete('/admin/torneos/{id}/equipos/{equipoId}/eliminar', [TorneoController::class, 'eliminarEquipoDeTorneo']);
         Route::post('/admin/torneos/{id}/equipos/crear', [TorneoController::class, 'crearEquipoEnTorneo']);
         Route::get('/admin/torneos/{id}/equipos/{equipoId}/jugadores', [TorneoController::class, 'mostrarPaginaJugadoresDeEquipoEnTorneo']);
         Route::post('/admin/torneos/{id}/equipos/{equipoId}/jugadores/agregar', [TorneoController::class, 'agregarJugadorAEquipoEnTorneo']);
-        Route::get('/admin/torneos/{id}/equipos/{equipoId}/jugadores/{jugadorId}/eliminar', [TorneoController::class, 'eliminarJugadorDeEquipoEnTorneo']);
+        Route::delete('/admin/torneos/{id}/equipos/{equipoId}/jugadores/{jugadorId}/eliminar', [TorneoController::class, 'eliminarJugadorDeEquipoEnTorneo']);
         Route::post('/admin/torneos/{id}/equipos/{equipoId}/jugadores/crear', [TorneoController::class, 'crearJugadorEnEquipoEnTorneo']);
         //Equipos
         Route::get('/admin/equipos', [EquipoController::class, 'mostrarPaginaEquipos']);
         Route::get('/admin/equipos/{id}', [EquipoController::class, 'mostrarPaginaEquipo']);
         Route::post('/admin/equipos/crear', [EquipoController::class, 'crearEquipo']);
-        Route::get('/admin/equipos/{id}/eliminar', [EquipoController::class, 'eliminarEquipo']);
+        Route::delete('/admin/equipos/{id}/eliminar', [EquipoController::class, 'eliminarEquipo']);
         Route::post('/admin/equipos/{id}/editar', [EquipoController::class, 'editarEquipo']);
         Route::post('/admin/equipos/{id}/torneos/agregar', [EquipoController::class, 'inscribirATorneoEquipo']);
-        Route::get('/admin/equipos/{id}/torneos/{torneoId}/eliminar', [EquipoController::class, 'eliminarDeTorneoEquipo']);
+        Route::delete('/admin/equipos/{id}/torneos/{torneoId}/eliminar', [EquipoController::class, 'eliminarDeTorneoEquipo']);
         Route::post('/admin/equipos/{id}/torneos/crear', [EquipoController::class, 'crearTorneoConEquipo']);
         Route::post('/admin/equipos/{id}/jugadores/agregar', [EquipoController::class, 'agregarJugadorAEquipo']);
-        Route::get('/admin/equipos/{id}/jugadores/{jugadorId}/eliminar', [EquipoController::class, 'eliminarJugadorDeEquipo']);
+        Route::delete('/admin/equipos/{id}/jugadores/{jugadorId}/eliminar', [EquipoController::class, 'eliminarJugadorDeEquipo']);
         Route::post('/admin/equipos/{id}/jugadores/crear', [EquipoController::class, 'crearJugadorEnEquipo']);
         //Jugadores
         Route::get('/admin/jugadores', [JugadorController::class, 'mostrarPaginaJugadores']);
         Route::get('/admin/jugadores/{id}', [JugadorController::class, 'mostrarPaginaJugador']);
         Route::post('/admin/jugadores/crear', [JugadorController::class, 'crearJugador']);
-        Route::get('/admin/jugadores/{id}/eliminar', [JugadorController::class, 'eliminarJugador']);
+        Route::delete('/admin/jugadores/{id}/eliminar', [JugadorController::class, 'eliminarJugador']);
         Route::post('/admin/jugadores/{id}/editar', [JugadorController::class, 'editarJugador']);
         Route::post('/admin/jugadores/{id}/equipos/agregar', [JugadorController::class, 'agregarAEquipoJugador']);
-        Route::get('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
+        Route::delete('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
         Route::post('/admin/jugadores/{id}/equipos/crear', [JugadorController::class, 'crearEquipoConJugador']);
         //Liguillas
         Route::get('/admin/liguillas', [LiguillaController::class, 'mostrarPaginaLiguillas']);
@@ -175,12 +136,12 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
         Route::get('/admin/torneos/{idTorneo}/jornadas', [PartidoController::class, 'mostrarPaginaJornadas']);
         Route::post('/admin/torneos/{idTorneo}/jornadas/crear', [PartidoController::class, 'crearJornada']);
         Route::post('/admin/torneos/{idTorneo}/jornadas/guardarOrdenJornadas', [PartidoController::class, 'guardarOrdenJornadas']);
-        Route::get('/admin/jornadas/{id}/eliminar', [PartidoController::class, 'eliminarJornada']);
+        Route::delete('/admin/jornadas/{id}/eliminar', [PartidoController::class, 'eliminarJornada']);
         Route::post('/admin/jornadas/{id}/editar', [PartidoController::class, 'editarJornada']);
         //Partidos
         Route::get('/admin/partidos/{id}', [PartidoController::class, 'mostrarPaginaPartido']);
         Route::post('/admin/jornadas/{idJornada}/partidos/crear', [PartidoController::class, 'crearPartido']);
-        Route::get('/admin/partidos/{id}/eliminar', [PartidoController::class, 'eliminarPartido']);
+        Route::delete('/admin/partidos/{id}/eliminar', [PartidoController::class, 'eliminarPartido']);
         Route::post('/admin/partidos/{id}/editar', [PartidoController::class, 'editarPartido']);
         Route::post('/admin/partidos/actualizar-resultado', [PartidoController::class, 'actualizarResultado']);
         Route::post('/admin/partidos/{id}/eventos/agregar', [PartidoController::class, 'agregarEvento']);

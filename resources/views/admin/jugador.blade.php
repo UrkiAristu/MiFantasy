@@ -325,6 +325,24 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const createAndSubmitDeleteForm = (url) => {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(csrfInput);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        };
+
         const botonesEliminar = document.querySelectorAll('.btn-dejar-equipo');
         botonesEliminar.forEach(boton => {
             boton.addEventListener('click', function(e) {
@@ -341,31 +359,33 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = url;
+                        createAndSubmitDeleteForm(url);
                     }
                 });
             });
         });
 
         const botonEliminarJugador = document.querySelector('.btn-eliminar-jugador');
-        botonEliminarJugador.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = this.getAttribute('data-url');
-            Swal.fire({
-                title: '¿Estás seguro de que deseas eliminar este jugador?',
-                text: "Esta acción no se puede deshacer.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = url;
-                }
+        if (botonEliminarJugador) {
+            botonEliminarJugador.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+                Swal.fire({
+                    title: '¿Estás seguro de que deseas eliminar este jugador?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        createAndSubmitDeleteForm(url);
+                    }
+                });
             });
-        });
+        }
     });
 </script>
 @endpush
