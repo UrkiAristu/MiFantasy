@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\RedirigirSiAutenticado;
 use App\Http\Middleware\RedirigirSiVerificado;
+use App\Http\Middleware\SetTenantPermissionsContext;
 use App\Http\Middleware\VerificarAdmin;
 use App\Http\Middleware\VerificarSesion;
 use Illuminate\Foundation\Application;
@@ -22,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'stripe/*',
         ]);
 
+        $middleware->web(append: [
+            SetTenantPermissionsContext::class,
+        ]);
+
         $middleware->alias([
             'auth'     => AuthMiddleware::class,
             'guest'    => GuestMiddleware::class,
@@ -30,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verificar.admin' => VerificarAdmin::class,
             'redirigir.si.autenticado' => RedirigirSiAutenticado::class,
             'redirigir.si.verificado' => RedirigirSiVerificado::class,
+            'set.tenant.permissions' => SetTenantPermissionsContext::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

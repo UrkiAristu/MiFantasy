@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alineacion;
-use App\Models\Cuenta;
 use App\Models\Estadistica;
 use App\Models\Jugador;
 use App\Models\Liguilla;
@@ -155,23 +154,25 @@ class LiguillaController extends Controller
         ]);
         $liguilla = Liguilla::findOrFail($liguillaId);
 
-        // Seleccionar jugadores aleatorios del torneo de esa liguilla
-        $jugadores = Jugador::whereHas('participaciones', function ($query) use ($liguilla) {
+        $limite = $liguilla->torneo->jugadores_por_equipo + 3;
+
+        // Seleccionar IDs de jugadores disponibles del torneo y barajar en memoria para evitar ORDER BY RAND()
+        $jugadorIds = Jugador::whereHas('participaciones', function ($query) use ($liguilla) {
             $query->where('torneo_id', $liguilla->torneo->id);
         })
             ->whereDoesntHave('plantillas', function ($query) use ($liguilla) {
                 $query->where('liguilla_id', $liguilla->id);
             })
-            ->inRandomOrder()
-            ->limit(value: $liguilla->torneo->jugadores_por_equipo + 3)
-            ->get();
+            ->pluck('id')
+            ->shuffle()
+            ->take($limite);
 
-        if ($jugadores->isNotEmpty()) {
+        if ($jugadorIds->isNotEmpty()) {
             $now = now();
-            $registros = $jugadores->map(function ($jugador) use ($plantilla, $now) {
+            $registros = $jugadorIds->map(function ($jugadorId) use ($plantilla, $now) {
                 return [
                     'plantilla_id' => $plantilla->id,
-                    'jugador_id'   => $jugador->id,
+                    'jugador_id'   => $jugadorId,
                     'created_at'   => $now,
                     'updated_at'   => $now,
                 ];

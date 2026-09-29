@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
 use Spatie\Permission\Models\Permission;
@@ -59,8 +60,11 @@ class StripeWebhookController extends CashierWebhookController
      */
     public function provisionTenant(User $user, string $orgName, string $planKey): Tenant
     {
-        // 1. Generar ID único numérico compatible con Stancl Tenancy y Spatie team_id
-        $maxId = Tenant::all()->map(fn($t) => is_numeric($t->id) ? (int) $t->id : 0)->max() ?? 0;
+        // 1. Generar ID único numérico compatible con Stancl Tenancy y Spatie team_id evitando OOM
+        $driver = DB::connection()->getDriverName();
+        $maxId = $driver === 'sqlite'
+            ? (int) (DB::table('tenants')->selectRaw('MAX(CAST(id AS INTEGER)) as max_id')->value('max_id') ?? 0)
+            : (int) (DB::table('tenants')->selectRaw('MAX(CAST(id AS UNSIGNED)) as max_id')->value('max_id') ?? 0);
         $tenantId = (string) ($maxId + 1);
 
         // 2. Crear registro de Tenant
