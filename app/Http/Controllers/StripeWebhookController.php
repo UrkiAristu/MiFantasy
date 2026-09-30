@@ -4,15 +4,65 @@ namespace App\Http\Controllers;
 
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Carbon;
 
 class StripeWebhookController extends CashierWebhookController
 {
+    /**
+     * @pagokit:signature-verified (Regla 1: Cashier via VerifyWebhookSignature verifica el raw body con Stripe\Webhook)
+     * Regla 2: Cashier comprueba el timestamp de la firma permitiendo una deriva máxima de 300s (config('cashier.webhook.tolerance')).
+     * Regla 8: Usa cashier.webhook.secret que debe ser distinto de la API Key.
+     * Regla 9: Cashier usa la SDK oficial para comprobar la firma (hash_equals seguro contra timing attacks).
+     */
+    public function handleWebhook(Request $request)
+    {
+        $payload = json_decode($request->getContent(), true);
+        $eventId = $payload['id'] ?? null;
+        $eventType = $payload['type'] ?? 'unknown';
+        $eventCreated = $payload['created'] ?? null;
+
+        // Regla 7: Loguear solo id, type, created. NUNCA el payload completo.
+        Log::info('Stripe Webhook Recibido', [
+            'event_id'      => $eventId,
+            'event_type'    => $eventType,
+            'event_created' => $eventCreated,
+        ]);
+
+        if ($eventId) {
+            // Deduplicación de Webhooks: registrar el evento para evitar procesar dos veces el mismo (replay / fallos de red)
+            $processed = DB::table('webhook_events_processed')->where('id', $eventId)->exists();
+
+            if ($processed) {
+                Log::info("Webhook idempotente: El evento {$eventId} ya fue procesado.");
+                return new Response('Webhook Already Processed', 200);
+            }
+
+            DB::table('webhook_events_processed')->insert([
+                'id'                => $eventId,
+                'type'              => $eventType,
+                'created_at_stripe' => $eventCreated ? Carbon::createFromTimestamp($eventCreated)->toDateTimeString() : null,
+                'processed_at'      => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        }
+
+        return parent::handleWebhook($request);
+    }
+
+    /**
+     * Handle handled events directly if needed or let Cashier's parent handle them.
+     * customer.subscription.created, customer.subscription.updated, customer.subscription.deleted are handled by parent.
+     * invoice.payment_succeeded and invoice.payment_failed are handled by parent.
+     */
+
     /**
      * Manejar evento checkout.session.completed de Stripe.
      * Aprovisiona de forma asíncrona e idempotente el Tenant y los roles RBAC.

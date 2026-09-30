@@ -166,4 +166,155 @@ class SubscriptionOnboardingTest extends TestCase
         $response->assertRedirect(route('home'));
         $response->assertSessionHas('info');
     }
+
+    public function test_webhook_deduplication_stores_event_id(): void
+    {
+        $payload = [
+            'id' => 'evt_test_dedup_12345',
+            'type' => 'invoice.payment_succeeded',
+            'created' => time(),
+            'data' => [
+                'object' => [
+                    'id' => 'in_test_123',
+                ],
+            ],
+        ];
+
+        $response1 = $this->postJson('/stripe/webhook', $payload);
+        $response1->assertStatus(200);
+
+        $this->assertDatabaseHas('webhook_events_processed', [
+            'id' => 'evt_test_dedup_12345',
+            'type' => 'invoice.payment_succeeded',
+        ]);
+
+        // Second call with same event ID
+        $response2 = $this->postJson('/stripe/webhook', $payload);
+        $response2->assertStatus(200);
+        $response2->assertSeeText('Webhook Already Processed');
+    }
+
+    public function test_billing_portal_without_stripe_id_redirects_with_notice(): void
+    {
+        $user = User::factory()->create(['stripe_id' => null]);
+
+        $response = $this->actingAs($user)->get(route('subscription.portal'));
+
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('info');
+    }
+
+    public function test_webhook_accepts_valid_cryptographic_signature(): void
+    {
+        $secret = 'whsec_test_signing_secret_key_12345';
+        config(['cashier.webhook.secret' => $secret]);
+        config(['cashier.webhook.tolerance' => 300]);
+
+        $payload = [
+            'id' => 'evt_valid_sig_' . uniqid(),
+            'type' => 'customer.subscription.updated',
+            'created' => time(),
+            'data' => [
+                'object' => [
+                    'id' => 'sub_test_valid',
+                    'customer' => 'cus_test_123',
+                ],
+            ],
+        ];
+
+        $payloadJson = json_encode($payload);
+        $timestamp = time();
+        $signatureHeader = \Stripe\WebhookSignature::generateSignatureHeader($payloadJson, $secret, $timestamp);
+
+        $response = $this->call(
+            'POST',
+            '/stripe/webhook',
+            [],
+            [],
+            [],
+            [
+                'HTTP_STRIPE_SIGNATURE' => $signatureHeader,
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            $payloadJson
+        );
+
+        $response->assertStatus(200);
+    }
+
+    public function test_webhook_rejects_forged_cryptographic_signature(): void
+    {
+        $secret = 'whsec_test_signing_secret_key_12345';
+        config(['cashier.webhook.secret' => $secret]);
+
+        $payload = [
+            'id' => 'evt_forged_sig_' . uniqid(),
+            'type' => 'invoice.payment_succeeded',
+            'created' => time(),
+            'data' => [
+                'object' => [
+                    'id' => 'in_test_forged',
+                ],
+            ],
+        ];
+
+        $payloadJson = json_encode($payload);
+        // Generar firma con secret incorrecto / forjada
+        $forgedSignatureHeader = \Stripe\WebhookSignature::generateSignatureHeader($payloadJson, 'whsec_attacker_evil_secret', time());
+
+        $response = $this->call(
+            'POST',
+            '/stripe/webhook',
+            [],
+            [],
+            [],
+            [
+                'HTTP_STRIPE_SIGNATURE' => $forgedSignatureHeader,
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            $payloadJson
+        );
+
+        // AccessDeniedHttpException produce código 403
+        $this->assertContains($response->getStatusCode(), [400, 403]);
+    }
+
+    public function test_webhook_rejects_replayed_timestamp_outside_tolerance(): void
+    {
+        $secret = 'whsec_test_signing_secret_key_12345';
+        config(['cashier.webhook.secret' => $secret]);
+        config(['cashier.webhook.tolerance' => 300]);
+
+        $payload = [
+            'id' => 'evt_replayed_sig_' . uniqid(),
+            'type' => 'invoice.payment_succeeded',
+            'created' => time() - 600,
+            'data' => [
+                'object' => [
+                    'id' => 'in_test_replay',
+                ],
+            ],
+        ];
+
+        $payloadJson = json_encode($payload);
+        // Generar firma con timestamp de hace 600 segundos (supera los 300s de tolerancia)
+        $replayedTimestamp = time() - 600;
+        $replayedHeader = \Stripe\WebhookSignature::generateSignatureHeader($payloadJson, $secret, $replayedTimestamp);
+
+        $response = $this->call(
+            'POST',
+            '/stripe/webhook',
+            [],
+            [],
+            [],
+            [
+                'HTTP_STRIPE_SIGNATURE' => $replayedHeader,
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            $payloadJson
+        );
+
+        // Replay fuera de tolerancia produce 403 / 400
+        $this->assertContains($response->getStatusCode(), [400, 403]);
+    }
 }

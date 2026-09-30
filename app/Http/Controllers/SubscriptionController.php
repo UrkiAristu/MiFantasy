@@ -15,7 +15,7 @@ class SubscriptionController extends Controller
     /**
      * Iniciar sesión de Stripe Checkout o simulación segura en local.
      */
-    public function checkout(Request $request): Response|Checkout
+    public function checkout(Request $request): Response|\Illuminate\Http\RedirectResponse|\Laravel\Cashier\Checkout
     {
         /** @var User $user */
         $user = $request->user();
@@ -36,17 +36,31 @@ class SubscriptionController extends Controller
         $stripeSecret = config('cashier.secret') ?? config('services.stripe.secret');
 
         // Si Stripe está configurado con clave real, generar sesión de Checkout vía Cashier
-        if (! empty($stripeSecret) && ! in_array($stripeSecret, ['sk_test_placeholder', 'your_stripe_secret_here', ''])) {
+        if (! empty($stripeSecret) && ! str_contains($stripeSecret, 'placeholder') && $stripeSecret !== 'your_stripe_secret_here') {
             try {
+                // Rule 5: SAQ A compliant redirect (nunca tocamos PAN o CVV).
+                // Rule 3: Claves de idempotencia como UUID v4 fuerte.
+                $idempotencyKey = \Illuminate\Support\Str::uuid()->toString();
+
+                \Illuminate\Support\Facades\DB::table('idempotency_keys')->insert([
+                    'id'      => $idempotencyKey,
+                    'user_id' => $user->id,
+                    'scope'   => 'subscription_checkout_' . $planKey,
+                    'used_at' => now(),
+                ]);
+
                 return $user->newSubscription('default', $priceId)
                     ->allowPromotionCodes()
                     ->checkout([
+                        'payment_method_types' => ['card', 'bizum'],
+                        'mode' => 'subscription',
                         'success_url' => route('subscription.success').'?session_id={CHECKOUT_SESSION_ID}&plan='.$planKey.'&org='.urlencode($orgName),
                         'cancel_url' => route('subscription.cancel'),
                         'metadata' => [
                             'user_id' => $user->id,
                             'plan' => $planKey,
                             'org_name' => $orgName,
+                            'idempotency_key' => $idempotencyKey,
                         ],
                     ]);
             } catch (Throwable $e) {
@@ -89,6 +103,24 @@ class SubscriptionController extends Controller
         return redirect()->route('home')->with(
             'info',
             'El proceso de pago o suscripción se ha cancelado. Puedes activarlo cuando lo desees desde tu panel.'
+        );
+    }
+
+    /**
+     * Redirigir al Customer Portal de Stripe para gestionar métodos de pago, facturas y cancelaciones.
+     */
+    public function portal(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($user->hasStripeId()) {
+            return $user->redirectToBillingPortal(route('home'));
+        }
+
+        return redirect()->route('home')->with(
+            'info',
+            'No tienes una suscripción activa o perfil de facturación registrado en Stripe.'
         );
     }
 }
