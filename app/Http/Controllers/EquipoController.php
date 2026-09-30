@@ -7,13 +7,13 @@ use App\Models\Jugador;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class EquipoController extends Controller
 {
     public function mostrarPaginaEquipos()
     {
         $equipos = Equipo::all();
+
         return view('admin.equipos', compact('equipos'));
     }
 
@@ -22,6 +22,7 @@ class EquipoController extends Controller
         $equipo = Equipo::with(['torneos', 'jugadores'])->findOrFail($id);
         $torneosDisponibles = Torneo::whereNotIn('id', $equipo->torneos->pluck('id'))->get();
         $jugadoresDisponibles = Jugador::whereNotIn('id', $equipo->jugadores->pluck('id'))->get();
+
         return view('admin.equipo', compact('equipo', 'torneosDisponibles', 'jugadoresDisponibles'));
     }
 
@@ -41,7 +42,7 @@ class EquipoController extends Controller
             ]
         );
 
-        $equipo = new Equipo();
+        $equipo = new Equipo;
         $equipo->nombre = $validated['nombre'];
 
         if ($request->hasFile('logo')) {
@@ -70,6 +71,7 @@ class EquipoController extends Controller
         }
 
         $equipo->delete();
+
         return redirect('/admin/equipos')->with('success', 'Equipo eliminado correctamente.');
     }
 
@@ -113,6 +115,7 @@ class EquipoController extends Controller
         }
 
         $equipo->save();
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Equipo actualizado correctamente.');
     }
 
@@ -137,6 +140,7 @@ class EquipoController extends Controller
 
         $torneo = Torneo::findOrFail($validated['torneo_id']);
         $equipo->torneos()->attach($torneo->id);
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Equipo inscrito al torneo correctamente.');
     }
 
@@ -144,11 +148,12 @@ class EquipoController extends Controller
     {
         $equipo = Equipo::findOrFail($id);
 
-        if (!$equipo->torneos()->where('torneo_id', $torneoId)->exists()) {
+        if (! $equipo->torneos()->where('torneo_id', $torneoId)->exists()) {
             return redirect("/admin/equipos/{$id}")->withErrors(['El equipo no está inscrito en este torneo.']);
         }
 
         $equipo->torneos()->detach($torneoId);
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Equipo eliminado del torneo correctamente.');
     }
 
@@ -194,7 +199,7 @@ class EquipoController extends Controller
 
         $equipo = Equipo::findOrFail($id);
 
-        $torneo = new Torneo();
+        $torneo = new Torneo;
         $torneo->nombre = $validated['nombre'];
         $torneo->descripcion = $validated['descripcion'] ?? null;
         $torneo->fecha_inicio = $validated['fecha_inicio'];
@@ -218,6 +223,7 @@ class EquipoController extends Controller
         $torneo->save();
 
         $equipo->torneos()->attach($torneo->id);
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Torneo creado e inscrito al equipo correctamente.');
     }
 
@@ -242,6 +248,7 @@ class EquipoController extends Controller
 
         $jugador = Jugador::findOrFail($validated['jugador_id']);
         $equipo->jugadores()->attach($jugador->id);
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Jugador agregado al equipo correctamente.');
     }
 
@@ -249,11 +256,12 @@ class EquipoController extends Controller
     {
         $equipo = Equipo::findOrFail($id);
 
-        if (!$equipo->jugadores()->where('jugador_id', $jugadorId)->exists()) {
+        if (! $equipo->jugadores()->where('jugador_id', $jugadorId)->exists()) {
             return redirect("/admin/equipos/{$id}")->withErrors(['El jugador no está en este equipo.']);
         }
 
         $equipo->jugadores()->detach($jugadorId);
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Jugador eliminado del equipo correctamente.');
     }
 
@@ -291,7 +299,7 @@ class EquipoController extends Controller
 
         $equipo = Equipo::findOrFail($id);
 
-        $jugador = new Jugador();
+        $jugador = new Jugador;
         $jugador->nombre = $validated['nombre'];
         $jugador->apellido1 = $validated['apellido1'];
         $jugador->apellido2 = $validated['apellido2'];
@@ -299,7 +307,7 @@ class EquipoController extends Controller
         $jugador->posicion = $validated['posicion'] ?? null;
 
         if ($request->hasFile('foto')) {
-            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre'] . '_' . $validated['apellido1'] . '_' . $validated['apellido2']);
+            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre'].'_'.$validated['apellido1'].'_'.$validated['apellido2']);
             $timestamp = time();
             $extension = $request->file('foto')->extension();
             $fotoFileName = "foto_{$nombreJugador}_{$timestamp}.{$extension}";
@@ -313,6 +321,7 @@ class EquipoController extends Controller
         $jugador->save();
 
         $equipo->jugadores()->attach($jugador->id);
+
         return redirect("/admin/equipos/{$id}")->with('success', 'Jugador creado e inscrito en el equipo correctamente.');
     }
 }

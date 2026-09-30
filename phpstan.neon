@@ -1,0 +1,12 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - routes
+
+    # Level 5 analysis as specified in audit report
+    level: 5
+
+    ignoreErrors: []

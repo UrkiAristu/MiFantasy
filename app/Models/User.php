@@ -4,8 +4,11 @@ namespace App\Models;
 
 use App\Notifications\ResetearPassword;
 use App\Notifications\VerificarEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
@@ -13,8 +16,8 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, Billable;
+    /** @use HasFactory<UserFactory> */
+    use Billable, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -56,24 +59,37 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new VerificarEmail());
+        $this->notify(new VerificarEmail);
     }
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetearPassword($token));
     }
 
-    public function liguillasCreadas()
+    /**
+     * @return HasMany<Liguilla, $this>
+     */
+    public function liguillasCreadas(): HasMany
     {
         return $this->hasMany(Liguilla::class, 'creador_id');
     }
-    public function liguillas()
+
+    /**
+     * @return BelongsToMany<Liguilla, $this>
+     */
+    public function liguillas(): BelongsToMany
     {
-        return $this->belongsToMany(Liguilla::class, 'liguilla_usuario',  'user_id', 'liguilla_id')
+        return $this->belongsToMany(Liguilla::class, 'liguilla_usuario', 'user_id', 'liguilla_id')
             ->withPivot('puesto', 'puntos')
             ->withTimestamps();
     }
-    public function plantillaLiguilla($liguillaId)
+
+    /**
+     * @param  int  $liguillaId
+     * @return HasMany<Plantilla, $this>
+     */
+    public function plantillaLiguilla($liguillaId): HasMany
     {
         return $this->hasMany(Plantilla::class, 'user_id')->where('liguilla_id', $liguillaId);
     }

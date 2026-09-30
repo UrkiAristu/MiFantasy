@@ -4,40 +4,58 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Alineacion extends Model
 {
     use HasFactory;
 
     protected $table = 'alineaciones';
+
     public $timestamps = true;
+
     protected $fillable = [
         'user_id',
         'liguilla_id',
         'jornada_id',
         'formacion',
     ];
-    public function usuario()
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function liguilla()
+    /**
+     * @return BelongsTo<Liguilla, $this>
+     */
+    public function liguilla(): BelongsTo
     {
         return $this->belongsTo(Liguilla::class);
     }
 
-    public function jornada()
+    /**
+     * @return BelongsTo<Jornada, $this>
+     */
+    public function jornada(): BelongsTo
     {
         return $this->belongsTo(Jornada::class);
     }
 
-    public function jugadores()
+    /**
+     * @return BelongsToMany<Jugador, $this>
+     */
+    public function jugadores(): BelongsToMany
     {
         return $this->belongsToMany(Jugador::class, 'alineacion_jugador')
             ->withPivot('puntos')
             ->withTimestamps();
     }
+
     public function scopeBase($q)
     {
         return $q->whereNull('jornada_id');

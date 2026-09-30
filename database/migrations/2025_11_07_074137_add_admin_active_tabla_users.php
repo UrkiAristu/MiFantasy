@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             // Añade los campos solo si no existen
-            if (!Schema::hasColumn('users', 'active')) {
+            if (! Schema::hasColumn('users', 'active')) {
                 $table->boolean('active')->default(true)->after('remember_token');
             }
 
-            if (!Schema::hasColumn('users', 'admin')) {
+            if (! Schema::hasColumn('users', 'admin')) {
                 $table->boolean('admin')->default(false)->after('active');
             }
         });

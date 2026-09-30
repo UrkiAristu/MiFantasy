@@ -16,7 +16,7 @@ class GenerarPlantillaAleatoriaAction
     {
         $plantilla = Plantilla::create([
             'liguilla_id' => $liguillaId,
-            'user_id'     => $usuarioId,
+            'user_id' => $usuarioId,
         ]);
 
         $liguilla = Liguilla::with('torneo')->findOrFail($liguillaId);
@@ -38,9 +38,9 @@ class GenerarPlantillaAleatoriaAction
             $registros = $jugadorIds->map(function ($jugadorId) use ($plantilla, $now) {
                 return [
                     'plantilla_id' => $plantilla->id,
-                    'jugador_id'   => $jugadorId,
-                    'created_at'   => $now,
-                    'updated_at'   => $now,
+                    'jugador_id' => $jugadorId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ];
             })->all();
 

@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class JugadorController extends Controller
 {
-    ///////////////////////////ADMIN////////////////////
+    // /////////////////////////ADMIN////////////////////
     public function mostrarPaginaJugadores()
     {
         $jugadores = Jugador::all();
+
         return view('admin.jugadores', compact('jugadores'));
     }
 
@@ -21,6 +22,7 @@ class JugadorController extends Controller
     {
         $jugador = Jugador::with(['equipos', 'participaciones'])->findOrFail($id);
         $equiposDisponibles = Equipo::whereNotIn('id', $jugador->equipos->pluck('id'))->get();
+
         return view('admin.jugador', compact('jugador', 'equiposDisponibles'));
     }
 
@@ -54,7 +56,7 @@ class JugadorController extends Controller
             ]
         );
 
-        $jugador = new Jugador();
+        $jugador = new Jugador;
         $jugador->nombre = $validated['nombre'];
         $jugador->apellido1 = $validated['apellido1'];
         $jugador->apellido2 = $validated['apellido2'];
@@ -62,7 +64,7 @@ class JugadorController extends Controller
         $jugador->posicion = $validated['posicion'];
 
         if ($request->hasFile('foto')) {
-            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre'] . '_' . $validated['apellido1'] . '_' . $validated['apellido2']);
+            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre'].'_'.$validated['apellido1'].'_'.$validated['apellido2']);
             $timestamp = time();
             $extension = $request->file('foto')->extension();
             $fotoFileName = "foto_{$nombreJugador}_{$timestamp}.{$extension}";
@@ -86,6 +88,7 @@ class JugadorController extends Controller
         }
 
         $jugador->delete();
+
         return redirect('/admin/jugadores')->with('success', 'Jugador eliminado correctamente.');
     }
 
@@ -137,7 +140,7 @@ class JugadorController extends Controller
             if ($jugador->foto && Storage::disk('public')->exists($jugador->foto)) {
                 Storage::disk('public')->delete($jugador->foto);
             }
-            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->nombre . '_' . $request->apellido1 . '_' . $request->apellido2);
+            $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->nombre.'_'.$request->apellido1.'_'.$request->apellido2);
             $timestamp = time();
             $extension = $request->file('foto')->extension();
             $fotoFileName = "foto_{$nombreJugador}_{$timestamp}.{$extension}";
@@ -147,6 +150,7 @@ class JugadorController extends Controller
         }
 
         $jugador->save();
+
         return redirect("/admin/jugadores/{$id}")->with('success', 'Jugador actualizado correctamente.');
     }
 
@@ -170,17 +174,19 @@ class JugadorController extends Controller
 
         $equipo = Equipo::findOrFail($validated['equipo_id']);
         $equipo->jugadores()->attach($jugador->id);
+
         return redirect("/admin/jugadores/{$id}")->with('success', 'Jugador agregado al equipo correctamente.');
     }
 
     public function eliminarDeEquipoJugador($id, $equipoId)
     {
         $jugador = Jugador::findOrFail($id);
-        if (!$jugador->equipos()->where('equipo_id', $equipoId)->exists()) {
+        if (! $jugador->equipos()->where('equipo_id', $equipoId)->exists()) {
             return redirect("/admin/jugadores/{$id}")->withErrors(['El equipo no está inscrito en este torneo.']);
         }
 
         $jugador->equipos()->detach($equipoId);
+
         return redirect("/admin/jugadores/{$id}")->with('success', 'Jugador eliminado del equipo correctamente.');
     }
 
@@ -201,7 +207,7 @@ class JugadorController extends Controller
         );
 
         $jugador = Jugador::findOrFail($id);
-        $equipo = new Equipo();
+        $equipo = new Equipo;
         $equipo->nombre = $validated['nombre'];
 
         if ($request->hasFile('logo')) {
@@ -218,15 +224,17 @@ class JugadorController extends Controller
         $equipo->save();
 
         $jugador->equipos()->attach($equipo->id);
+
         return redirect("/admin/jugadores/{$id}")->with('success', 'Equipo creado e inscrito el jugador correctamente.');
     }
 
-    ///////////////////////////USER////////////////////
+    // /////////////////////////USER////////////////////
     public function info($idJugador, $idTorneo)
     {
         $jugador = Jugador::findOrFail($idJugador);
         $edad = Carbon::parse($jugador->fecha_nacimiento)->age;
         $estadisticas = $jugador->resumenEstadisticasEnTorneo($idTorneo);
+
         return response()->json([
             'nombre' => $jugador->nombre,
             'apellido1' => $jugador->apellido1,
@@ -246,4 +254,3 @@ class JugadorController extends Controller
         ]);
     }
 }
-

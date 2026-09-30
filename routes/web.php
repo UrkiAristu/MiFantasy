@@ -17,10 +17,10 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-///////////MIDLEWARE REDIRIGIR SI VERIFICADO/////////
+// /////////MIDLEWARE REDIRIGIR SI VERIFICADO/////////
 Route::middleware('redirigir.si.verificado')->group(function () {
-//VERIFICADOR DE EMAIL
-    //Muestra aviso al usuario no verificado
+    // VERIFICADOR DE EMAIL
+    // Muestra aviso al usuario no verificado
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
     })->middleware('auth')->name('verification.notice');
@@ -28,34 +28,35 @@ Route::middleware('redirigir.si.verificado')->group(function () {
     // Procesa el enlace del correo
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill(); // Marca el email como verificado
+
         return redirect('/')->with('success', 'Tu correo ha sido verificado correctamente.');
     })->middleware(['auth', 'signed'])->name('verification.verify');
 
-    //Permite reenviar el correo de verificación
+    // Permite reenviar el correo de verificación
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();
+
         return back()->with('message', 'Se ha reenviado el enlace de verificación.');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 });
 
-
-////////////MIDLEWARE REDIRIGIR SI AUTENTICADO/////////
+// //////////MIDLEWARE REDIRIGIR SI AUTENTICADO/////////
 Route::middleware('guest')->group(function () {
-    //REGISTER
-    //Mostrar página de registro
+    // REGISTER
+    // Mostrar página de registro
     Route::get('/registro', function () {
         return view('auth/registro');
     })->name('register');
     Route::post('/registro', [RegisterController::class, 'register'])->name('register.attempt');
 
-    //LOGIN
-    //Mostrar página de login
+    // LOGIN
+    // Mostrar página de login
     Route::get('/login', function () {
         return view('auth/login');
     })->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 
-    //RECUPERAR CONTRASEÑA
+    // RECUPERAR CONTRASEÑA
     Route::get('/forgot-password', [PasswordController::class, 'showForgotForm'])
         ->name('password.request');
 
@@ -74,29 +75,30 @@ Route::get('/', function () {
     if (auth()->check()) {
         return view('user/home');
     }
+
     return view('welcome');
 })->name('welcome');
 
-//LOGOUT
+// LOGOUT
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 
-////////////MIDLEWARE VERIFICAR SESION/////////
-Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verificar email
+// //////////MIDLEWARE VERIFICAR SESION/////////
+Route::middleware(['auth'])->group(function () { // Añadir 'verified' para verificar email
     Route::get('/home', function () {
         return view('user/home');
     })->name('home');
-    
-    ///////////////MIDLEWARE VERIFICAR ADMIN/////////
+
+    // /////////////MIDLEWARE VERIFICAR ADMIN/////////
     Route::middleware('verificar.admin')->group(function () {
         Route::get('/zonaAdmin', function () {
             return view('admin/home');
         });
-        //USUARIOS
+        // USUARIOS
         Route::get('/admin/usuarios', [UsuarioController::class, 'mostrarPaginaUsuarios']);
         Route::get('/admin/usuarios/{id}', [UsuarioController::class, 'mostrarPaginaUsuario']);
         Route::post('admin/usuarios/{id}/editar', [UsuarioController::class, 'editarUsuario']);
         Route::put('/admin/usuarios/{id}/toggle', [UsuarioController::class, 'toggleActivo']);
-        //Torneos
+        // Torneos
         Route::get('/admin/torneos', [TorneoController::class, 'mostrarPaginaTorneos']);
         Route::get('/admin/torneos/{id}', [TorneoController::class, 'mostrarPaginaTorneo']);
         Route::post('/admin/torneos/crear', [TorneoController::class, 'crearTorneo']);
@@ -109,7 +111,7 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
         Route::post('/admin/torneos/{id}/equipos/{equipoId}/jugadores/agregar', [TorneoController::class, 'agregarJugadorAEquipoEnTorneo']);
         Route::delete('/admin/torneos/{id}/equipos/{equipoId}/jugadores/{jugadorId}/eliminar', [TorneoController::class, 'eliminarJugadorDeEquipoEnTorneo']);
         Route::post('/admin/torneos/{id}/equipos/{equipoId}/jugadores/crear', [TorneoController::class, 'crearJugadorEnEquipoEnTorneo']);
-        //Equipos
+        // Equipos
         Route::get('/admin/equipos', [EquipoController::class, 'mostrarPaginaEquipos']);
         Route::get('/admin/equipos/{id}', [EquipoController::class, 'mostrarPaginaEquipo']);
         Route::post('/admin/equipos/crear', [EquipoController::class, 'crearEquipo']);
@@ -121,7 +123,7 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
         Route::post('/admin/equipos/{id}/jugadores/agregar', [EquipoController::class, 'agregarJugadorAEquipo']);
         Route::delete('/admin/equipos/{id}/jugadores/{jugadorId}/eliminar', [EquipoController::class, 'eliminarJugadorDeEquipo']);
         Route::post('/admin/equipos/{id}/jugadores/crear', [EquipoController::class, 'crearJugadorEnEquipo']);
-        //Jugadores
+        // Jugadores
         Route::get('/admin/jugadores', [JugadorController::class, 'mostrarPaginaJugadores']);
         Route::get('/admin/jugadores/{id}', [JugadorController::class, 'mostrarPaginaJugador']);
         Route::post('/admin/jugadores/crear', [JugadorController::class, 'crearJugador']);
@@ -130,15 +132,15 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
         Route::post('/admin/jugadores/{id}/equipos/agregar', [JugadorController::class, 'agregarAEquipoJugador']);
         Route::delete('/admin/jugadores/{id}/equipos/{equipoId}/eliminar', [JugadorController::class, 'eliminarDeEquipoJugador']);
         Route::post('/admin/jugadores/{id}/equipos/crear', [JugadorController::class, 'crearEquipoConJugador']);
-        //Liguillas
+        // Liguillas
         Route::get('/admin/liguillas', [LiguillaController::class, 'mostrarPaginaLiguillas']);
-        //Jornadas
+        // Jornadas
         Route::get('/admin/torneos/{idTorneo}/jornadas', [PartidoController::class, 'mostrarPaginaJornadas']);
         Route::post('/admin/torneos/{idTorneo}/jornadas/crear', [PartidoController::class, 'crearJornada']);
         Route::post('/admin/torneos/{idTorneo}/jornadas/guardarOrdenJornadas', [PartidoController::class, 'guardarOrdenJornadas']);
         Route::delete('/admin/jornadas/{id}/eliminar', [PartidoController::class, 'eliminarJornada']);
         Route::post('/admin/jornadas/{id}/editar', [PartidoController::class, 'editarJornada']);
-        //Partidos
+        // Partidos
         Route::get('/admin/partidos/{id}', [PartidoController::class, 'mostrarPaginaPartido']);
         Route::post('/admin/jornadas/{idJornada}/partidos/crear', [PartidoController::class, 'crearPartido']);
         Route::delete('/admin/partidos/{id}/eliminar', [PartidoController::class, 'eliminarPartido']);
@@ -160,9 +162,9 @@ Route::middleware(['auth'])->group(function () { //Añadir 'verified' para verif
     Route::post('/user/liguillas/{id}/alineacion/guardar', [AlineacionController::class, 'guardarAlineacion']);
     Route::get('/user/liguillas/{idLiguilla}/alineacion/{idJornada}', [AlineacionController::class, 'obtenerAlineacion']);
     Route::get('/user/jugadores/{idJugador}/info/torneo/{idTorneo}', [JugadorController::class, 'info']);
-    Route::get('/user/liguillas/{idLiguilla}/usuario/{idUser}/plantilla', [LiguillaController::class, 'plantilla']); 
-    Route::get('/user/liguillas/{liguilla}/clasificacion',[LiguillaController::class, 'clasificacionAjax'])->name('liguillas.clasificacionAjax');
-    Route::get('/user/liguillas/{liguilla}/alineacion-usuario/{user}/jornada/{jornada}',[LiguillaController::class, 'alineacionUsuarioJornada'])->name('liguillas.alineacionUsuarioJornada');
+    Route::get('/user/liguillas/{idLiguilla}/usuario/{idUser}/plantilla', [LiguillaController::class, 'plantilla']);
+    Route::get('/user/liguillas/{liguilla}/clasificacion', [LiguillaController::class, 'clasificacionAjax'])->name('liguillas.clasificacionAjax');
+    Route::get('/user/liguillas/{liguilla}/alineacion-usuario/{user}/jornada/{jornada}', [LiguillaController::class, 'alineacionUsuarioJornada'])->name('liguillas.alineacionUsuarioJornada');
 
     // Suscripciones SaaS B2B y Gestión de Tenants
     Route::get('/suscripcion/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');

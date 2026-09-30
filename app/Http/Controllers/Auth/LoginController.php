@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -34,15 +32,17 @@ class LoginController extends Controller
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
         $credentials = [
-            $field     => $login,
+            $field => $login,
             'password' => $request->password,
-            'active'   => 1, // solo usuarios activos pueden autenticarse
+            'active' => 1, // solo usuarios activos pueden autenticarse
         ];
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
             return redirect()->intended('/'); // o /dashboard
         }
+
         return back()->withErrors([
             'login' => 'El usuario o la contraseña son incorrectos o la cuenta está inactiva.',
         ])->onlyInput('login');
@@ -53,11 +53,13 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/login');
     }
+
     public function register(Request $request)
     {
-       $validated = $request->validate(
+        $validated = $request->validate(
             [
                 'nombreUsuario' => 'required|unique:users,name',
                 'email' => 'required|unique:users,email',
@@ -70,17 +72,17 @@ class LoginController extends Controller
                 'email.unique' => 'El email ya existe.',
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-                'password.confirmed' => 'Las contraseñas no coinciden.'
+                'password.confirmed' => 'Las contraseñas no coinciden.',
             ]
         );
 
         // Crear el usuario en la tabla users
         $user = User::create([
-            'name'     => $validated['nombreUsuario'],   // <- mapeo a users.name
-            'email'    => $validated['email'],
+            'name' => $validated['nombreUsuario'],   // <- mapeo a users.name
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'active'   => true,   // o false si quieres activación manual
-            'admin'    => false,
+            'active' => true,   // o false si quieres activación manual
+            'admin' => false,
         ]);
 
         Auth::login($user);

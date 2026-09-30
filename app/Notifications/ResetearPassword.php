@@ -13,14 +13,15 @@ class ResetearPassword extends ResetPassword
     public function toMail($notifiable)
     {
         $resetUrl = $this->resetUrl($notifiable);
+
         return (new MailMessage)
             ->subject('Restablecer contraseña')
-            ->greeting('¡Hola ' . $notifiable->name . '!')
+            ->greeting('¡Hola '.$notifiable->name.'!')
             ->line('Has solicitado restablecer la contraseña de tu cuenta.')
             ->line('Haz clic en el siguiente botón para establecer una nueva contraseña.')
             ->action('Restablecer contraseña', $resetUrl)
             ->line('Este enlace caducará en 60 minutos.')
             ->line('Si no has solicitado este cambio, puedes ignorar este mensaje.')
-            ->salutation('Saludos, ' . config('app.name'));
+            ->salutation('Saludos, '.config('app.name'));
     }
 }

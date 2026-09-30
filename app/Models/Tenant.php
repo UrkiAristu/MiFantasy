@@ -10,7 +10,7 @@ use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 
 class Tenant extends BaseTenant
 {
-    use HasDomains, Billable;
+    use Billable, HasDomains;
 
     public static function getCustomColumns(): array
     {

@@ -29,13 +29,21 @@ class PuntosYClasificacionTest extends TestCase
     use RefreshDatabase;
 
     private Torneo $torneo;
+
     private Liguilla $liguilla;
+
     private Jornada $jornada1;
+
     private Jornada $jornada2;
+
     private User $userA;
+
     private User $userB;
+
     private array $jugadores;
+
     private Equipo $equipo1;
+
     private Equipo $equipo2;
 
     protected function setUp(): void
@@ -49,7 +57,7 @@ class PuntosYClasificacionTest extends TestCase
         $this->userB = User::factory()->create(['name' => 'Usuario B', 'email' => 'b@test.com', 'active' => true]);
 
         // 2. Crear Torneo
-        $this->torneo = new Torneo();
+        $this->torneo = new Torneo;
         $this->torneo->nombre = 'Torneo Clasificacion Test';
         $this->torneo->jugadores_por_equipo = 2;
         $this->torneo->fecha_inicio = now()->subDays(10);
@@ -57,7 +65,7 @@ class PuntosYClasificacionTest extends TestCase
         $this->torneo->save();
 
         // 3. Crear Liguilla y asociar usuarios
-        $this->liguilla = new Liguilla();
+        $this->liguilla = new Liguilla;
         $this->liguilla->nombre = 'Liguilla Clasificacion';
         $this->liguilla->torneo_id = $this->torneo->id;
         $this->liguilla->max_usuarios = 10;
@@ -71,18 +79,18 @@ class PuntosYClasificacionTest extends TestCase
         ]);
 
         // 4. Crear Equipos
-        $this->equipo1 = new Equipo();
+        $this->equipo1 = new Equipo;
         $this->equipo1->nombre = 'Equipo 1';
         $this->equipo1->save();
 
-        $this->equipo2 = new Equipo();
+        $this->equipo2 = new Equipo;
         $this->equipo2->nombre = 'Equipo 2';
         $this->equipo2->save();
 
         // 5. Crear Jugadores
         $this->jugadores = [];
         for ($i = 1; $i <= 4; $i++) {
-            $jugador = new Jugador();
+            $jugador = new Jugador;
             $jugador->nombre = "Jugador $i";
             $jugador->apellido1 = "Apellido $i";
             $jugador->save();
@@ -92,11 +100,11 @@ class PuntosYClasificacionTest extends TestCase
             $equipoId = ($i <= 2) ? $this->equipo1->id : $this->equipo2->id;
             DB::table('equipo_jugador_torneo')->insert([
                 'jugador_id' => $jugador->id,
-                'equipo_id'  => $equipoId,
-                'torneo_id'  => $this->torneo->id,
-                'goles'      => 0,
-                'asistencias'=> 0,
-                'puntos'     => 0,
+                'equipo_id' => $equipoId,
+                'torneo_id' => $this->torneo->id,
+                'goles' => 0,
+                'asistencias' => 0,
+                'puntos' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -119,7 +127,7 @@ class PuntosYClasificacionTest extends TestCase
         $alineacionBaseB->jugadores()->attach([$this->jugadores[2]->id, $this->jugadores[3]->id]);
 
         // 8. Crear Jornadas
-        $this->jornada1 = new Jornada();
+        $this->jornada1 = new Jornada;
         $this->jornada1->torneo_id = $this->torneo->id;
         $this->jornada1->nombre = 'Jornada 1';
         $this->jornada1->orden = 1;
@@ -127,7 +135,7 @@ class PuntosYClasificacionTest extends TestCase
         $this->jornada1->fecha_fin = now()->subDays(2);
         $this->jornada1->save();
 
-        $this->jornada2 = new Jornada();
+        $this->jornada2 = new Jornada;
         $this->jornada2->torneo_id = $this->torneo->id;
         $this->jornada2->nombre = 'Jornada 2';
         $this->jornada2->orden = 2;
@@ -223,7 +231,7 @@ class PuntosYClasificacionTest extends TestCase
         // Jugador 2 victoria (+3) = 3 pts
         // Jugador 3 derrota (0) + 1 amarilla (-3) = -3 pts
         // Jugador 4 derrota (0) = 0 pts
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada1->id;
         $partido->equipo_local_id = $this->equipo1->id;
         $partido->equipo_visitante_id = $this->equipo2->id;
@@ -279,7 +287,7 @@ class PuntosYClasificacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'modo'    => 'global',
+                'modo' => 'global',
                 'jornada' => null,
             ]);
 
@@ -316,11 +324,11 @@ class PuntosYClasificacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'modo'    => (string) $this->jornada1->id,
+                'modo' => (string) $this->jornada1->id,
                 'jornada' => [
-                    'id'     => $this->jornada1->id,
+                    'id' => $this->jornada1->id,
                     'nombre' => 'Jornada 1',
-                    'orden'  => 1,
+                    'orden' => 1,
                 ],
             ]);
 
@@ -345,7 +353,7 @@ class PuntosYClasificacionTest extends TestCase
         $alA->jugadores()->attach([$this->jugadores[0]->id, $this->jugadores[1]->id]);
 
         // Crear partido y estadisticas para la Jornada 1
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada1->id;
         $partido->equipo_local_id = $this->equipo1->id;
         $partido->equipo_visitante_id = $this->equipo2->id;
@@ -358,32 +366,32 @@ class PuntosYClasificacionTest extends TestCase
         Estadistica::create([
             'partido_id' => $partido->id,
             'jugador_id' => $this->jugadores[0]->id,
-            'goles'      => 1,
-            'puntos'     => 8, // 3 victoria + 5 gol
-            'resultado'  => 'ganado',
+            'goles' => 1,
+            'puntos' => 8, // 3 victoria + 5 gol
+            'resultado' => 'ganado',
         ]);
 
         Estadistica::create([
             'partido_id' => $partido->id,
             'jugador_id' => $this->jugadores[1]->id,
-            'puntos'     => 3, // 3 victoria
-            'resultado'  => 'ganado',
+            'puntos' => 3, // 3 victoria
+            'resultado' => 'ganado',
         ]);
 
         $response = $this->actingAs($this->userA)->getJson("/user/liguillas/{$this->liguilla->id}/alineacion-usuario/{$this->userA->id}/jornada/{$this->jornada1->id}");
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'       => 'ok',
+                'status' => 'ok',
                 'total_puntos' => 11,
             ])
             ->assertJsonCount(2, 'jugadores')
             ->assertJsonFragment([
-                'id'     => $this->jugadores[0]->id,
+                'id' => $this->jugadores[0]->id,
                 'puntos' => 8,
             ])
             ->assertJsonFragment([
-                'id'     => $this->jugadores[1]->id,
+                'id' => $this->jugadores[1]->id,
                 'puntos' => 3,
             ]);
     }
@@ -394,8 +402,8 @@ class PuntosYClasificacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'       => 'ok',
-                'jugadores'    => [],
+                'status' => 'ok',
+                'jugadores' => [],
                 'total_puntos' => 0,
             ]);
     }
@@ -424,7 +432,7 @@ class PuntosYClasificacionTest extends TestCase
 
         $admin = User::factory()->create(['name' => 'Admin', 'email' => 'admin@test.com', 'active' => true, 'admin' => true]);
 
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada1->id;
         $partido->equipo_local_id = $this->equipo1->id;
         $partido->equipo_visitante_id = $this->equipo2->id;
@@ -442,7 +450,7 @@ class PuntosYClasificacionTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        
+
         Queue::assertPushed(RecalcularPuntosJornadaJob::class, function ($job) use ($partido) {
             return $job->jornadaId === $partido->jornada_id;
         });
@@ -456,8 +464,8 @@ class PuntosYClasificacionTest extends TestCase
             $this->jugadores[0]->id => ['puntos' => 0],
             $this->jugadores[1]->id => ['puntos' => 0],
         ]);
-        
-        $partido = new Partido();
+
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada1->id;
         $partido->equipo_local_id = $this->equipo1->id;
         $partido->equipo_visitante_id = $this->equipo2->id;
@@ -465,7 +473,7 @@ class PuntosYClasificacionTest extends TestCase
         $partido->estado = 'jugado';
         $partido->save();
         $partidoId = $partido->id;
-        
+
         Estadistica::create(['partido_id' => $partidoId, 'jugador_id' => $this->jugadores[0]->id, 'puntos' => 6, 'goles' => 1, 'resultado' => 'empatado']);
         Estadistica::create(['partido_id' => $partidoId, 'jugador_id' => $this->jugadores[1]->id, 'puntos' => 4, 'asistencias' => 1, 'resultado' => 'empatado']);
 
@@ -494,4 +502,3 @@ class PuntosYClasificacionTest extends TestCase
         $this->assertEquals(14, $ligGlobalA2->puntos);
     }
 }
-

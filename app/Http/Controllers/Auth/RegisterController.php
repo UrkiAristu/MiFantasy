@@ -13,7 +13,7 @@ class RegisterController extends Controller
 {
     public function register(Request $request)
     {
-       $validated = $request->validate(
+        $validated = $request->validate(
             [
                 'nombreUsuario' => 'required|string|max:255|unique:users,name',
                 'email' => 'required|string|email|max:255|unique:users,email',
@@ -28,17 +28,17 @@ class RegisterController extends Controller
                 'email.unique' => 'El email ya existe.',
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-                'password.confirmed' => 'Las contraseñas no coinciden.'
+                'password.confirmed' => 'Las contraseñas no coinciden.',
             ]
         );
 
         // Crear el usuario en la tabla users
         $user = User::create([
-            'name'     => $validated['nombreUsuario'],   // <- mapeo a users.name
-            'email'    => $validated['email'],
+            'name' => $validated['nombreUsuario'],   // <- mapeo a users.name
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'active'   => true,   // o false si quieres activación manual
-            'admin'    => false,
+            'active' => true,   // o false si quieres activación manual
+            'admin' => false,
         ]);
 
         event(new Registered($user));
@@ -47,10 +47,10 @@ class RegisterController extends Controller
         $request->session()->regenerate();
 
         // Si el registro incluye selección de plan SaaS B2B, iniciar Checkout de Stripe Cashier
-        if (!empty($validated['plan'])) {
+        if (! empty($validated['plan'])) {
             return redirect()->route('subscription.checkout', [
                 'plan' => $validated['plan'],
-                'org' => $validated['organizacion'] ?? ('Liga de ' . $user->name),
+                'org' => $validated['organizacion'] ?? ('Liga de '.$user->name),
             ]);
         }
 

@@ -7,7 +7,36 @@ on:
     branches: [ "main", "test" ]
 
 jobs:
-  laravel-tests:
+  code-quality:
+    name: Code Quality & Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, bcmath, zip
+          coverage: none
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run Security Audit
+        run: composer audit --locked
+
+      - name: Check Code Style with Pint
+        run: ./vendor/bin/pint --test
+
+      - name: Run Larastan / PHPStan Static Analysis (Level 5)
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
+
+  tests:
+    name: Automated Tests
+    needs: code-quality
     runs-on: ubuntu-latest
 
     services:

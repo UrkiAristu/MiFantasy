@@ -4,10 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Alineacion\GuardarAlineacionAction;
 use App\Models\Alineacion;
-use App\Models\Jornada;
-use App\Models\Jugador;
-use App\Models\Liguilla;
-use App\Models\Plantilla;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +27,7 @@ class AlineacionController extends Controller
         ],
         'sala' => [
             '1-2-1' => ['Portero' => 1, 'Defensa' => 1, 'Centrocampista' => 2, 'Delantero' => 1],
-            '2-2'   => ['Portero' => 1, 'Defensa' => 2, 'Centrocampista' => 0, 'Delantero' => 2],
+            '2-2' => ['Portero' => 1, 'Defensa' => 2, 'Centrocampista' => 0, 'Delantero' => 2],
             '1-1-2' => ['Portero' => 1, 'Defensa' => 1, 'Centrocampista' => 1, 'Delantero' => 2],
             '2-1-1' => ['Portero' => 1, 'Defensa' => 2, 'Centrocampista' => 1, 'Delantero' => 1],
         ],
@@ -48,9 +44,9 @@ class AlineacionController extends Controller
             $usuarioId = Auth::id();
 
             $validated = $request->validate([
-                'jugadores'   => 'nullable|array',
+                'jugadores' => 'nullable|array',
                 'jugadores.*' => 'exists:jugadores,id',
-                'formacion'   => 'nullable|string',
+                'formacion' => 'nullable|string',
             ]);
 
             $result = $action->execute(
@@ -62,25 +58,25 @@ class AlineacionController extends Controller
 
             if (! $result['success']) {
                 return response()->json([
-                    'status'  => 'error',
+                    'status' => 'error',
                     'message' => $result['message'],
                 ], $result['status_code'] ?? 422);
             }
 
             return response()->json([
-                'status'    => 'success',
-                'message'   => 'Alineación guardada correctamente',
+                'status' => 'success',
+                'message' => 'Alineación guardada correctamente',
                 'formacion' => $result['formacion'],
             ]);
         } catch (Exception $e) {
-            Log::error('Error al guardar alineación: ' . $e->getMessage(), [
-                'user_id'     => Auth::id(),
+            Log::error('Error al guardar alineación: '.$e->getMessage(), [
+                'user_id' => Auth::id(),
                 'liguilla_id' => $liguillaId,
-                'trace'       => $e->getTraceAsString(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Ocurrió un error inesperado al guardar la alineación.',
             ], 500);
         }
@@ -96,29 +92,29 @@ class AlineacionController extends Controller
             ->where('jornada_id', $idJornada)
             ->first();
 
-        if (!$alineacion) {
+        if (! $alineacion) {
             return response()->json([
-                'status'       => 'empty',
-                'formacion'    => null,
-                'jugadores'    => [],
+                'status' => 'empty',
+                'formacion' => null,
+                'jugadores' => [],
                 'total_puntos' => 0,
             ]);
         }
 
-        $totalPuntos = $alineacion->jugadores->sum(fn($j) => $j->pivot->puntos ?? 0);
+        $totalPuntos = $alineacion->jugadores->sum(fn ($j) => $j->pivot->puntos ?? 0);
 
         return response()->json([
-            'status'       => 'ok',
-            'formacion'    => $alineacion->formacion,
-            'jugadores'    => $alineacion->jugadores->map(function ($jugador) {
+            'status' => 'ok',
+            'formacion' => $alineacion->formacion,
+            'jugadores' => $alineacion->jugadores->map(function ($jugador) {
                 return [
-                    'id'        => $jugador->id,
-                    'nombre'    => $jugador->nombre,
+                    'id' => $jugador->id,
+                    'nombre' => $jugador->nombre,
                     'apellido1' => $jugador->apellido1,
                     'apellido2' => $jugador->apellido2,
-                    'posicion'  => $jugador->posicion,
-                    'foto'      => $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png'),
-                    'puntos'    => $jugador->pivot->puntos ?? 0,
+                    'posicion' => $jugador->posicion,
+                    'foto' => $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png'),
+                    'puntos' => $jugador->pivot->puntos ?? 0,
                 ];
             })->values(),
             'total_puntos' => $totalPuntos,

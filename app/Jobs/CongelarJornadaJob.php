@@ -30,9 +30,7 @@ class CongelarJornadaJob implements ShouldQueue
     /**
      * Crear una nueva instancia del Job.
      */
-    public function __construct(public Jornada $jornada)
-    {
-    }
+    public function __construct(public Jornada $jornada) {}
 
     /**
      * Ejecutar el Job de congelación de alineaciones por lotes para evitar saturación de memoria.
@@ -41,8 +39,9 @@ class CongelarJornadaJob implements ShouldQueue
     {
         $torneo = $this->jornada->loadMissing('torneo')->torneo;
 
-        if (!$torneo) {
+        if (! $torneo) {
             Log::warning("CongelarJornadaJob: La jornada {$this->jornada->id} no tiene torneo asociado.");
+
             return;
         }
 
@@ -85,10 +84,10 @@ class CongelarJornadaJob implements ShouldQueue
 
                         // Crear cabecera de alineación congelada
                         $alineacionJornada = Alineacion::create([
-                            'user_id'     => $baseAlineacion->user_id,
+                            'user_id' => $baseAlineacion->user_id,
                             'liguilla_id' => $liguilla->id,
-                            'jornada_id'  => $this->jornada->id,
-                            'formacion'   => $baseAlineacion->formacion,
+                            'jornada_id' => $this->jornada->id,
+                            'formacion' => $baseAlineacion->formacion,
                         ]);
 
                         // Preparar filas para Bulk Insert en la tabla pivote alineacion_jugador
@@ -96,14 +95,14 @@ class CongelarJornadaJob implements ShouldQueue
                         foreach ($baseAlineacion->jugadores as $jugador) {
                             $pivotRows[] = [
                                 'alineacion_id' => $alineacionJornada->id,
-                                'jugador_id'    => $jugador->id,
-                                'puntos'        => 0,
-                                'created_at'    => $now,
-                                'updated_at'    => $now,
+                                'jugador_id' => $jugador->id,
+                                'puntos' => 0,
+                                'created_at' => $now,
+                                'updated_at' => $now,
                             ];
                         }
 
-                        if (!empty($pivotRows)) {
+                        if (! empty($pivotRows)) {
                             DB::table('alineacion_jugador')->insert($pivotRows);
                         }
                     }

@@ -6,7 +6,7 @@ use App\Models\Torneo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Torneo>
+ * @extends Factory<Torneo>
  */
 class TorneoFactory extends Factory
 {
@@ -23,7 +23,7 @@ class TorneoFactory extends Factory
         $fin = (clone $inicio)->modify('+6 months');
 
         return [
-            'nombre' => 'Liga ' . fake()->city() . ' ' . fake()->year(),
+            'nombre' => 'Liga '.fake()->city().' '.fake()->year(),
             'fecha_inicio' => $inicio->format('Y-m-d'),
             'fecha_fin' => $fin->format('Y-m-d'),
             'descripcion' => fake()->paragraph(),

@@ -2,10 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Alineacion;
-use App\Models\Equipo;
 use App\Models\Estadistica;
-use App\Models\Jornada;
 use App\Models\Jugador;
 use App\Models\Liguilla;
 use App\Models\Partido;

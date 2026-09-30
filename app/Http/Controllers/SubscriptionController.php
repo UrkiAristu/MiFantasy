@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Checkout;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class SubscriptionController extends Controller
@@ -13,7 +15,7 @@ class SubscriptionController extends Controller
     /**
      * Iniciar sesión de Stripe Checkout o simulación segura en local.
      */
-    public function checkout(Request $request): RedirectResponse
+    public function checkout(Request $request): Response|Checkout
     {
         /** @var User $user */
         $user = $request->user();
@@ -21,25 +23,25 @@ class SubscriptionController extends Controller
         $planKey = $request->query('plan', $request->input('plan', 'pro'));
         $plans = config('saas.plans', []);
 
-        if (!array_key_exists($planKey, $plans)) {
+        if (! array_key_exists($planKey, $plans)) {
             $planKey = 'basico';
         }
 
-        $orgName = $request->query('org', $request->input('org', $request->input('organizacion', 'Liga de ' . $user->name)));
+        $orgName = $request->query('org', $request->input('org', $request->input('organizacion', 'Liga de '.$user->name)));
         if (empty(trim((string) $orgName))) {
-            $orgName = 'Liga de ' . $user->name;
+            $orgName = 'Liga de '.$user->name;
         }
 
         $priceId = $plans[$planKey]['price_id'] ?? 'price_basico_monthly';
-        $stripeSecret = config('cashier.secret') ?? env('STRIPE_SECRET');
+        $stripeSecret = config('cashier.secret') ?? config('services.stripe.secret');
 
         // Si Stripe está configurado con clave real, generar sesión de Checkout vía Cashier
-        if (!empty($stripeSecret) && !in_array($stripeSecret, ['sk_test_placeholder', 'your_stripe_secret_here', ''])) {
+        if (! empty($stripeSecret) && ! in_array($stripeSecret, ['sk_test_placeholder', 'your_stripe_secret_here', ''])) {
             try {
                 return $user->newSubscription('default', $priceId)
                     ->allowPromotionCodes()
                     ->checkout([
-                        'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}&plan=' . $planKey . '&org=' . urlencode($orgName),
+                        'success_url' => route('subscription.success').'?session_id={CHECKOUT_SESSION_ID}&plan='.$planKey.'&org='.urlencode($orgName),
                         'cancel_url' => route('subscription.cancel'),
                         'metadata' => [
                             'user_id' => $user->id,
@@ -48,7 +50,7 @@ class SubscriptionController extends Controller
                         ],
                     ]);
             } catch (Throwable $e) {
-                Log::warning('Stripe Checkout no pudo inicializarse con el API remoto: ' . $e->getMessage());
+                Log::warning('Stripe Checkout no pudo inicializarse con el API remoto: '.$e->getMessage());
                 // Fallback automático para entornos de desarrollo sin Stripe configurado
             }
         }
@@ -71,7 +73,7 @@ class SubscriptionController extends Controller
         $planKey = $request->query('plan', 'pro');
         $plans = config('saas.plans', []);
         $planData = $plans[$planKey] ?? ($plans['pro'] ?? ['name' => ucfirst($planKey)]);
-        $planLabel = $planData['name'] ?? 'Plan ' . ucfirst($planKey);
+        $planLabel = $planData['name'] ?? 'Plan '.ucfirst($planKey);
 
         return redirect()->route('home')->with(
             'success',

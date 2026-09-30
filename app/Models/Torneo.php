@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Torneo extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $table = 'torneos';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -63,24 +66,38 @@ class Torneo extends Model
             default => '1-2-1',
         };
     }
-    public function equipos()
+
+    /**
+     * @return BelongsToMany<Equipo, $this>
+     */
+    public function equipos(): BelongsToMany
     {
         return $this->belongsToMany(Equipo::class, 'equipo_torneo')
             ->withTimestamps();
     }
 
-    public function jugadores()
+    /**
+     * @return BelongsToMany<Jugador, $this>
+     */
+    public function jugadores(): BelongsToMany
     {
         return $this->belongsToMany(Jugador::class, 'equipo_jugador_torneo')
             ->withPivot('equipo_id', 'goles', 'asistencias', 'puntos')
             ->withTimestamps();
     }
-    public function jornadas()
+
+    /**
+     * @return HasMany<Jornada, $this>
+     */
+    public function jornadas(): HasMany
     {
         return $this->hasMany(Jornada::class);
     }
 
-    public function liguillas()
+    /**
+     * @return HasMany<Liguilla, $this>
+     */
+    public function liguillas(): HasMany
     {
         return $this->hasMany(Liguilla::class);
     }

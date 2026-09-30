@@ -8,18 +8,12 @@ use App\Models\Jugador;
 use App\Models\Liguilla;
 use App\Models\Plantilla;
 use Exception;
-use Illuminate\Validation\ValidationException;
 
 class GuardarAlineacionAction
 {
     /**
      * Valida y guarda la alineación base de un usuario en una liguilla.
      *
-     * @param int $usuarioId
-     * @param int $liguillaId
-     * @param array $jugadores
-     * @param string|null $formacion
-     * @return array
      * @throws Exception
      */
     public function execute(int $usuarioId, int $liguillaId, array $jugadores = [], ?string $formacion = null): array
@@ -40,8 +34,8 @@ class GuardarAlineacionAction
         $formacionesDisponibles = AlineacionController::obtenerFormacionesPorModalidad($modalidad);
 
         // Validar formación
-        if (!empty($formacion)) {
-            if (!isset($formacionesDisponibles[$formacion])) {
+        if (! empty($formacion)) {
+            if (! isset($formacionesDisponibles[$formacion])) {
                 return [
                     'success' => false,
                     'status_code' => 422,
@@ -83,7 +77,7 @@ class GuardarAlineacionAction
         if ($plantilla) {
             $idsEnPlantilla = $plantilla->jugadores->pluck('id')->toArray();
             foreach ($jugadoresUnicos as $idJug) {
-                if (!in_array($idJug, $idsEnPlantilla)) {
+                if (! in_array($idJug, $idsEnPlantilla)) {
                     return [
                         'success' => false,
                         'status_code' => 422,
@@ -94,13 +88,13 @@ class GuardarAlineacionAction
         }
 
         // Validar topes por posición según la formación
-        if (!empty($jugadoresUnicos)) {
+        if (! empty($jugadoresUnicos)) {
             $jugadoresModelos = Jugador::whereIn('id', $jugadoresUnicos)->get();
             $conteoPorPosicion = [
-                'Portero'        => 0,
-                'Defensa'        => 0,
+                'Portero' => 0,
+                'Defensa' => 0,
                 'Centrocampista' => 0,
-                'Delantero'      => 0,
+                'Delantero' => 0,
             ];
 
             foreach ($jugadoresModelos as $jugador) {
@@ -124,9 +118,9 @@ class GuardarAlineacionAction
 
         // Buscar o crear alineación BASE
         $alineacion = Alineacion::firstOrCreate([
-            'user_id'     => $usuarioId,
+            'user_id' => $usuarioId,
             'liguilla_id' => $liguillaId,
-            'jornada_id'  => null,
+            'jornada_id' => null,
         ]);
 
         $alineacion->formacion = $formacionElegida;
@@ -136,9 +130,9 @@ class GuardarAlineacionAction
         $alineacion->jugadores()->sync($jugadoresUnicos);
 
         return [
-            'success'   => true,
+            'success' => true,
             'formacion' => $formacionElegida,
-            'alineacion'=> $alineacion,
+            'alineacion' => $alineacion,
         ];
     }
 }

@@ -45,8 +45,9 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
     {
         $jornada = Jornada::with('torneo')->find($this->jornadaId);
 
-        if (!$jornada || !$jornada->torneo) {
+        if (! $jornada || ! $jornada->torneo) {
             Log::warning("RecalcularPuntosJornadaJob: Jornada {$this->jornadaId} o torneo no encontrados.");
+
             return;
         }
 
@@ -71,7 +72,7 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
         $driver = DB::connection()->getDriverName();
 
         if ($driver === 'mysql') {
-            DB::statement("
+            DB::statement('
                 UPDATE alineacion_jugador aj
                 JOIN alineaciones a ON a.id = aj.alineacion_id
                 LEFT JOIN (
@@ -83,10 +84,10 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
                 ) stats ON stats.jugador_id = aj.jugador_id
                 SET aj.puntos = COALESCE(stats.total_puntos, 0)
                 WHERE a.jornada_id = ?
-            ", [$jornadaId, $jornadaId]);
+            ', [$jornadaId, $jornadaId]);
         } else {
             // Compatibilidad SQLite / testing
-            DB::statement("
+            DB::statement('
                 UPDATE alineacion_jugador
                 SET puntos = COALESCE((
                     SELECT SUM(e.puntos)
@@ -97,7 +98,7 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
                 WHERE alineacion_id IN (
                     SELECT id FROM alineaciones WHERE jornada_id = ?
                 )
-            ", [$jornadaId, $jornadaId]);
+            ', [$jornadaId, $jornadaId]);
         }
     }
 
@@ -109,7 +110,7 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
         $driver = DB::connection()->getDriverName();
 
         if ($driver === 'mysql') {
-            DB::statement("
+            DB::statement('
                 UPDATE liguilla_usuario lu
                 JOIN liguillas l ON l.id = lu.liguilla_id
                 LEFT JOIN (
@@ -121,10 +122,10 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
                 ) calc ON calc.liguilla_id = lu.liguilla_id AND calc.user_id = lu.user_id
                 SET lu.puntos = COALESCE(calc.total_puntos, 0)
                 WHERE l.torneo_id = ?
-            ", [$torneoId]);
+            ', [$torneoId]);
         } else {
             // Compatibilidad SQLite / testing
-            DB::statement("
+            DB::statement('
                 UPDATE liguilla_usuario
                 SET puntos = COALESCE((
                     SELECT SUM(aj.puntos)
@@ -137,7 +138,7 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
                 WHERE liguilla_id IN (
                     SELECT id FROM liguillas WHERE torneo_id = ?
                 )
-            ", [$torneoId]);
+            ', [$torneoId]);
         }
     }
 }

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Liguilla>
+ * @extends Factory<Liguilla>
  */
 class LiguillaFactory extends Factory
 {
@@ -23,7 +23,7 @@ class LiguillaFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => 'Liguilla ' . fake()->company(),
+            'nombre' => 'Liguilla '.fake()->company(),
             'torneo_id' => Torneo::factory(),
             'max_usuarios' => 10,
             'codigo_unico' => strtoupper(Str::random(8)),

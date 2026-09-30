@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Alineacion;
 use App\Models\Equipo;
-use App\Models\Estadistica;
 use App\Models\Jornada;
 use App\Models\Jugador;
 use App\Models\Liguilla;
@@ -16,7 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -73,7 +71,7 @@ class DatabaseSeeder extends Seeder
             'Real Madrid', 'FC Barcelona', 'Atlético de Madrid', 'Athletic Club', 'Real Sociedad',
             'Real Betis', 'Villarreal CF', 'Sevilla FC', 'CA Osasuna', 'Valencia CF',
             'Girona FC', 'Celta de Vigo', 'RCD Mallorca', 'Rayo Vallecano', 'Getafe CF',
-            'UD Las Palmas', 'Deportivo Alavés', 'CD Leganés', 'Real Valladolid', 'RCD Espanyol'
+            'UD Las Palmas', 'Deportivo Alavés', 'CD Leganés', 'Real Valladolid', 'RCD Espanyol',
         ];
 
         $equipos = collect();
@@ -590,7 +588,7 @@ class DatabaseSeeder extends Seeder
             DB::table('liguilla_usuario')->insert([
                 'liguilla_id' => $liguilla->id,
                 'user_id' => $user->id,
-                'nombre_equipo' => $nombresEquiposLiguilla[$user->id] ?? ('Equipo ' . $user->name),
+                'nombre_equipo' => $nombresEquiposLiguilla[$user->id] ?? ('Equipo '.$user->name),
                 'puesto' => null,
                 'puntos' => 0,
                 'created_at' => now(),

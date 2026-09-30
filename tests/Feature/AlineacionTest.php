@@ -18,8 +18,11 @@ class AlineacionTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Torneo $torneoSala;
+
     private Liguilla $liguillaSala;
+
     private Plantilla $plantillaSala;
 
     protected function setUp(): void
@@ -95,7 +98,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'No puedes modificar alineaciones de una liguilla en la que no participas.',
             ]);
     }
@@ -111,7 +114,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJson([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Solo puedes alinear jugadores que están en tu plantilla.',
             ]);
     }
@@ -129,7 +132,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJson([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => "La formación '4-4-2' no es válida para la modalidad 'sala'.",
             ]);
     }
@@ -147,7 +150,7 @@ class AlineacionTest extends TestCase
         ];
         $this->asignarAPlantilla($this->plantillaSala, $jugadores);
 
-        $ids = array_map(fn($j) => $j->id, $jugadores);
+        $ids = array_map(fn ($j) => $j->id, $jugadores);
 
         $response = $this->actingAs($this->user)->postJson("/user/liguillas/{$this->liguillaSala->id}/alineacion/guardar", [
             'jugadores' => $ids,
@@ -156,7 +159,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJson([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Solo puedes seleccionar hasta 5 jugadores para la formación 1-2-1.',
             ]);
     }
@@ -174,7 +177,7 @@ class AlineacionTest extends TestCase
         ];
         $this->asignarAPlantilla($this->plantillaSala, $jugadores);
 
-        $ids = array_map(fn($j) => $j->id, $jugadores);
+        $ids = array_map(fn ($j) => $j->id, $jugadores);
 
         $response = $this->actingAs($this->user)->postJson("/user/liguillas/{$this->liguillaSala->id}/alineacion/guardar", [
             'jugadores' => $ids,
@@ -183,7 +186,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJson([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => "Has seleccionado 2 jugadores para la posición 'Delantero', pero la formación 1-2-1 solo permite un máximo de 1.",
             ]);
     }
@@ -200,7 +203,7 @@ class AlineacionTest extends TestCase
         ];
         $this->asignarAPlantilla($this->plantillaSala, $jugadores);
 
-        $ids = array_map(fn($j) => $j->id, $jugadores);
+        $ids = array_map(fn ($j) => $j->id, $jugadores);
 
         $response = $this->actingAs($this->user)->postJson("/user/liguillas/{$this->liguillaSala->id}/alineacion/guardar", [
             'jugadores' => $ids,
@@ -209,7 +212,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJson([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => "Has seleccionado 2 jugadores para la posición 'Portero', pero la formación 1-2-1 solo permite un máximo de 1.",
             ]);
     }
@@ -224,7 +227,7 @@ class AlineacionTest extends TestCase
             $this->crearJugador('Delantero'),
         ];
         $this->asignarAPlantilla($this->plantillaSala, $jugadores);
-        $ids = array_map(fn($j) => $j->id, $jugadores);
+        $ids = array_map(fn ($j) => $j->id, $jugadores);
 
         $response = $this->actingAs($this->user)->postJson("/user/liguillas/{$this->liguillaSala->id}/alineacion/guardar", [
             'jugadores' => $ids,
@@ -233,8 +236,8 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'    => 'success',
-                'message'   => 'Alineación guardada correctamente',
+                'status' => 'success',
+                'message' => 'Alineación guardada correctamente',
                 'formacion' => '1-2-1',
             ]);
 
@@ -274,7 +277,7 @@ class AlineacionTest extends TestCase
             $this->crearJugador('Delantero'),
         ];
         $this->asignarAPlantilla($plantilla7, $jugadores);
-        $ids = array_map(fn($j) => $j->id, $jugadores);
+        $ids = array_map(fn ($j) => $j->id, $jugadores);
 
         $response = $this->actingAs($this->user)->postJson("/user/liguillas/{$liguilla7->id}/alineacion/guardar", [
             'jugadores' => $ids,
@@ -283,8 +286,8 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'    => 'success',
-                'message'   => 'Alineación guardada correctamente',
+                'status' => 'success',
+                'message' => 'Alineación guardada correctamente',
                 'formacion' => '3-2-1',
             ]);
 
@@ -326,7 +329,7 @@ class AlineacionTest extends TestCase
             $this->crearJugador('Delantero'),
         ];
         $this->asignarAPlantilla($plantilla11, $jugadores);
-        $ids = array_map(fn($j) => $j->id, $jugadores);
+        $ids = array_map(fn ($j) => $j->id, $jugadores);
 
         $response = $this->actingAs($this->user)->postJson("/user/liguillas/{$liguilla11->id}/alineacion/guardar", [
             'jugadores' => $ids,
@@ -335,8 +338,8 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'    => 'success',
-                'message'   => 'Alineación guardada correctamente',
+                'status' => 'success',
+                'message' => 'Alineación guardada correctamente',
                 'formacion' => '4-3-3',
             ]);
 
@@ -378,7 +381,7 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'    => 'success',
+                'status' => 'success',
                 'formacion' => '2-2',
             ]);
 
@@ -402,9 +405,9 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'       => 'empty',
-                'formacion'    => null,
-                'jugadores'    => [],
+                'status' => 'empty',
+                'formacion' => null,
+                'jugadores' => [],
                 'total_puntos' => 0,
             ]);
     }
@@ -421,10 +424,10 @@ class AlineacionTest extends TestCase
 
         // Crear alineación congelada para la jornada
         $alineacion = Alineacion::create([
-            'user_id'     => $this->user->id,
+            'user_id' => $this->user->id,
             'liguilla_id' => $this->liguillaSala->id,
-            'jornada_id'  => $jornada->id,
-            'formacion'   => '1-2-1',
+            'jornada_id' => $jornada->id,
+            'formacion' => '1-2-1',
         ]);
 
         $alineacion->jugadores()->attach([
@@ -436,18 +439,18 @@ class AlineacionTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'       => 'ok',
-                'formacion'    => '1-2-1',
+                'status' => 'ok',
+                'formacion' => '1-2-1',
                 'total_puntos' => 12,
             ])
             ->assertJsonCount(2, 'jugadores')
             ->assertJsonFragment([
-                'id'     => $portero->id,
+                'id' => $portero->id,
                 'nombre' => $portero->nombre,
                 'puntos' => 8,
             ])
             ->assertJsonFragment([
-                'id'     => $defensa->id,
+                'id' => $defensa->id,
                 'nombre' => $defensa->nombre,
                 'puntos' => 4,
             ]);

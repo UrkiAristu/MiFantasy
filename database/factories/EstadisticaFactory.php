@@ -8,7 +8,7 @@ use App\Models\Partido;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Estadistica>
+ * @extends Factory<Estadistica>
  */
 class EstadisticaFactory extends Factory
 {

@@ -27,15 +27,17 @@ class StripeWebhookController extends CashierWebhookController
         $orgName = $metadata['org_name'] ?? 'Mi Liga';
 
         // Buscar el usuario por user_id en metadata o por el customer ID de Stripe
+        /** @var User|null $user */
         $user = $userId
             ? User::find($userId)
-            : $this->getUserByStripeId($session['customer'] ?? null);
+            : User::where('stripe_id', $session['customer'] ?? null)->first();
 
-        if (!$user) {
+        if (! $user) {
             Log::warning('Stripe Webhook: Usuario no encontrado para checkout.session.completed', [
                 'user_id' => $userId,
                 'customer' => $session['customer'] ?? null,
             ]);
+
             return $this->successMethod();
         }
 
@@ -46,6 +48,7 @@ class StripeWebhookController extends CashierWebhookController
 
         if ($existingTenant) {
             Log::info("Webhook idempotente: Tenant '{$orgName}' ya existe para usuario ID {$user->id}. Omitiendo aprovisionamiento duplicado.");
+
             return $this->successMethod();
         }
 
@@ -100,13 +103,13 @@ class StripeWebhookController extends CashierWebhookController
                 'guard_name' => 'web',
             ]);
 
-            if (!$role->hasPermissionTo($permission)) {
+            if (! $role->hasPermissionTo($permission)) {
                 $role->givePermissionTo($permission);
             }
         }
 
         // 5. Asignar el rol al usuario dentro del equipo/tenant
-        if (!$user->hasRole($roleName)) {
+        if (! $user->hasRole($roleName)) {
             $user->assignRole($role);
         }
 

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class Partido extends Model
@@ -11,7 +13,9 @@ class Partido extends Model
     use HasFactory;
 
     protected $table = 'partidos';
+
     public $timestamps = true;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -19,29 +23,44 @@ class Partido extends Model
         'fecha_partido' => 'datetime',
     ];
 
-    public function jornada()
+    /**
+     * @return BelongsTo<Jornada, $this>
+     */
+    public function jornada(): BelongsTo
     {
         return $this->belongsTo(Jornada::class);
     }
 
-    public function equipoLocal()
+    /**
+     * @return BelongsTo<Equipo, $this>
+     */
+    public function equipoLocal(): BelongsTo
     {
         return $this->belongsTo(Equipo::class, 'equipo_local_id');
     }
 
-    public function equipoVisitante()
+    /**
+     * @return BelongsTo<Equipo, $this>
+     */
+    public function equipoVisitante(): BelongsTo
     {
         return $this->belongsTo(Equipo::class, 'equipo_visitante_id');
     }
+
     public function getEquiposAttribute()
     {
         return collect([$this->equipoLocal, $this->equipoVisitante])
             ->filter();
     }
-    public function estadisticas()
+
+    /**
+     * @return HasMany<Estadistica, $this>
+     */
+    public function estadisticas(): HasMany
     {
         return $this->hasMany(Estadistica::class);
     }
+
     public function actualizarEstadisticas()
     {
         // 1) Borrar todo para este partido
@@ -51,7 +70,9 @@ class Partido extends Model
         $localGoles = $this->goles_local;
         $visitanteGoles = $this->goles_visitante;
 
-        if ($localGoles === null || $visitanteGoles === null) return;
+        if ($localGoles === null || $visitanteGoles === null) {
+            return;
+        }
 
         $resultadoLocal = $localGoles > $visitanteGoles ? 'ganado' : ($localGoles < $visitanteGoles ? 'perdido' : 'empatado');
         $resultadoVisitante = $localGoles > $visitanteGoles ? 'perdido' : ($localGoles < $visitanteGoles ? 'ganado' : 'empatado');
@@ -60,66 +81,76 @@ class Partido extends Model
 
         // 3) Crear stats base
         $stats = [];
-        $torneoId = $this->jornada->torneo_id ?? $this->jornada->torneo->id;
+        $torneoId = $this->jornada->torneo_id ?? $this->jornada?->torneo?->id;
         $now = now();
 
         $jugadoresLocal = $this->equipoLocal ? $this->equipoLocal->jugadoresEnTorneo($torneoId) : collect();
         foreach ($jugadoresLocal as $jugador) {
             $stats[$jugador->id] = [
-                'jugador_id'         => $jugador->id,
-                'partido_id'         => $this->id,
-                'resultado'          => $resultadoLocal,
-                'puntos'             => $puntosLocal,
-                'goles'              => 0,
-                'asistencias'        => 0,
+                'jugador_id' => $jugador->id,
+                'partido_id' => $this->id,
+                'resultado' => $resultadoLocal,
+                'puntos' => $puntosLocal,
+                'goles' => 0,
+                'asistencias' => 0,
                 'tarjetas_amarillas' => 0,
-                'tarjetas_rojas'     => 0,
-                'faltas'             => 0,
-                'paradas'            => 0,
-                'created_at'         => $now,
-                'updated_at'         => $now,
+                'tarjetas_rojas' => 0,
+                'faltas' => 0,
+                'paradas' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
         }
 
         $jugadoresVisitante = $this->equipoVisitante ? $this->equipoVisitante->jugadoresEnTorneo($torneoId) : collect();
         foreach ($jugadoresVisitante as $jugador) {
             $stats[$jugador->id] = [
-                'jugador_id'         => $jugador->id,
-                'partido_id'         => $this->id,
-                'resultado'          => $resultadoVisitante,
-                'puntos'             => $puntosVisitante,
-                'goles'              => 0,
-                'asistencias'        => 0,
+                'jugador_id' => $jugador->id,
+                'partido_id' => $this->id,
+                'resultado' => $resultadoVisitante,
+                'puntos' => $puntosVisitante,
+                'goles' => 0,
+                'asistencias' => 0,
                 'tarjetas_amarillas' => 0,
-                'tarjetas_rojas'     => 0,
-                'faltas'             => 0,
-                'paradas'            => 0,
-                'created_at'         => $now,
-                'updated_at'         => $now,
+                'tarjetas_rojas' => 0,
+                'faltas' => 0,
+                'paradas' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
         }
 
         // 4) Sumar puntos y contadores de eventos
-        $eventos = is_string($this->eventos) ? json_decode($this->eventos, true) : $this->eventos;
-        if ($eventos && is_array($eventos)) {
+        $eventos = $this->eventos;
+        while (is_string($eventos)) {
+            $decoded = json_decode($eventos, true);
+            if (! is_array($decoded) && ! is_string($decoded)) {
+                break;
+            }
+            $eventos = $decoded;
+        }
+
+        if (is_array($eventos)) {
             foreach ($eventos as $evento) {
                 $jugadorId = $evento['jugador_id'] ?? null;
-                if (!$jugadorId) continue;
+                if (! $jugadorId) {
+                    continue;
+                }
 
-                if (!isset($stats[$jugadorId])) {
+                if (! isset($stats[$jugadorId])) {
                     $stats[$jugadorId] = [
-                        'jugador_id'         => $jugadorId,
-                        'partido_id'         => $this->id,
-                        'resultado'          => 'empatado',
-                        'puntos'             => 0,
-                        'goles'              => 0,
-                        'asistencias'        => 0,
+                        'jugador_id' => $jugadorId,
+                        'partido_id' => $this->id,
+                        'resultado' => 'empatado',
+                        'puntos' => 0,
+                        'goles' => 0,
+                        'asistencias' => 0,
                         'tarjetas_amarillas' => 0,
-                        'tarjetas_rojas'     => 0,
-                        'faltas'             => 0,
-                        'paradas'            => 0,
-                        'created_at'         => $now,
-                        'updated_at'         => $now,
+                        'tarjetas_rojas' => 0,
+                        'faltas' => 0,
+                        'paradas' => 0,
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ];
                 }
 
@@ -152,7 +183,7 @@ class Partido extends Model
             }
         }
 
-        if (!empty($stats)) {
+        if (! empty($stats)) {
             DB::table('estadisticas')->insert(array_values($stats));
         }
     }

@@ -8,6 +8,7 @@ use App\Models\Jornada;
 use App\Models\Jugador;
 use App\Models\Partido;
 use App\Models\Torneo;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -17,10 +18,15 @@ class CalculoPuntosTest extends TestCase
     use RefreshDatabase;
 
     private Torneo $torneo;
+
     private Equipo $equipoLocal;
+
     private Equipo $equipoVisitante;
+
     private Jugador $jugadorLocal;
+
     private Jugador $jugadorVisitante;
+
     private Jornada $jornada;
 
     protected function setUp(): void
@@ -28,7 +34,7 @@ class CalculoPuntosTest extends TestCase
         parent::setUp();
 
         // 1. Crear torneo
-        $this->torneo = new Torneo();
+        $this->torneo = new Torneo;
         $this->torneo->nombre = 'Torneo Test';
         $this->torneo->fecha_inicio = now()->subDays(5);
         $this->torneo->fecha_fin = now()->addDays(5);
@@ -36,21 +42,21 @@ class CalculoPuntosTest extends TestCase
         $this->torneo->save();
 
         // 2. Crear equipos
-        $this->equipoLocal = new Equipo();
+        $this->equipoLocal = new Equipo;
         $this->equipoLocal->nombre = 'Equipo Local';
         $this->equipoLocal->save();
 
-        $this->equipoVisitante = new Equipo();
+        $this->equipoVisitante = new Equipo;
         $this->equipoVisitante->nombre = 'Equipo Visitante';
         $this->equipoVisitante->save();
 
         // 3. Crear jugadores
-        $this->jugadorLocal = new Jugador();
+        $this->jugadorLocal = new Jugador;
         $this->jugadorLocal->nombre = 'Juan';
         $this->jugadorLocal->apellido1 = 'Perez';
         $this->jugadorLocal->save();
 
-        $this->jugadorVisitante = new Jugador();
+        $this->jugadorVisitante = new Jugador;
         $this->jugadorVisitante->nombre = 'Carlos';
         $this->jugadorVisitante->apellido1 = 'Gomez';
         $this->jugadorVisitante->save();
@@ -59,28 +65,28 @@ class CalculoPuntosTest extends TestCase
         DB::table('equipo_jugador_torneo')->insert([
             [
                 'jugador_id' => $this->jugadorLocal->id,
-                'equipo_id'  => $this->equipoLocal->id,
-                'torneo_id'  => $this->torneo->id,
-                'goles'      => 0,
-                'asistencias'=> 0,
-                'puntos'     => 0,
+                'equipo_id' => $this->equipoLocal->id,
+                'torneo_id' => $this->torneo->id,
+                'goles' => 0,
+                'asistencias' => 0,
+                'puntos' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'jugador_id' => $this->jugadorVisitante->id,
-                'equipo_id'  => $this->equipoVisitante->id,
-                'torneo_id'  => $this->torneo->id,
-                'goles'      => 0,
-                'asistencias'=> 0,
-                'puntos'     => 0,
+                'equipo_id' => $this->equipoVisitante->id,
+                'torneo_id' => $this->torneo->id,
+                'goles' => 0,
+                'asistencias' => 0,
+                'puntos' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
 
         // 4. Crear jornada
-        $this->jornada = new Jornada();
+        $this->jornada = new Jornada;
         $this->jornada->torneo_id = $this->torneo->id;
         $this->jornada->nombre = 'Jornada 1';
         $this->jornada->orden = 1;
@@ -91,7 +97,7 @@ class CalculoPuntosTest extends TestCase
 
     public function test_victoria_local_asigna_3_puntos_a_local_y_0_a_visitante(): void
     {
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -122,7 +128,7 @@ class CalculoPuntosTest extends TestCase
 
     public function test_empate_asigna_1_punto_a_ambos_equipos(): void
     {
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -153,7 +159,7 @@ class CalculoPuntosTest extends TestCase
 
     public function test_victoria_visitante_asigna_3_puntos_a_visitante_y_0_a_local(): void
     {
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -202,7 +208,7 @@ class CalculoPuntosTest extends TestCase
             ['jugador_id' => $this->jugadorVisitante->id, 'tipo' => 'Tarjeta Roja'],
         ];
 
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -236,7 +242,7 @@ class CalculoPuntosTest extends TestCase
 
     public function test_recalcular_estadisticas_limpia_registros_previos(): void
     {
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -273,7 +279,7 @@ class CalculoPuntosTest extends TestCase
     public function test_resumen_estadisticas_en_torneo_calcula_agregaciones_sql_correctamente(): void
     {
         // Crear un partido con estadísticas para el jugador local
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -318,7 +324,7 @@ class CalculoPuntosTest extends TestCase
 
     public function test_estadisticas_restriccion_unica_partido_jugador(): void
     {
-        $partido = new Partido();
+        $partido = new Partido;
         $partido->jornada_id = $this->jornada->id;
         $partido->equipo_local_id = $this->equipoLocal->id;
         $partido->equipo_visitante_id = $this->equipoVisitante->id;
@@ -328,15 +334,15 @@ class CalculoPuntosTest extends TestCase
         Estadistica::create([
             'partido_id' => $partido->id,
             'jugador_id' => $this->jugadorLocal->id,
-            'puntos'     => 3,
+            'puntos' => 3,
         ]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
 
         Estadistica::create([
             'partido_id' => $partido->id,
             'jugador_id' => $this->jugadorLocal->id,
-            'puntos'     => 5,
+            'puntos' => 5,
         ]);
     }
 }

@@ -18,8 +18,11 @@ class LiguillaInscripcionTest extends TestCase
     use RefreshDatabase;
 
     private User $creador;
+
     private User $usuario;
+
     private Torneo $torneo;
+
     private Liguilla $liguilla;
 
     protected function setUp(): void
@@ -30,7 +33,7 @@ class LiguillaInscripcionTest extends TestCase
         $this->creador = User::factory()->create(['name' => 'Creador', 'email' => 'creador@test.com', 'active' => true]);
         $this->usuario = User::factory()->create(['name' => 'Usuario Test', 'email' => 'usuario@test.com', 'active' => true]);
 
-        $this->torneo = new Torneo();
+        $this->torneo = new Torneo;
         $this->torneo->nombre = 'Torneo Inscripcion Test';
         $this->torneo->jugadores_por_equipo = 2;
         $this->torneo->fecha_inicio = now()->subDays(5);
@@ -38,29 +41,29 @@ class LiguillaInscripcionTest extends TestCase
         $this->torneo->save();
 
         // Crear equipo y jugadores para plantilla aleatoria
-        $equipo = new Equipo();
+        $equipo = new Equipo;
         $equipo->nombre = 'Equipo Test';
         $equipo->save();
 
         for ($i = 1; $i <= 6; $i++) {
-            $jugador = new Jugador();
+            $jugador = new Jugador;
             $jugador->nombre = "Jugador $i";
             $jugador->apellido1 = "Apellido $i";
             $jugador->save();
 
             DB::table('equipo_jugador_torneo')->insert([
                 'jugador_id' => $jugador->id,
-                'equipo_id'  => $equipo->id,
-                'torneo_id'  => $this->torneo->id,
-                'goles'      => 0,
-                'asistencias'=> 0,
-                'puntos'     => 0,
+                'equipo_id' => $equipo->id,
+                'torneo_id' => $this->torneo->id,
+                'goles' => 0,
+                'asistencias' => 0,
+                'puntos' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
 
-        $this->liguilla = new Liguilla();
+        $this->liguilla = new Liguilla;
         $this->liguilla->nombre = 'Liguilla Cupos';
         $this->liguilla->torneo_id = $this->torneo->id;
         $this->liguilla->max_usuarios = 2; // Máximo 2 usuarios

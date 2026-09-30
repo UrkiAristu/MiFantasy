@@ -4,17 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Actions\Plantilla\GenerarPlantillaAleatoriaAction;
 use App\Models\Alineacion;
-use App\Models\Estadistica;
-use App\Models\Jugador;
 use App\Models\Liguilla;
 use App\Models\Plantilla;
 use App\Models\Torneo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class LiguillaController extends Controller
@@ -26,6 +23,7 @@ class LiguillaController extends Controller
         // Retornar la vista con los datos de los equipos
         return view('admin.liguillas', compact('liguillas'));
     }
+
     public function crearLiguilla(Request $request, GenerarPlantillaAleatoriaAction $generarPlantilla)
     {
         // Validar los datos del formulario
@@ -33,7 +31,7 @@ class LiguillaController extends Controller
             [
                 'nombre' => 'required|string|max:255',
                 'num_max_part' => 'required|integer|min:2|max:100',
-                'torneo_id' => 'required|integer|exists:torneos,id'
+                'torneo_id' => 'required|integer|exists:torneos,id',
             ],
             [
                 'nombre.required' => 'El nombre es obligatorio.',
@@ -51,7 +49,7 @@ class LiguillaController extends Controller
 
         $usuario_id = Auth::id();
         $torneo = Torneo::findOrFail($validated['torneo_id']);
-        $liguilla = new Liguilla();
+        $liguilla = new Liguilla;
         $liguilla->nombre = $validated['nombre'];
         $liguilla->torneo_id = $torneo->id;
         $liguilla->max_usuarios = $validated['num_max_part'];
@@ -63,14 +61,16 @@ class LiguillaController extends Controller
         $liguilla->usuarios()->attach($usuario_id);
         // Crear plantilla aleatoria para este usuario en la liguilla
         $generarPlantilla->execute($liguilla->id, (int) $usuario_id);
+
         // Redirigir a la página de torneos con un mensaje de éxito
         return redirect('/user/liguillas')->with('success', 'Ligulla creada correctamente.');
     }
+
     public function mostrarPaginaLiguillasUser()
     {
-        /** @var \App\Models\User $usuario */
+        /** @var User|null $usuario */
         $usuario = Auth::user();
-        if (!$usuario) {
+        if (! $usuario) {
             return redirect('/login')->withErrors('Usuario no encontrado.');
         }
 
@@ -81,8 +81,8 @@ class LiguillaController extends Controller
             }])
             ->get()
             ->map(function ($liguilla) use ($usuario) {
-                $usuariosOrdenados = $liguilla->usuarios->sortByDesc(fn($u) => $u->pivot->puntos ?? 0)->values();
-                $posicion = $usuariosOrdenados->search(fn($u) => $u->id === $usuario->id);
+                $usuariosOrdenados = $liguilla->usuarios->sortByDesc(fn ($u) => $u->pivot->puntos ?? 0)->values();
+                $posicion = $usuariosOrdenados->search(fn ($u) => $u->id === $usuario->id);
 
                 $liguilla->posicion_usuario = $posicion !== false ? ($posicion + 1) : ($liguilla->pivot->puesto ?? 'N/D');
                 $liguilla->puntos_usuario = $liguilla->pivot->puntos ?? 0;
@@ -92,11 +92,14 @@ class LiguillaController extends Controller
 
         return view('user.liguillas', compact('liguillasUsuario'));
     }
+
     public function mostrarPaginaUnirseLiguillasUser(Request $request)
     {
         $codigo = $request->query('codigo'); // o $request->input('codigo')
+
         return view('user.unirseLiguilla', compact('codigo'));
     }
+
     public function unirseLiguilla(Request $request, GenerarPlantillaAleatoriaAction $generarPlantilla)
     {
         $validated = $request->validate([
@@ -113,7 +116,7 @@ class LiguillaController extends Controller
             // Cargar liguilla con bloqueo pesimista para prevenir condiciones de carrera en cupo
             $liguilla = Liguilla::where('codigo_unico', $codigo)->lockForUpdate()->first();
 
-            if (!$liguilla) {
+            if (! $liguilla) {
                 return ['status' => 'error', 'message' => 'Código de liguilla no válido.'];
             }
 
@@ -142,6 +145,7 @@ class LiguillaController extends Controller
 
         return redirect('/user/liguillas')->with('success', 'Te has unido correctamente a la liguilla.');
     }
+
     public function mostrarPaginaLiguillaUser($id)
     {
         $usuario = Auth::user();
@@ -178,7 +182,7 @@ class LiguillaController extends Controller
                     'posicion' => $index + 1,
                     'name' => $usuario->name,
                     'email' => $usuario->email,
-                    'puntos' => $usuario->pivot->puntos ?? 0
+                    'puntos' => $usuario->pivot->puntos ?? 0,
                 ];
             });
 
@@ -188,7 +192,7 @@ class LiguillaController extends Controller
             ->whereDate('fecha_inicio', '<=', $hoy)
             ->whereDate('fecha_fin', '>=', $hoy)
             ->first();
-        if (!$jornadaActiva) {
+        if (! $jornadaActiva) {
             $jornadaActiva = $liguilla->torneo->jornadas()
                 ->whereDate('fecha_inicio', '>=', $hoy)
                 ->orderBy('fecha_inicio', 'asc')
@@ -196,23 +200,23 @@ class LiguillaController extends Controller
         }
 
         $jornadas = $liguilla->torneo->jornadas()
-        ->with(['partidos.equipoLocal', 'partidos.equipoVisitante'])
-        ->orderBy('orden')
-        ->get();
+            ->with(['partidos.equipoLocal', 'partidos.equipoVisitante'])
+            ->orderBy('orden')
+            ->get();
 
         // 4️⃣ Alineación BASE del usuario + alineaciones congeladas
         $alineacionBase = Alineacion::with('jugadores')
-        ->where('liguilla_id', $liguilla->id)
-        ->where('user_id', $usuario->id)
-        ->whereNull('jornada_id')
-        ->first();
-        $jugadoresBase = $alineacionBase?->jugadores ?? collect();
+            ->where('liguilla_id', $liguilla->id)
+            ->where('user_id', $usuario->id)
+            ->whereNull('jornada_id')
+            ->first();
+        $jugadoresBase = $alineacionBase ? $alineacionBase->jugadores : collect();
 
         $misAlineaciones = Alineacion::with(['jornada', 'jugadores'])
-        ->where('liguilla_id', $liguilla->id)
-        ->where('user_id', $usuario->id)
-        ->whereNotNull('jornada_id') // solo las "fotos" de jornada
-        ->get();
+            ->where('liguilla_id', $liguilla->id)
+            ->where('user_id', $usuario->id)
+            ->whereNotNull('jornada_id') // solo las "fotos" de jornada
+            ->get();
 
         // 5️⃣ Resultados de partidos de la última jornada
         $resultados = $jornadaActiva
@@ -224,7 +228,7 @@ class LiguillaController extends Controller
             ->where('liguilla_id', $liguilla->id)
             ->where('user_id', $usuario->id)
             ->first();
-        $miPlantilla = $plantilla?->jugadores ?? collect();
+        $miPlantilla = $plantilla ? $plantilla->jugadores : collect();
 
         // 6️⃣ Formaciones disponibles según la modalidad del torneo
         $modalidad = (string) ($liguilla->torneo->modalidad ?? 'sala');
@@ -252,13 +256,14 @@ class LiguillaController extends Controller
             'formacionActiva'
         ));
     }
+
     public function plantilla($idLiguilla, $idUser)
     {
         $liguilla = Liguilla::findOrFail($idLiguilla);
         $user = User::findOrFail($idUser);
 
-        if (!$liguilla->usuarios()->where('users.id', Auth::id())->exists() ||
-            !$liguilla->usuarios()->where('users.id', $user->id)->exists()) {
+        if (! $liguilla->usuarios()->where('users.id', Auth::id())->exists() ||
+            ! $liguilla->usuarios()->where('users.id', $user->id)->exists()) {
             abort(403, 'No tienes permiso para ver esta plantilla');
         }
 
@@ -273,7 +278,7 @@ class LiguillaController extends Controller
 
     public function clasificacionAjax(Liguilla $liguilla, Request $request)
     {
-        if (!$liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
+        if (! $liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -295,11 +300,11 @@ class LiguillaController extends Controller
                     ->get()
                     ->map(function ($usuario, $index) {
                         return [
-                            'id'       => $usuario->id,
+                            'id' => $usuario->id,
                             'posicion' => $index + 1,
-                            'name'     => $usuario->name,
-                            'email'    => $usuario->email,
-                            'puntos'   => $usuario->pivot->puntos ?? 0,
+                            'name' => $usuario->name,
+                            'email' => $usuario->email,
+                            'puntos' => $usuario->pivot->puntos ?? 0,
                         ];
                     })
                     ->values();
@@ -326,11 +331,11 @@ class LiguillaController extends Controller
                         ->values()
                         ->map(function ($usuario, $index) use ($puntosPorUsuario) {
                             return [
-                                'id'       => $usuario->id,
+                                'id' => $usuario->id,
                                 'posicion' => $index + 1,
-                                'name'     => $usuario->name,
-                                'email'    => $usuario->email,
-                                'puntos'   => $puntosPorUsuario[$usuario->id] ?? 0,
+                                'name' => $usuario->name,
+                                'email' => $usuario->email,
+                                'puntos' => $puntosPorUsuario[$usuario->id] ?? 0,
                             ];
                         })
                         ->values();
@@ -340,11 +345,11 @@ class LiguillaController extends Controller
             }
 
             return [
-                'modo'         => $modoClasificacion,
-                'jornada'      => $jornadaSeleccionada ? [
-                    'id'     => $jornadaSeleccionada->id,
+                'modo' => $modoClasificacion,
+                'jornada' => $jornadaSeleccionada ? [
+                    'id' => $jornadaSeleccionada->id,
                     'nombre' => $jornadaSeleccionada->nombre,
-                    'orden'  => $jornadaSeleccionada->orden,
+                    'orden' => $jornadaSeleccionada->orden,
                 ] : null,
                 'clasificacion' => $clasificacion,
             ];
@@ -356,8 +361,8 @@ class LiguillaController extends Controller
     public function alineacionUsuarioJornada(Liguilla $liguilla, User $user, $jornadaId)
     {
         $authId = Auth::id();
-        if (!$liguilla->usuarios()->where('users.id', $authId)->exists() ||
-            !$liguilla->usuarios()->where('users.id', $user->id)->exists()) {
+        if (! $liguilla->usuarios()->where('users.id', $authId)->exists() ||
+            ! $liguilla->usuarios()->where('users.id', $user->id)->exists()) {
             return response()->json(['status' => 'error', 'message' => 'No autorizado'], 403);
         }
 
@@ -367,10 +372,10 @@ class LiguillaController extends Controller
             ->where('jornada_id', $jornadaId)
             ->first();
 
-        if (!$alineacion) {
+        if (! $alineacion) {
             return response()->json([
-                'status'       => 'ok',
-                'jugadores'    => [],
+                'status' => 'ok',
+                'jugadores' => [],
                 'total_puntos' => 0,
             ]);
         }
@@ -389,23 +394,22 @@ class LiguillaController extends Controller
             $puntos = $puntosPorJugador[$jug->id] ?? 0;
 
             return [
-                'id'        => $jug->id,
-                'nombre'    => $jug->nombre,
+                'id' => $jug->id,
+                'nombre' => $jug->nombre,
                 'apellido1' => $jug->apellido1,
-                'foto'      => $jug->foto
-                    ? asset('storage/' . $jug->foto)
+                'foto' => $jug->foto
+                    ? asset('storage/'.$jug->foto)
                     : asset('assets/media/images/default-player.png'),
-                'puntos'    => $puntos,
+                'puntos' => $puntos,
             ];
         });
 
         $totalPuntos = $jugadores->sum('puntos');
 
         return response()->json([
-            'status'       => 'ok',
-            'jugadores'    => $jugadores,
+            'status' => 'ok',
+            'jugadores' => $jugadores,
             'total_puntos' => $totalPuntos,
         ]);
     }
-
 }

@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Jornada;
 use App\Services\CongelarAlineacionesService;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CongelarAlineacionesCommand extends Command
 {
@@ -33,14 +33,15 @@ class CongelarAlineacionesCommand extends Command
      */
     public function handle()
     {
-         // Jornadas cuya fecha de cierre ya ha pasado y aún no están marcadas como congeladas
+        // Jornadas cuya fecha de cierre ya ha pasado y aún no están marcadas como congeladas
         $jornadas = Jornada::whereNotNull('fecha_cierre_alineaciones')
             ->where('fecha_cierre_alineaciones', '<=', Carbon::now())
             ->where('alineaciones_congeladas', false)
             ->get();
 
         if ($jornadas->isEmpty()) {
-            $this->info("No hay jornadas para congelar.");
+            $this->info('No hay jornadas para congelar.');
+
             return Command::SUCCESS;
         }
 
@@ -49,7 +50,8 @@ class CongelarAlineacionesCommand extends Command
             $this->service->congelarJornada($jornada);
         }
 
-        $this->info("Alineaciones congeladas correctamente.");
+        $this->info('Alineaciones congeladas correctamente.');
+
         return Command::SUCCESS;
     }
 }

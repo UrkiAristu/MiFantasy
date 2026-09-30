@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class Jugador extends Model
@@ -11,18 +13,25 @@ class Jugador extends Model
     use HasFactory;
 
     protected $table = 'jugadores';
+
     public $timestamps = true;
 
     protected array $equiposTorneoMemo = [];
 
-    public function equipos()
+    /**
+     * @return BelongsToMany<Equipo, $this>
+     */
+    public function equipos(): BelongsToMany
     {
         return $this->belongsToMany(Equipo::class, 'equipo_jugador')
             ->withPivot('fecha_union')
             ->withTimestamps();
     }
 
-    public function participaciones()
+    /**
+     * @return BelongsToMany<Torneo, $this>
+     */
+    public function participaciones(): BelongsToMany
     {
         return $this->belongsToMany(Torneo::class, 'equipo_jugador_torneo')
             ->withPivot('equipo_id', 'goles', 'asistencias', 'puntos')
@@ -39,6 +48,7 @@ class Jugador extends Model
             $participacion = $this->participaciones->firstWhere('id', $torneoId);
             if ($participacion && isset($participacion->pivot->equipo_id)) {
                 $equipo = Equipo::find($participacion->pivot->equipo_id);
+
                 return $this->equiposTorneoMemo[$torneoId] = $equipo;
             }
         }
@@ -52,7 +62,10 @@ class Jugador extends Model
         return $this->equiposTorneoMemo[$torneoId] = $equipo;
     }
 
-    public function estadisticas()
+    /**
+     * @return HasMany<Estadistica, $this>
+     */
+    public function estadisticas(): HasMany
     {
         return $this->hasMany(Estadistica::class);
     }
@@ -78,24 +91,30 @@ class Jugador extends Model
 
         return [
             'partidos_jugados' => (int) ($res->partidos_jugados ?? 0),
-            'goles'            => (int) ($res->goles ?? 0),
-            'asistencias'      => (int) ($res->asistencias ?? 0),
-            'paradas'          => (int) ($res->paradas ?? 0),
-            'faltas'           => (int) ($res->faltas ?? 0),
-            'amarillas'        => (int) ($res->amarillas ?? 0),
-            'rojas'            => (int) ($res->rojas ?? 0),
-            'puntos'           => (int) ($res->puntos ?? 0),
+            'goles' => (int) ($res->goles ?? 0),
+            'asistencias' => (int) ($res->asistencias ?? 0),
+            'paradas' => (int) ($res->paradas ?? 0),
+            'faltas' => (int) ($res->faltas ?? 0),
+            'amarillas' => (int) ($res->amarillas ?? 0),
+            'rojas' => (int) ($res->rojas ?? 0),
+            'puntos' => (int) ($res->puntos ?? 0),
         ];
     }
 
-    public function plantillas()
+    /**
+     * @return BelongsToMany<Plantilla, $this>
+     */
+    public function plantillas(): BelongsToMany
     {
         return $this->belongsToMany(Plantilla::class, 'jugador_plantilla')
             ->withPivot('posicion')
             ->withTimestamps();
     }
 
-    public function alineaciones()
+    /**
+     * @return BelongsToMany<Alineacion, $this>
+     */
+    public function alineaciones(): BelongsToMany
     {
         return $this->belongsToMany(Alineacion::class, 'alineacion_jugador')
             ->withPivot('puntos')

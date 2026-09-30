@@ -12,10 +12,10 @@ class PerfilController extends Controller
     public function mostrarPaginaPerfil()
     {
         $user = Auth::user();
-        return view('user/perfil',compact('user'));
+
+        return view('user/perfil', compact('user'));
     }
 
-    
     public function actualizarPerfil(Request $request)
     {
         /** @var User $user */
@@ -36,14 +36,14 @@ class PerfilController extends Controller
             $user->email_verified_at = null;
         }
 
-        $user->name  = $validated['name'];
+        $user->name = $validated['name'];
         $user->email = $validated['email'];
 
         $user->save();
 
-
         return redirect('/user/perfil#actualizar-perfil')->with('success', 'Perfil actualizado correctamente.');
     }
+
     public function enviarVerificacionEmail()
     {
         /** @var User $user */
@@ -58,6 +58,7 @@ class PerfilController extends Controller
 
         return redirect('/user/perfil#actualizar-perfil')->with('status', 'verification-link-sent');
     }
+
     public function actualizarPassword(Request $request)
     {
         /** @var User $user */
@@ -65,7 +66,7 @@ class PerfilController extends Controller
 
         $request->validate([
             'current_password' => ['required'],
-            'password'         => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', 'min:8'],
         ], [
             'current_password.required' => 'Debes introducir tu contraseña actual.',
             'password.required' => 'La nueva contraseña es obligatoria.',
@@ -101,8 +102,8 @@ class PerfilController extends Controller
         // Validar la contraseña
         if (! Hash::check($request->password_deletion, $user->password)) {
             return redirect('/user/perfil#eliminar-perfil')
-            ->withErrors(['password_deletion' => 'La contraseña introducida no es correcta.'], 'userDeletion')
-            ->with('delete_error', 'La contraseña introducida no es correcta.');
+                ->withErrors(['password_deletion' => 'La contraseña introducida no es correcta.'], 'userDeletion')
+                ->with('delete_error', 'La contraseña introducida no es correcta.');
         }
 
         // Cerrar sesión
