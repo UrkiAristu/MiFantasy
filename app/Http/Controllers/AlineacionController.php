@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Alineacion\GuardarAlineacionAction;
 use App\Models\Alineacion;
 use App\Models\Jornada;
 use App\Models\Jugador;
@@ -41,7 +42,7 @@ class AlineacionController extends Controller
         return self::$formacionesPorModalidad[$modalidad] ?? self::$formacionesPorModalidad['sala'];
     }
 
-    public function guardarAlineacion(Request $request, $liguillaId)
+    public function guardarAlineacion(Request $request, $liguillaId, GuardarAlineacionAction $action)
     {
         try {
             $usuarioId = Auth::id();
@@ -52,121 +53,35 @@ class AlineacionController extends Controller
                 'formacion'   => 'nullable|string',
             ]);
 
-            // Comprobar que la liguilla existe y cargar el torneo
-            $liguilla = Liguilla::with('torneo')->findOrFail($liguillaId);
+            $result = $action->execute(
+                usuarioId: (int) $usuarioId,
+                liguillaId: (int) $liguillaId,
+                jugadores: $validated['jugadores'] ?? [],
+                formacion: $validated['formacion'] ?? null
+            );
 
-            // Asegurar que el usuario pertenece a la liguilla
-            if (! $liguilla->usuarios()->where('users.id', $usuarioId)->exists()) {
+            if (! $result['success']) {
                 return response()->json([
                     'status'  => 'error',
-                    'message' => 'No puedes modificar alineaciones de una liguilla en la que no participas.',
-                ], 403);
+                    'message' => $result['message'],
+                ], $result['status_code'] ?? 422);
             }
-
-            $modalidad = (string) ($liguilla->torneo->modalidad ?? 'sala');
-            $formacionesDisponibles = self::obtenerFormacionesPorModalidad($modalidad);
-
-            // Validar formación
-            if (!empty($validated['formacion'])) {
-                if (!isset($formacionesDisponibles[$validated['formacion']])) {
-                    return response()->json([
-                        'status'  => 'error',
-                        'message' => "La formación '{$validated['formacion']}' no es válida para la modalidad '$modalidad'.",
-                    ], 422);
-                }
-                $formacionElegida = $validated['formacion'];
-            } else {
-                $alineacionExistente = Alineacion::where('user_id', $usuarioId)
-                    ->where('liguilla_id', $liguillaId)
-                    ->whereNull('jornada_id')
-                    ->first();
-                $formacionElegida = ($alineacionExistente && isset($formacionesDisponibles[$alineacionExistente->formacion]))
-                    ? $alineacionExistente->formacion
-                    : array_key_first($formacionesDisponibles);
-            }
-
-            $cuotas = $formacionesDisponibles[$formacionElegida];
-            $maxJugadores = array_sum($cuotas);
-
-            // Evitamos duplicados
-            $jugadoresUnicos = array_values(array_unique($validated['jugadores'] ?? []));
-
-            // Limitar al número total permitido por la formación
-            if (count($jugadoresUnicos) > $maxJugadores) {
-                return response()->json([
-                    'status'  => 'error',
-                    'message' => "Solo puedes seleccionar hasta $maxJugadores jugadores para la formación $formacionElegida.",
-                ], 422);
-            }
-
-            // Obtener plantilla del usuario para comprobar que los jugadores son suyos
-            $plantilla = Plantilla::with('jugadores')
-                ->where('liguilla_id', $liguillaId)
-                ->where('user_id', $usuarioId)
-                ->first();
-
-            if ($plantilla) {
-                $idsEnPlantilla = $plantilla->jugadores->pluck('id')->toArray();
-                foreach ($jugadoresUnicos as $idJug) {
-                    if (!in_array($idJug, $idsEnPlantilla)) {
-                        return response()->json([
-                            'status'  => 'error',
-                            'message' => 'Solo puedes alinear jugadores que están en tu plantilla.',
-                        ], 422);
-                    }
-                }
-            }
-
-            // Validar topes por posición según la formación
-            if (!empty($jugadoresUnicos)) {
-                $jugadoresModelos = Jugador::whereIn('id', $jugadoresUnicos)->get();
-                $conteoPorPosicion = [
-                    'Portero'        => 0,
-                    'Defensa'        => 0,
-                    'Centrocampista' => 0,
-                    'Delantero'      => 0,
-                ];
-
-                foreach ($jugadoresModelos as $jugador) {
-                    $pos = $jugador->posicion;
-                    if ($pos && isset($conteoPorPosicion[$pos])) {
-                        $conteoPorPosicion[$pos]++;
-                    }
-                }
-
-                foreach ($cuotas as $posicion => $limite) {
-                    $actual = $conteoPorPosicion[$posicion] ?? 0;
-                    if ($actual > $limite) {
-                        return response()->json([
-                            'status'  => 'error',
-                            'message' => "Has seleccionado $actual jugadores para la posición '$posicion', pero la formación $formacionElegida solo permite un máximo de $limite.",
-                        ], 422);
-                    }
-                }
-            }
-
-            // Buscar o crear alineación BASE
-            $alineacion = Alineacion::firstOrCreate([
-                'user_id'     => $usuarioId,
-                'liguilla_id' => $liguillaId,
-                'jornada_id'  => null,
-            ]);
-
-            $alineacion->formacion = $formacionElegida;
-            $alineacion->save();
-
-            // Sincronizar jugadores
-            $alineacion->jugadores()->sync($jugadoresUnicos);
 
             return response()->json([
                 'status'    => 'success',
                 'message'   => 'Alineación guardada correctamente',
-                'formacion' => $formacionElegida,
+                'formacion' => $result['formacion'],
             ]);
         } catch (Exception $e) {
+            Log::error('Error al guardar alineación: ' . $e->getMessage(), [
+                'user_id'     => Auth::id(),
+                'liguilla_id' => $liguillaId,
+                'trace'       => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Error al guardar la alineación: ' . $e->getMessage(),
+                'message' => 'Ocurrió un error inesperado al guardar la alineación.',
             ], 500);
         }
     }

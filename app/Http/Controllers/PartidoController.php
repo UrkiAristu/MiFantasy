@@ -18,10 +18,6 @@ class PartidoController extends Controller
 {
     public function mostrarPaginaJornadas($idTorneo)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $torneo = Torneo::with(['jornadas' => function ($query) {
             $query->orderBy('orden');
         }])->findOrFail($idTorneo);
@@ -30,9 +26,6 @@ class PartidoController extends Controller
     }
     public function crearJornada(Request $request, $idTorneo)
     {
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         // Validar los datos del formulario
         $validated = $request->validate(
             [
@@ -93,10 +86,6 @@ class PartidoController extends Controller
     }
     public function editarJornada(Request $request, $id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         // Validar los datos del formulario
         $validated = $request->validate(
             [
@@ -169,10 +158,6 @@ class PartidoController extends Controller
     }
     public function eliminarJornada($id)
     {
-        // Verificar si el usuario es administrador
-       if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $jornada = Jornada::findOrFail($id);
         
         $ordenEliminado = $jornada->orden;
@@ -187,10 +172,6 @@ class PartidoController extends Controller
 
     public function mostrarPaginaPartido($id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         // Lógica para mostrar la página de un partido específico
         $partido = Partido::with(['equipoLocal', 'equipoVisitante', 'jornada.torneo'])
             ->findOrFail($id);
@@ -221,12 +202,8 @@ class PartidoController extends Controller
 
     public function crearPartido(Request $request, $idJornada)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $jornada = Jornada::findOrFail($idJornada);
-       
+
         // Validar los datos del formulario
         $validated=$request->validate(
             [
@@ -255,7 +232,7 @@ class PartidoController extends Controller
             ]
         );
         $torneo = Torneo::findOrFail($jornada->torneo->id);
-        
+
         //Comprobar que la fecha sea posterior a fecha_inicio y anterior a fecha_fin del torneo
         $fecha_partido = Carbon::parse($validated['fecha_partido']);
         if ($fecha_partido->lt($torneo->fecha_inicio) || $fecha_partido->gt($torneo->fecha_fin)) {
@@ -283,11 +260,6 @@ class PartidoController extends Controller
 
     public function eliminarPartido($id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-       
         $partido = Partido::findOrFail($id);
         $id_torneo = $partido->jornada->torneo->id;
         // Eliminar el partido de la base de datos
@@ -297,10 +269,6 @@ class PartidoController extends Controller
 
     public function editarPartido(Request $request, $id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         // Validar los datos del formulario
         $validated = $request->validate(
             [
@@ -363,10 +331,6 @@ class PartidoController extends Controller
     }
     public function actualizarResultado(Request $request)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $partido = Partido::findOrFail($request->partido_id);
         $partido->goles_local = $request->goles_local;
         $partido->goles_visitante = $request->goles_visitante;

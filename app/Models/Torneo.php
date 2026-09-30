@@ -25,6 +25,16 @@ class Torneo extends Model
         'usa_posiciones',
     ];
 
+    protected $casts = [
+        'estado' => 'boolean',
+        'usa_posiciones' => 'boolean',
+    ];
+
+    public function scopeActivos($query)
+    {
+        return $query->where('estado', true);
+    }
+
     public function getJugadoresPorEquipoAttribute(): int
     {
         return match ((string) ($this->attributes['modalidad'] ?? 'sala')) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Plantilla\GenerarPlantillaAleatoriaAction;
 use App\Models\Alineacion;
 use App\Models\Estadistica;
 use App\Models\Jugador;
@@ -20,16 +21,12 @@ class LiguillaController extends Controller
 {
     public function mostrarPaginaLiguillas()
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $liguillas = Liguilla::all();
 
         // Retornar la vista con los datos de los equipos
         return view('admin.liguillas', compact('liguillas'));
     }
-    public function crearLiguilla(Request $request)
+    public function crearLiguilla(Request $request, GenerarPlantillaAleatoriaAction $generarPlantilla)
     {
         // Validar los datos del formulario
         $validated = $request->validate(
@@ -65,7 +62,7 @@ class LiguillaController extends Controller
         // Añadir al creador como primer usuario
         $liguilla->usuarios()->attach($usuario_id);
         // Crear plantilla aleatoria para este usuario en la liguilla
-        $this->crearPlantillaAleatoria($liguilla->id, $usuario_id);
+        $generarPlantilla->execute($liguilla->id, (int) $usuario_id);
         // Redirigir a la página de torneos con un mensaje de éxito
         return redirect('/user/liguillas')->with('success', 'Ligulla creada correctamente.');
     }
@@ -100,7 +97,7 @@ class LiguillaController extends Controller
         $codigo = $request->query('codigo'); // o $request->input('codigo')
         return view('user.unirseLiguilla', compact('codigo'));
     }
-    public function unirseLiguilla(Request $request)
+    public function unirseLiguilla(Request $request, GenerarPlantillaAleatoriaAction $generarPlantilla)
     {
         $validated = $request->validate([
             'codigo' => 'required|string|size:8', // suponiendo código de 8 caracteres
@@ -112,7 +109,7 @@ class LiguillaController extends Controller
         $codigo = strtoupper($validated['codigo']); // uniformizar mayúsculas
         $usuarioId = Auth::id();
 
-        $resultado = DB::transaction(function () use ($codigo, $usuarioId) {
+        $resultado = DB::transaction(function () use ($codigo, $usuarioId, $generarPlantilla) {
             // Cargar liguilla con bloqueo pesimista para prevenir condiciones de carrera en cupo
             $liguilla = Liguilla::where('codigo_unico', $codigo)->lockForUpdate()->first();
 
@@ -134,7 +131,7 @@ class LiguillaController extends Controller
             $liguilla->usuarios()->attach($usuarioId);
 
             // Crear plantilla aleatoria para este usuario en la liguilla
-            $this->crearPlantillaAleatoria($liguilla->id, $usuarioId);
+            $generarPlantilla->execute($liguilla->id, (int) $usuarioId);
 
             return ['status' => 'success'];
         });
@@ -144,42 +141,6 @@ class LiguillaController extends Controller
         }
 
         return redirect('/user/liguillas')->with('success', 'Te has unido correctamente a la liguilla.');
-    }
-    private function crearPlantillaAleatoria($liguillaId, $usuarioId)
-    {
-        // Crear registro de plantilla
-        $plantilla = Plantilla::create([
-            'liguilla_id' => $liguillaId,
-            'user_id' => $usuarioId
-        ]);
-        $liguilla = Liguilla::findOrFail($liguillaId);
-
-        $limite = $liguilla->torneo->jugadores_por_equipo + 3;
-
-        // Seleccionar IDs de jugadores disponibles del torneo y barajar en memoria para evitar ORDER BY RAND()
-        $jugadorIds = Jugador::whereHas('participaciones', function ($query) use ($liguilla) {
-            $query->where('torneo_id', $liguilla->torneo->id);
-        })
-            ->whereDoesntHave('plantillas', function ($query) use ($liguilla) {
-                $query->where('liguilla_id', $liguilla->id);
-            })
-            ->pluck('id')
-            ->shuffle()
-            ->take($limite);
-
-        if ($jugadorIds->isNotEmpty()) {
-            $now = now();
-            $registros = $jugadorIds->map(function ($jugadorId) use ($plantilla, $now) {
-                return [
-                    'plantilla_id' => $plantilla->id,
-                    'jugador_id'   => $jugadorId,
-                    'created_at'   => $now,
-                    'updated_at'   => $now,
-                ];
-            })->all();
-
-            DB::table('jugador_plantilla')->insert($registros);
-        }
     }
     public function mostrarPaginaLiguillaUser($id)
     {

@@ -6,7 +6,7 @@ use App\Models\Equipo;
 use App\Models\Jugador;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class TorneoController extends Controller
@@ -14,44 +14,24 @@ class TorneoController extends Controller
     //////////////////ADMIN///////////////
     public function mostrarPaginaTorneos()
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            // Si no es administrador, redirigir a la página de inicio o mostrar un error
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $torneos = Torneo::all();
-        // Retornar la vista con los datos de los torneos
         return view('admin.torneos', compact('torneos'));
-        
     }
 
     public function mostrarPaginaTorneo($id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            // Si no es administrador, redirigir a la página de inicio o mostrar un error
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-        // Buscar el torneo por ID
-        $torneo = Torneo::with(['equipos','jugadores'])->findOrFail($id);
-        // Obtener equipos disponibles (no inscritos en el torneo)
+        $torneo = Torneo::with(['equipos', 'jugadores'])->findOrFail($id);
         $equiposDisponibles = Equipo::whereNotIn('id', $torneo->equipos->pluck('id'))->get();
-        // Retornar la vista con los datos del torneo
         return view('admin.torneo', compact('torneo', 'equiposDisponibles'));
     }
+
     public function crearTorneo(Request $request)
     {
-
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            // Si no es administrador, redirigir a la página de inicio o mostrar un error
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $request->merge([
             'usa_posiciones' => $request->has('usa_posiciones') ? 1 : 0,
         ]);
-        // Validar los datos del formulario
-        $validated =$request->validate(
+
+        $validated = $request->validate(
             [
                 'nombre' => 'required|string|max:255',
                 'descripcion' => 'nullable|string|max:1000',
@@ -82,7 +62,7 @@ class TorneoController extends Controller
                 'usa_posiciones.boolean' => 'El campo "Usar posiciones" debe ser verdadero o falso.',
             ]
         );
-        // Crear un nuevo torneo
+
         $torneo = new Torneo();
         $torneo->nombre = $validated['nombre'];
         $torneo->descripcion = $validated['descripcion'] ?? null;
@@ -91,20 +71,19 @@ class TorneoController extends Controller
         $torneo->estado = $validated['estado'] ?? false;
         $torneo->jugadores_por_equipo = $validated['jugadores_por_equipo'];
         $torneo->usa_posiciones = $validated['usa_posiciones'] ?? 0;
-        // Logo
+
         if ($request->hasFile('logo')) {
             $nombreTorneo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre']);
             $timestamp = time();
-            $extension = $request->file('logo')->getClientOriginalExtension();
+            $extension = $request->file('logo')->extension();
             $logoFileName = "logo_{$nombreTorneo}_{$timestamp}.{$extension}";
 
-            // Guarda directo en /public/torneos_logos
-            $request->file('logo')->move(public_path('torneos_logos'), $logoFileName);
-            // Guarda solo la ruta relativa para mostrarla
-            $torneo->logo = 'torneos_logos/' . $logoFileName;
+            $path = $request->file('logo')->storeAs('torneos_logos', $logoFileName, 'public');
+            $torneo->logo = $path;
         } else {
-            $torneo->logo = null; // Si no se subió un logo, establecerlo como nulo
+            $torneo->logo = null;
         }
+
         $torneo->save();
 
         return redirect('/admin/torneos')->with('success', 'Torneo creado correctamente.');
@@ -112,30 +91,22 @@ class TorneoController extends Controller
 
     public function eliminarTorneo($id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $torneo = Torneo::findOrFail($id);
-        // Eliminar el logo del torneo si existe
-        if ($torneo->logo && file_exists(public_path($torneo->logo))) {
-            unlink(public_path($torneo->logo));
+
+        if ($torneo->logo && Storage::disk('public')->exists($torneo->logo)) {
+            Storage::disk('public')->delete($torneo->logo);
         }
-        // Eliminar el torneo de la base de datos
+
         $torneo->delete();
         return redirect('/admin/torneos')->with('success', 'Torneo eliminado correctamente.');
     }
 
     public function editarTorneo(Request $request, $id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/admin/torneos')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $request->merge([
             'usa_posiciones' => $request->has('usa_posiciones') ? 1 : 0,
         ]);
-        // Validar los datos del formulario
+
         $validated = $request->validate(
             [
                 'nombre' => 'required|string|max:255',
@@ -168,39 +139,35 @@ class TorneoController extends Controller
             ]
         );
 
-        // Buscar el torneo por ID
         $torneo = Torneo::findOrFail($id);
-        if ($torneo) {
-            $torneo->nombre = $validated['nombre'];
-            $torneo->descripcion = $validated['descripcion'] ?? null;
-            $torneo->fecha_inicio = $validated['fecha_inicio'];
-            $torneo->fecha_fin = $validated['fecha_fin'];
-            $torneo->estado = $validated['estado'] ?? false;
-            $torneo->jugadores_por_equipo = $validated['jugadores_por_equipo'];
-            $torneo->usa_posiciones = $validated['usa_posiciones'] ?? 0;
-            if ($request->has('eliminar_logo') && $validated['eliminar_logo']) {
-                // Eliminar el logo del torneo si se ha marcado la opción
-                if ($torneo->logo && file_exists(public_path($torneo->logo))) {
-                    unlink(public_path($torneo->logo));
-                }
-                $torneo->logo = null; // Establecer el logo como nulo
+        $torneo->nombre = $validated['nombre'];
+        $torneo->descripcion = $validated['descripcion'] ?? null;
+        $torneo->fecha_inicio = $validated['fecha_inicio'];
+        $torneo->fecha_fin = $validated['fecha_fin'];
+        $torneo->estado = $validated['estado'] ?? false;
+        $torneo->jugadores_por_equipo = $validated['jugadores_por_equipo'];
+        $torneo->usa_posiciones = $validated['usa_posiciones'] ?? 0;
+
+        if ($request->has('eliminar_logo') && $request->eliminar_logo) {
+            if ($torneo->logo && Storage::disk('public')->exists($torneo->logo)) {
+                Storage::disk('public')->delete($torneo->logo);
             }
-            if ($request->hasFile('logo')) {
-                // Eliminar el logo anterior si existe
-                if ($torneo->logo && file_exists(public_path($torneo->logo))) {
-                    unlink(public_path($torneo->logo));
-                }
-                $nombreTorneo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre']);
-                $timestamp = time();
-                $extension = $request->file('logo')->getClientOriginalExtension();
-                $logoFileName = "logo_{$nombreTorneo}_{$timestamp}.{$extension}";
-                // Guarda directo en /public/torneos_logos
-                $request->file('logo')->move(public_path('torneos_logos'), $logoFileName);
-                $torneo->logo = "torneos_logos/{$logoFileName}";
-            }
+            $torneo->logo = null;
         }
 
-        // Guardar los cambios en la base de datos
+        if ($request->hasFile('logo')) {
+            if ($torneo->logo && Storage::disk('public')->exists($torneo->logo)) {
+                Storage::disk('public')->delete($torneo->logo);
+            }
+            $nombreTorneo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre']);
+            $timestamp = time();
+            $extension = $request->file('logo')->extension();
+            $logoFileName = "logo_{$nombreTorneo}_{$timestamp}.{$extension}";
+
+            $path = $request->file('logo')->storeAs('torneos_logos', $logoFileName, 'public');
+            $torneo->logo = $path;
+        }
+
         $torneo->save();
 
         return redirect("/admin/torneos/{$id}")->with('success', 'Torneo actualizado correctamente.');
@@ -208,14 +175,9 @@ class TorneoController extends Controller
 
     public function agregarEquipoATorneo(Request $request, $id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-        // Validar los datos del formulario
         $validated = $request->validate(
             [
-                'equipo_id' => 'required|exists:equipos,id', // Asegurarse de que el equipo exista
+                'equipo_id' => 'required|exists:equipos,id',
             ],
             [
                 'equipo_id.required' => 'El equipo es obligatorio.',
@@ -223,52 +185,37 @@ class TorneoController extends Controller
             ]
         );
 
-        // Buscar el torneo por ID
         $torneo = Torneo::findOrFail($id);
 
-        // Comprobar que el equipo no esté ya inscrito en el torneo
         if ($torneo->equipos()->where('equipos.id', $validated['equipo_id'])->exists()) {
             return redirect("/admin/torneos/{$id}")
                 ->withErrors(['El equipo ya está inscrito en este torneo.']);
         }
 
-        // Buscar el equipo por ID
         $equipo = Equipo::findOrFail($validated['equipo_id']);
-        // Agregar el equipo al torneo
         $torneo->equipos()->attach($equipo->id);
 
         return redirect("/admin/torneos/{$id}")->with('success', 'Equipo agregado al torneo correctamente.');
-        
     }
 
     public function eliminarEquipoDeTorneo($id, $equipoId)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-        // Buscar el torneo por ID
         $torneo = Torneo::findOrFail($id);
-        // Verificar si el equipo está inscrito en el torneo
+
         if (!$torneo->equipos()->where('equipo_id', $equipoId)->exists()) {
             return redirect("/admin/torneos/{$id}")->withErrors(['El equipo no está inscrito en este torneo.']);
         }
-        // Eliminar el equipo del torneo
+
         $torneo->equipos()->detach($equipoId);
         return redirect("/admin/torneos/{$id}")->with('success', 'Equipo eliminado del torneo correctamente.');
     }
 
     public function crearEquipoEnTorneo(Request $request, $id)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-        // Validar los datos del formulario
         $validated = $request->validate(
             [
                 'nombre' => 'required|string|max:255',
-                'logo' => 'nullable|image|max:2048', // Asumiendo que hay un campo para subir un logo
+                'logo' => 'nullable|image|max:2048',
             ],
             [
                 'nombre.required' => 'El nombre del equipo es obligatorio.',
@@ -278,66 +225,51 @@ class TorneoController extends Controller
                 'logo.max' => 'El logo no puede tener más de 2 MB.',
             ]
         );
+
         $torneo = Torneo::findOrFail($id);
 
-        // Crear un nuevo equipo
         $equipo = new Equipo();
         $equipo->nombre = $validated['nombre'];
+
         if ($request->hasFile('logo')) {
             $nombreEquipo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre']);
             $timestamp = time();
-            $extension = $request->file('logo')->getClientOriginalExtension();
+            $extension = $request->file('logo')->extension();
             $logoFileName = "logo_{$nombreEquipo}_{$timestamp}.{$extension}";
-            // Guarda directo en /public/equipos_logos
-            $request->file('logo')->move(public_path('equipos_logos'), $logoFileName);
-            $equipo->logo = 'equipos_logos/' . $logoFileName;
-        } else {
-            $equipo->logo = null; // Si no se subió un logo, establecerlo como nulo
-        }
-        $equipo->save();
 
-        // Agregar el equipo al torneo
+            $path = $request->file('logo')->storeAs('equipos_logos', $logoFileName, 'public');
+            $equipo->logo = $path;
+        } else {
+            $equipo->logo = null;
+        }
+
+        $equipo->save();
         $torneo->equipos()->attach($equipo->id);
+
         return redirect("/admin/torneos/{$id}")->with('success', 'Equipo creado y agregado al torneo correctamente.');
     }
 
     public function mostrarPaginaJugadoresDeEquipoEnTorneo($id, $equipoId)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-        // Buscar el torneo por ID
         $torneo = Torneo::findOrFail($id);
-
-        // Buscar el equipo por ID
         $equipo = $torneo->equipos()->findOrFail($equipoId);
 
-        // Jugadores inscritos en este equipo en este torneo
         $jugadores = Jugador::whereHas('participaciones', function ($q) use ($id, $equipoId) {
             $q->where('torneo_id', $id)
                 ->where('equipo_id', $equipoId);
         })->get();
-        // Todos los jugadores del equipo (en general)
-        $todosJugadoresDelEquipo = $equipo->jugadores;
 
-        // Disponibles: los del equipo que NO están ya en este torneo
+        $todosJugadoresDelEquipo = $equipo->jugadores;
         $jugadoresDisponibles = $todosJugadoresDelEquipo->diff($jugadores);
 
-        // Retornar la vista con los datos del torneo y del equipo
         return view('admin.jugadores_equipo_torneo', compact('torneo', 'equipo', 'jugadores', 'jugadoresDisponibles'));
     }
 
     public function agregarJugadorAEquipoEnTorneo(Request $request, $id, $equipoId)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
-        // Validar los datos del formulario
         $validated = $request->validate(
             [
-                'jugador_id' => 'required|exists:jugadores,id', // Asegurarse de que el jugador exista
+                'jugador_id' => 'required|exists:jugadores,id',
             ],
             [
                 'jugador_id.required' => 'El jugador es obligatorio.',
@@ -345,36 +277,28 @@ class TorneoController extends Controller
             ]
         );
 
-        // Buscar el torneo por ID
         $torneo = Torneo::findOrFail($id);
-        // Buscar el equipo por ID
         $equipo = $torneo->equipos()->findOrFail($equipoId);
-        // Buscar el jugador por ID
         $jugador = Jugador::findOrFail($validated['jugador_id']);
 
-        // Inscribir el jugador al equipo en el torneo
         $equipo->jugadoresEnTorneos()->attach($jugador->id, ['torneo_id' => $torneo->id]);
         return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")->with('success', 'Jugador agregado al equipo en el torneo correctamente.');
     }
 
     public function eliminarJugadorDeEquipoEnTorneo($id, $equipoId, $jugadorId)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-            return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-        }
         $torneo = Torneo::findOrFail($id);
         $equipo = $torneo->equipos()->findOrFail($equipoId);
-        
-        // Verificar si el jugador está inscrito en el equipo en el torneo
+
         if (!$equipo->jugadoresEnTorneos()
             ->wherePivot('torneo_id', $torneo->id)
             ->wherePivot('jugador_id', $jugadorId)
             ->exists()
-        ){
+        ) {
             return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
                 ->withErrors(['El jugador no está inscrito en este equipo en el torneo.']);
         }
+
         $equipo->jugadoresEnTorneos()
             ->wherePivot('torneo_id', $torneo->id)
             ->detach($jugadorId);
@@ -385,11 +309,6 @@ class TorneoController extends Controller
 
     public function crearJugadorEnEquipoEnTorneo(Request $request, $id, $equipoId)
     {
-        // Verificar si el usuario es administrador
-        if (!Auth::check() || !Auth::user()->admin) {
-                return redirect('/')->withErrors(['No tienes permiso para acceder a esta página.']);
-            }
-        // Validar los datos del formulario
         $validated = $request->validate(
             [
                 'nombre' => 'required|string|max:255',
@@ -420,38 +339,38 @@ class TorneoController extends Controller
             ]
         );
 
-        // Buscar el torneo por ID
         $torneo = Torneo::findOrFail($id);
-        // Buscar el equipo por ID
         $equipo = $torneo->equipos()->findOrFail($equipoId);
 
-        //verificar que el equipo esta inscrito al torneo
         if (!$torneo->equipos()->where('equipo_id', $equipoId)->exists()) {
             return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
                 ->withErrors(['El equipo no está inscrito en este torneo.']);
         }
-        // Crear un nuevo jugador
+
         $jugador = new Jugador();
         $jugador->nombre = $validated['nombre'];
         $jugador->apellido1 = $validated['apellido1'];
         $jugador->apellido2 = $validated['apellido2'];
         $jugador->fecha_nacimiento = $validated['fecha_nacimiento'];
         $jugador->posicion = $validated['posicion'] ?? null;
+
         if ($request->hasFile('foto')) {
             $nombreJugador = preg_replace('/[^A-Za-z0-9_\-]/', '_', $validated['nombre'] . '_' . $validated['apellido1'] . '_' . $validated['apellido2']);
             $timestamp = time();
-            $extension = $request->file('foto')->getClientOriginalExtension();
+            $extension = $request->file('foto')->extension();
             $fotoFileName = "foto_{$nombreJugador}_{$timestamp}.{$extension}";
-            // Guarda directo en /public/jugadores_fotos
-            $request->file('foto')->move(public_path('jugadores_fotos'), $fotoFileName);
-            $jugador->foto = 'jugadores_fotos/' . $fotoFileName;
+
+            $path = $request->file('foto')->storeAs('jugadores_fotos', $fotoFileName, 'public');
+            $jugador->foto = $path;
         } else {
-            $jugador->foto = null; // Si no se subió una foto, establecerlo como nulo
+            $jugador->foto = null;
         }
+
         $jugador->save();
-        //Inscribir jugador en equipo
+
         $equipo->jugadores()->attach($jugador->id);
         $equipo->jugadoresEnTorneos()->attach($jugador->id, ['torneo_id' => $torneo->id]);
+
         return redirect("/admin/torneos/{$id}/equipos/{$equipoId}/jugadores")
             ->with('success', 'Jugador creado e inscrito en el equipo del torneo correctamente.');
     }
@@ -459,13 +378,7 @@ class TorneoController extends Controller
     ///////////////////////////USER////////////////////
     public function mostrarPaginaTorneosUser()
     {
-        $torneos = Torneo::where('estado', 'activo')
-            ->orWhere('estado', '1')
-            ->orWhere('estado', 1)
-            ->orWhere('estado', true)
-            ->with('equipos')
-            ->get();
-
+        $torneos = Torneo::activos()->with('equipos')->get();
         return view('user.torneos', compact('torneos'));
     }
 }
