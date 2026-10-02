@@ -1,53 +1,56 @@
-<style>
-    .menuMovil {
-        background-color: #111;
-        /* Fondo del menú */
-        border-radius: 50px;
-    }
+<!-- Barra de Navegación Flotante Móvil -->
+<nav class="fixed bottom-4 inset-x-0 z-40 lg:hidden flex justify-center px-4 pointer-events-none">
+    <div class="pointer-events-auto bg-zinc-900/90 backdrop-blur-xl border border-zinc-800/90 rounded-full px-2 py-1.5 shadow-2xl shadow-zinc-950/80 flex items-center gap-1 sm:gap-2">
 
-    #menuMovil lord-icon,
-    #menuMovil img {
-        width: 32px;
-        height: 32px;
-    }
-</style>
-<div id="menuMovil"
-    class="d-lg-none fixed-bottom w-100 bg-transparent mb-3 d-flex justify-content-center">
+        <!-- Botón Volver -->
+        <button
+            type="button"
+            onclick="history.back()"
+            class="p-3 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 rounded-full transition-all flex items-center justify-center cursor-pointer"
+            aria-label="Volver atrás"
+        >
+            <i class="bi bi-arrow-left text-lg"></i>
+        </button>
 
-    <div class="menuMovil d-flex flex-wrap rounded-pill overflow-hidden shadow-lg"
-        style="width: 80%; background-color: rgba(34, 34, 34, 0.9);">
+        <div class="h-5 w-px bg-zinc-800"></div>
 
-        <!-- Botón atrás -->
-        <div class="col-3 text-center p-1"
-            style="border-right: 2px solid white;"
-            onclick="history.back()">
-            <i class="bi bi-arrow-left text-white fs-4"></i>
-        </div>
+        <!-- Mis Liguillas -->
+        <a
+            href="{{ url('/user/liguillas') }}"
+            class="p-3 {{ request()->is('user/liguillas*') ? 'text-lime-400 bg-lime-400/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80' }} rounded-full transition-all flex items-center justify-center"
+            aria-label="Mis Liguillas"
+        >
+            <i class="bi bi-trophy text-lg"></i>
+        </a>
 
-        <!-- Mis ligas-->
-        <div class="col-3 text-center p-1"
-            style="border-right: 2px solid white;">
-            <a href="{{ url('/user/liguillas') }}">
-                <i class="bi bi-trophy text-white fs-4"></i>
-            </a>
-        </div>
+        <!-- Torneos Activos / Crear Liga -->
+        <a
+            href="{{ url('/user/torneos') }}"
+            class="p-3 {{ request()->is('user/torneos*') ? 'text-lime-400 bg-lime-400/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80' }} rounded-full transition-all flex items-center justify-center"
+            aria-label="Torneos"
+        >
+            <i class="bi bi-plus-circle text-lg"></i>
+        </a>
 
+        <!-- Unirse a Liguilla -->
+        <a
+            href="{{ url('/user/unirseLiguilla') }}"
+            class="p-3 {{ request()->is('user/unirseLiguilla*') ? 'text-lime-400 bg-lime-400/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80' }} rounded-full transition-all flex items-center justify-center"
+            aria-label="Unirse a Liguilla"
+        >
+            <i class="bi bi-bookmark-plus text-lg"></i>
+        </a>
 
-        <!-- Crear Liga -->
-        <div class="col-3 text-center p-1"
-            style="border-right: 2px solid white;">
-            <a href="{{ url('/user/torneos') }}">
-                <i class="bi bi-plus-circle text-white fs-4"></i>
-            </a>
-        </div>
+        <div class="h-5 w-px bg-zinc-800"></div>
 
-
-        <!-- Unirse a liga -->
-        <div class="col-3 text-center p-1">
-            <a href="{{ url('/user/unirseLiguilla') }}">
-                <i class="bi bi-bookmark-plus text-white fs-4"></i>
-            </a>
-        </div>
+        <!-- Mi Perfil -->
+        <a
+            href="{{ url('/user/perfil') }}"
+            class="p-3 {{ request()->is('user/perfil*') ? 'text-lime-400 bg-lime-400/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80' }} rounded-full transition-all flex items-center justify-center"
+            aria-label="Perfil"
+        >
+            <i class="bi bi-person text-lg"></i>
+        </a>
 
     </div>
-</div>
+</nav>

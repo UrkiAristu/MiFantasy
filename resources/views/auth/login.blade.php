@@ -1,122 +1,143 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('auth.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Fantasy League - Iniciar sesión</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@section('title', 'Iniciar Sesión - MiFantasy')
 
-    {{-- Favicon --}}
-    <link rel="icon" href="{{ asset('assets/media/logos/logo-fantasy-nobg.png') }}" type="image/png">
+@section('content')
+<div class="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
 
-    <!-- SEO -->
-    <meta name="description" content="Accede a tu cuenta para gestionar tu equipo de Fantasy League.">
-    <meta name="keywords" content="fantasy, login, fútbol, liga, manager, fantasy league">
-
-    <!-- Estilos -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,600,700">
-    <link rel="stylesheet" href="/assets/plugins/global/plugins.bundle.css">
-    <link rel="stylesheet" href="/assets/css/style.bundle.css">
-    <link rel="stylesheet" href="/assets/css/fantasy.css">
-</head>
-
-<body class="bg-body d-flex flex-column flex-root">
-
-    <div class="d-flex flex-column flex-lg-row flex-column-fluid">
-
-        <!-- Lado visual -->
-        <div class="d-flex flex-column flex-lg-row-auto w-lg-900px"
-            style="background-image: url('/assets/media/images/login-fantasy.jpg'); background-size: cover; background-position: center;">
-            <div class="d-lg-none text-center w-100 p-5 bg-dark bg-opacity-75">
-                <img src="/assets/media/logos/logo-fantasy.png" class="w-50" alt="Logo Fantasy">
-            </div>
+        <!-- Header del Formulario -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100">
+                Bienvenido de nuevo
+            </h1>
+            <p class="mt-2 text-sm text-zinc-400">
+                ¿Aún no tienes cuenta?
+                <a href="{{ url('/registro') }}" class="font-medium text-lime-400 hover:text-lime-300 transition-colors">
+                    Regístrate gratis
+                </a>
+            </p>
         </div>
 
-        <!-- Contenido -->
-        <div class="d-flex flex-column flex-lg-row-fluid py-8">
-            <div class="d-flex flex-center flex-column flex-column-fluid">
-                <div class="w-lg-500px p-8 p-lg-10 mx-auto card shadow">
+        <!-- Tarjeta de Login (Bento Dark) -->
+        <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl shadow-zinc-950/50">
 
-                    <!-- Formulario -->
-                    <form class="form w-100" method="POST" action="{{ url('/login' ) }}" id="formularioLogin">
-                        @csrf
-
-                        <!-- Encabezado -->
-                        <div class="text-center mb-10">
-                            <!-- <img src="/assets/media/logos/logo-fantasy.png" class="mb-5" style="width: 120px;" alt="Logo Fantasy"> -->
-                            <h1 class="text-dark mb-3">Iniciar sesión</h1>
-                            <div class="text-gray-500 fw-bold fs-6">¿Aún no tienes cuenta?
-                                <a href="/registro" class="link-primary fw-bolder">Regístrate aquí</a>
-                            </div>
-                        </div>
-
-                        <!-- Nombre de usuario/Email -->
-                        <div class="fv-row mb-10">
-                            <label class="form-label fs-6 fw-bolder text-dark">Nombre de usuario/Correo electrónico</label>
-                            <input type="text" name="login"
-                                class="form-control form-control-lg form-control-solid 
-                                {{ $errors->has('login') ? 'is-invalid' : (old('login') ? 'is-valid' : '') }}"
-                                value="{{ old('login') }}"
-                                required autofocus>
-                        </div>
-
-                        <!-- Contraseña -->
-                        <div class="fv-row mb-10">
-                            <div class="d-flex justify-content-between mb-2">
-                                <label class="form-label fs-6 fw-bolder text-dark mb-0">Contraseña</label>
-                                <a href="{{ route('password.request') }}" class="link-primary fs-6 fw-bolder" tabindex="-1">¿Olvidaste tu contraseña?</a>
-                            </div>
-                            <input type="password" name="password" id="password"
-                                class="form-control form-control-lg form-control-solid 
-                                {{ ($errors->has('password') || $errors->has('login')) ? 'is-invalid' : '' }}"
-                                required>
-                        </div>
-
-                        <!-- Recordarme -->
-                        <div class="fv-row mb-10 form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember"
-                                value="1" {{ old('remember') ? 'checked' : '' }}>
-                            <label class="form-check-label text-dark fs-6 fw-bolder" for="remember">
-                                Recuérdame en este dispositivo
-                            </label>
-                        </div>
-
-                        <!-- Mensajes -->
-                        @if ($errors->any())
-                        <div class="alert alert-danger">
-                            @foreach ($errors->all() as $error)
-                            {{ $error }}<br>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        <!-- Botón de login -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-lg btn-primary w-100">Entrar</button>
-                        </div>
-                    </form>
-                    <!-- Fin formulario -->
-
+            {{-- Errores de Validación --}}
+            @if ($errors->any())
+                <div class="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm">
+                    <div class="flex items-center gap-2 font-semibold mb-1">
+                        <i class="bi bi-exclamation-circle-fill text-rose-400"></i>
+                        <span>No pudimos iniciar sesión</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-xs text-rose-300/90 mt-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-            </div>
+            @endif
+
+            @if (session('status'))
+                <div class="mb-6 p-4 rounded-xl bg-lime-500/10 border border-lime-500/20 text-lime-300 text-sm flex items-center gap-2">
+                    <i class="bi bi-check-circle-fill text-lime-400"></i>
+                    <span>{{ session('status') }}</span>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ url('/login') }}" id="formularioLogin" class="space-y-5">
+                @csrf
+
+                <!-- Campo Login (Usuario / Email) -->
+                <div>
+                    <label for="login" class="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
+                        Usuario o Correo Electrónico
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                            <i class="bi bi-person text-base"></i>
+                        </div>
+                        <input
+                            type="text"
+                            name="login"
+                            id="login"
+                            value="{{ old('login') }}"
+                            required
+                            autofocus
+                            placeholder="tu_usuario o correo@ejemplo.com"
+                            class="w-full pl-10 pr-4 py-2.5 bg-zinc-950/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all {{ $errors->has('login') ? '!border-rose-500/60 focus:!ring-rose-500' : '' }}"
+                        >
+                    </div>
+                </div>
+
+                <!-- Campo Contraseña -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                            Contraseña
+                        </label>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="text-xs font-medium text-zinc-400 hover:text-lime-400 transition-colors">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        @endif
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                            <i class="bi bi-lock text-base"></i>
+                        </div>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            required
+                            placeholder="••••••••"
+                            class="w-full pl-10 pr-4 py-2.5 bg-zinc-950/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all {{ $errors->has('password') || $errors->has('login') ? '!border-rose-500/60 focus:!ring-rose-500' : '' }}"
+                        >
+                    </div>
+                </div>
+
+                <!-- Recordarme -->
+                <div class="flex items-center justify-between pt-1">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            name="remember"
+                            id="remember"
+                            value="1"
+                            {{ old('remember') ? 'checked' : '' }}
+                            class="w-4 h-4 rounded border-zinc-700 bg-zinc-950 text-lime-400 focus:ring-lime-400 focus:ring-offset-zinc-900 accent-lime-400"
+                        >
+                        <span class="text-xs text-zinc-400 font-medium">Recordarme en este equipo</span>
+                    </label>
+                </div>
+
+                <!-- Botón de Envío -->
+                <button
+                    type="submit"
+                    class="w-full mt-2 py-3 px-4 bg-lime-400 hover:bg-lime-300 text-zinc-950 font-semibold text-sm rounded-xl transition-all shadow-lg shadow-lime-400/10 hover:shadow-lime-400/20 active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+                >
+                    <span>Entrar al juego</span>
+                    <i class="bi bi-arrow-right text-base"></i>
+                </button>
+            </form>
+
         </div>
+
     </div>
+</div>
+@endsection
 
-    <!-- Scripts -->
-    <script src="/assets/plugins/global/plugins.bundle.js"></script>
-
-    <script>
-        window.onload = function() {
-            try {
-                window.ReactNativeWebView?.postMessage(JSON.stringify({
-                    accion: "dispId"
-                }));
-                window.ReactNativeWebView?.postMessage(JSON.stringify({
-                    accion: "bioLogin"
-                }));
-            } catch (e) {}
-        };
-    </script>
-</body>
-
-</html>
+@push('scripts')
+<script>
+    window.addEventListener('load', function() {
+        try {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+                accion: "dispId"
+            }));
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+                accion: "bioLogin"
+            }));
+        } catch (e) {}
+    });
+</script>
+@endpush

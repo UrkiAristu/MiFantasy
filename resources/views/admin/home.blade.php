@@ -3,63 +3,144 @@
 @section('title', 'Inicio | Admin')
 
 @section('content')
-<div class="container">
-    <h1 class="m-4">Panel de Administración</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-person-circle fs-1 mb-3 text-dark"></i>
-                    <h5 class="card-title">Usuarios</h5>
-                    <p class="card-text">Gestiona los usuarios registrados en el sistema.</p>
-                    <a href="{{ url('/admin/usuarios') }}" class="btn btn-primary w-100">Ver Usuarios</a>
+    <!-- Header con Logo MiFantasy controlado -->
+    <div class="text-center space-y-3">
+        <div class="inline-block">
+            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-16 md:h-20 w-auto object-contain mx-auto max-w-full">
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-xs font-semibold uppercase tracking-wider">
+            <i class="bi bi-shield-lock"></i>
+            <span>Zona de Administración</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
+            Panel de Administración
+        </h1>
+        <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">
+            Gestiona usuarios, torneos, equipos, jugadores y liguillas de la plataforma.
+        </p>
+    </div>
+
+    <!-- Grid Sólido de Tarjetas del Panel -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Usuarios -->
+        <div class="group relative bg-zinc-900/60 hover:bg-zinc-900/90 border border-zinc-800 hover:border-lime-400/50 rounded-2xl p-6 transition-all duration-300 shadow-lg hover:shadow-lime-400/5 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="bi bi-person-circle"></i>
                 </div>
+                <div>
+                    <h2 class="text-lg font-bold text-zinc-100 group-hover:text-lime-400 transition-colors">
+                        Usuarios
+                    </h2>
+                    <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Gestiona los usuarios registrados en el sistema, permisos y estado de cuentas.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-zinc-800/80">
+                <a href="{{ url('/admin/usuarios') }}" class="w-full py-2.5 px-4 bg-zinc-800/60 hover:bg-lime-400 text-zinc-200 hover:text-zinc-950 font-semibold text-xs rounded-xl border border-zinc-700/60 hover:border-lime-400 transition-all flex items-center justify-center gap-2">
+                    <span>Ver Usuarios</span>
+                    <i class="bi bi-arrow-right text-sm"></i>
+                </a>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon" style="width: 2em; height: 2em;">
-                        <path d="M353.8 54.1L330.2 6.3c-3.9-8.3-16.1-8.6-20.4 0L286.2 54.1l-52.3 7.5c-9.3 1.4-13.3 12.9-6.4 19.8l38 37-9 52.1c-1.4 9.3 8.2 16.5 16.8 12.2l46.9-24.8 46.6 24.4c8.6 4.3 18.3-2.9 16.8-12.2l-9-52.1 38-36.6c6.8-6.8 2.9-18.3-6.4-19.8l-52.3-7.5zM256 256c-17.7 0-32 14.3-32 32l0 192c0 17.7 14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-192c0-17.7-14.3-32-32-32l-128 0zM32 320c-17.7 0-32 14.3-32 32L0 480c0 17.7 14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32L32 320zm416 96l0 64c0 17.7 14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-64c0-17.7-14.3-32-32-32l-128 0c-17.7 0-32 14.3-32 32z" />
-                    </svg>
-                    <h5 class="card-title">Liguillas</h5>
-                    <p class="card-text">Revisa y administra las liguillas creadas.</p>
-                    <a href="{{ url('/admin/liguillas') }}" class="btn btn-primary w-100">Ver Liguillas</a>
+        <!-- Liguillas -->
+        <div class="group relative bg-zinc-900/60 hover:bg-zinc-900/90 border border-zinc-800 hover:border-lime-400/50 rounded-2xl p-6 transition-all duration-300 shadow-lg hover:shadow-lime-400/5 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="bi bi-award"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-zinc-100 group-hover:text-lime-400 transition-colors">
+                        Liguillas
+                    </h2>
+                    <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Revisa y administra todas las liguillas creadas por los usuarios de la comunidad.
+                    </p>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-trophy-fill fs-1 mb-3 text-dark"></i>
-                    <h5 class="card-title">Torneos</h5>
-                    <p class="card-text">Administra los torneos disponibles.</p>
-                    <a href="{{ url('/admin/torneos') }}" class="btn btn-primary w-100">Ver Torneos</a>
-                </div>
+            <div class="mt-6 pt-4 border-t border-zinc-800/80">
+                <a href="{{ url('/admin/liguillas') }}" class="w-full py-2.5 px-4 bg-zinc-800/60 hover:bg-lime-400 text-zinc-200 hover:text-zinc-950 font-semibold text-xs rounded-xl border border-zinc-700/60 hover:border-lime-400 transition-all flex items-center justify-center gap-2">
+                    <span>Ver Liguillas</span>
+                    <i class="bi bi-arrow-right text-sm"></i>
+                </a>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-shield-fill fs-1 mb-3 text-dark"></i>
-                    <h5 class="card-title">Equipos</h5>
-                    <p class="card-text">Controla los equipos participantes.</p>
-                    <a href="{{ url('/admin/equipos') }}" class="btn btn-primary w-100">Ver Equipos</a>
+
+        <!-- Torneos -->
+        <div class="group relative bg-zinc-900/60 hover:bg-zinc-900/90 border border-zinc-800 hover:border-lime-400/50 rounded-2xl p-6 transition-all duration-300 shadow-lg hover:shadow-lime-400/5 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-zinc-100 group-hover:text-lime-400 transition-colors">
+                        Torneos
+                    </h2>
+                    <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Administra competiciones oficiales, calendarios, jornadas y modalidades.
+                    </p>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="icon" style="width: 2em; height: 2em;">
-                        <path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304l0 128c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-223.1L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6l29.7 0c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9 232 480c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-128-16 0z" />
-                    </svg>
-                    <h5 class="card-title">Jugadores</h5>
-                    <p class="card-text">Administra los jugadores de cada equipo.</p>
-                    <a href="{{ url('/admin/jugadores') }}" class="btn btn-primary w-100">Ver Jugadores</a>
-                </div>
+            <div class="mt-6 pt-4 border-t border-zinc-800/80">
+                <a href="{{ url('/admin/torneos') }}" class="w-full py-2.5 px-4 bg-zinc-800/60 hover:bg-lime-400 text-zinc-200 hover:text-zinc-950 font-semibold text-xs rounded-xl border border-zinc-700/60 hover:border-lime-400 transition-all flex items-center justify-center gap-2">
+                    <span>Ver Torneos</span>
+                    <i class="bi bi-arrow-right text-sm"></i>
+                </a>
             </div>
         </div>
-        @endsection
+
+        <!-- Equipos -->
+        <div class="group relative bg-zinc-900/60 hover:bg-zinc-900/90 border border-zinc-800 hover:border-lime-400/50 rounded-2xl p-6 transition-all duration-300 shadow-lg hover:shadow-lime-400/5 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="bi bi-shield-fill"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-zinc-100 group-hover:text-lime-400 transition-colors">
+                        Equipos
+                    </h2>
+                    <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Controla los clubes y equipos inscritos en cada competición y sus escudos.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-zinc-800/80">
+                <a href="{{ url('/admin/equipos') }}" class="w-full py-2.5 px-4 bg-zinc-800/60 hover:bg-lime-400 text-zinc-200 hover:text-zinc-950 font-semibold text-xs rounded-xl border border-zinc-700/60 hover:border-lime-400 transition-all flex items-center justify-center gap-2">
+                    <span>Ver Equipos</span>
+                    <i class="bi bi-arrow-right text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Jugadores -->
+        <div class="group relative bg-zinc-900/60 hover:bg-zinc-900/90 border border-zinc-800 hover:border-lime-400/50 rounded-2xl p-6 transition-all duration-300 shadow-lg hover:shadow-lime-400/5 hover:-translate-y-1 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-zinc-100 group-hover:text-lime-400 transition-colors">
+                        Jugadores
+                    </h2>
+                    <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Administra los jugadores, posiciones, valoraciones y estadísticas de cada plantilla.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-zinc-800/80">
+                <a href="{{ url('/admin/jugadores') }}" class="w-full py-2.5 px-4 bg-zinc-800/60 hover:bg-lime-400 text-zinc-200 hover:text-zinc-950 font-semibold text-xs rounded-xl border border-zinc-700/60 hover:border-lime-400 transition-all flex items-center justify-center gap-2">
+                    <span>Ver Jugadores</span>
+                    <i class="bi bi-arrow-right text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+@endsection

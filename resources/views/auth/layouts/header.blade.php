@@ -1,55 +1,31 @@
-<!-- Menú lateral móvil -->
-<div id="mobileMenu" class="mobile-menu pt-0 bg-primary">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy Logo" height="40" class="me-2">
-            @auth
-                {{ Auth::user()->name }}
-            @else
+<!-- Header Autenticación -->
+<header class="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3 group transition-transform hover:scale-[1.02]">
+            <img src="{{ asset('assets/media/logos/logo-fantasy-nobg.png') }}" alt="MiFantasy Logo" class="h-9 w-auto">
+            <span class="font-bold text-lg tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors">
                 MiFantasy
-            @endauth
+            </span>
         </a>
-        <button onclick="toggleMenu()" class="btn btn-sm btn-light">
-            <i class="bi bi-arrow-left text-dark fs-4"></i>
-        </button>
-    </div>
-    @auth
-        <form action="{{ url('/logout') }}" method="POST" class="mt-3">
-            @csrf
-            <button type="submit" class="nav-link text-white bg-danger rounded w-100 text-start border-0">
-                Cerrar sesión
-            </button>
-        </form>
-    @endauth
 
-
-</div>
-
-<!-- Navbar superior -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy Logo" height="40" class="me-2">
+        <div class="flex items-center gap-4">
             @auth
-                {{ Auth::user()->name }}
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-zinc-400">
+                        {{ Auth::user()->name ?? Auth::user()->nombreUsuario }}
+                    </span>
+                    <form action="{{ url('/logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="px-3 py-1.5 text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 rounded-lg transition-colors">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
             @else
-                MiFantasy
+                <a href="/" class="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition-colors flex items-center gap-1.5">
+                    <i class="bi bi-arrow-left"></i> Volver al inicio
+                </a>
             @endauth
-        </a>
-        <button class="hamburger d-lg-none" onclick="toggleMenu()">☰</button>
-        <div class="collapse navbar-collapse justify-content-end d-none d-lg-block">
-            <ul class="navbar-nav">
-                @auth
-                    <li class="nav-item">
-                        <form action="{{ url('/logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="nav-link text-danger border-0 bg-transparent">
-                                Cerrar sesión
-                            </button>
-                        </form>
-                    </li>
-                @endauth
-            </ul>
         </div>
     </div>
-</nav>
+</header>

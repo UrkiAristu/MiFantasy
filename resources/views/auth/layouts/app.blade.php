@@ -1,61 +1,18 @@
 @extends('layouts.base')
+
 @section('head')
-<title>@yield('title', 'MiFantasy - Inicio')</title>
-
-<!-- Estilos globales -->
-<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" />
-<link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" />
-<link href="{{ asset('assets/css/fantasy.css') }}" rel="stylesheet" />
-
-<style>
-    .mobile-menu {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        width: 250px;
-        height: 100%;
-        background-color: rgb(0, 0, 0);
-        color: white;
-        padding: 2rem 1rem;
-        transition: left 0.3s ease-in-out;
-        z-index: 1050;
-    }
-
-    .mobile-menu.show {
-        left: 0;
-    }
-
-    .mobile-menu a {
-        color: white;
-        display: block;
-        margin: 1rem 0;
-        font-weight: 600;
-    }
-
-    .hamburger {
-        border: none;
-        background: none;
-        color: white;
-        font-size: 1.5rem;
-    }
-
-    @media (min-width: 992px) {
-        .hamburger {
-            display: none;
-        }
-    }
-</style>
-
+<title>@yield('title', 'MiFantasy - Autenticación')</title>
 @stack('styles')
 @endsection
 
-@section('body_class', 'bg-body')
-@section('body')
+@section('body_class', 'bg-zinc-950 text-zinc-100 min-h-screen flex flex-col selection:bg-lime-400 selection:text-zinc-950')
 
+@section('body')
 @include('auth.layouts.header')
 
-<main>
+<main class="flex-1 flex flex-col">
     @yield('content')
 </main>
+
 @include('auth.layouts.footer')
 @endsection

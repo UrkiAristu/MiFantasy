@@ -1,27 +1,80 @@
 @extends('auth.layouts.app')
 
+@section('title', 'Recuperar Contraseña - MiFantasy')
+
 @section('content')
-<div class="container mt-5">
-    <h2>Recuperar contraseña</h2>
+<div class="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
 
-    @if (session('status'))
-        <div class="alert alert-success mt-2">
-            {{ session('status') }}
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('password.email') }}" class="mt-3">
-        @csrf
-
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required value="{{ old('email') }}">
-            @error('email')
-                <div class="text-danger small">{{ $message }}</div>
-            @enderror
+        <!-- Header del Formulario -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100">
+                Recuperar Contraseña
+            </h1>
+            <p class="mt-2 text-sm text-zinc-400">
+                Introduce tu correo y te enviaremos un enlace para restablecerla.
+            </p>
         </div>
 
-        <button class="btn btn-primary">Enviar enlace</button>
-    </form>
+        <!-- Tarjeta Bento Dark -->
+        <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl shadow-zinc-950/50">
+
+            @if (session('status'))
+                <div class="mb-6 p-4 rounded-xl bg-lime-500/10 border border-lime-500/20 text-lime-300 text-sm flex items-center gap-2">
+                    <i class="bi bi-check-circle-fill text-lime-400 text-base"></i>
+                    <span>{{ session('status') }}</span>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+                @csrf
+
+                <!-- Campo Email -->
+                <div>
+                    <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
+                        Correo Electrónico <span class="text-lime-400">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                            <i class="bi bi-envelope text-base"></i>
+                        </div>
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            value="{{ old('email') }}"
+                            required
+                            autofocus
+                            placeholder="tu@email.com"
+                            class="w-full pl-10 pr-4 py-2.5 bg-zinc-950/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all {{ $errors->has('email') ? '!border-rose-500/60 focus:!ring-rose-500' : '' }}"
+                        >
+                    </div>
+                    @error('email')
+                        <p class="mt-1.5 text-xs text-rose-400 flex items-center gap-1">
+                            <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <!-- Botón CTA -->
+                <button
+                    type="submit"
+                    class="w-full mt-2 py-3 px-4 bg-lime-400 hover:bg-lime-300 text-zinc-950 font-semibold text-sm rounded-xl transition-all shadow-lg shadow-lime-400/10 hover:shadow-lime-400/20 active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+                >
+                    <span>Enviar enlace de recuperación</span>
+                    <i class="bi bi-arrow-right text-base"></i>
+                </button>
+
+                <!-- Volver a Login -->
+                <div class="text-center pt-2">
+                    <a href="{{ url('/login') }}" class="text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1.5">
+                        <i class="bi bi-arrow-left"></i> Volver a iniciar sesión
+                    </a>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
 </div>
 @endsection

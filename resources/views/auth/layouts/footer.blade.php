@@ -1,21 +1,14 @@
-<script>
-    function toggleMenu() {
-        const menu = document.getElementById('mobileMenu');
-        if (menu) menu.classList.toggle('show');
-    }
+<!-- Footer Autenticación -->
+<footer class="w-full border-t border-zinc-800/80 bg-zinc-950 py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+        <p>&copy; {{ date('Y') }} MiFantasy. Todos los derechos reservados.</p>
+        <div class="flex items-center gap-6">
+            <a href="#" class="hover:text-zinc-300 transition-colors">Términos del servicio</a>
+            <a href="#" class="hover:text-zinc-300 transition-colors">Privacidad</a>
+            <a href="#" class="hover:text-zinc-300 transition-colors">Soporte</a>
+        </div>
+    </div>
+</footer>
 
-    let resizeTimerAuth;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimerAuth);
-        resizeTimerAuth = setTimeout(() => {
-            const menu = document.getElementById('mobileMenu');
-            if (menu && window.innerWidth >= 992) {
-                menu.classList.remove('show');
-            }
-        }, 100);
-    });
-</script>
-
-<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-{{-- SweetAlert2 cargado al final del DOM antes de los scripts de vista --}}
+{{-- SweetAlert2 para notificaciones modales --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

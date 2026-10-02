@@ -233,9 +233,18 @@ class LiguillaController extends Controller
         // 6️⃣ Formaciones disponibles según la modalidad del torneo
         $modalidad = (string) ($liguilla->torneo->modalidad ?? 'sala');
         $formacionesDisponibles = AlineacionController::obtenerFormacionesPorModalidad($modalidad);
+        $formaciones = array_combine(array_keys($formacionesDisponibles), array_keys($formacionesDisponibles));
         $formacionActiva = $alineacionBase->formacion
             ?? $liguilla->torneo->formacion_por_defecto
             ?? array_key_first($formacionesDisponibles);
+        $formacionActual = $formacionActiva;
+
+        // Variables de compatibilidad con la vista
+        $plantillaUsuario = $miPlantilla;
+        $alineacionActual = $alineacionBase;
+        $proximaJornada = $jornadaActiva;
+        $jornadasDisponibles = $jornadas;
+        $partidosTorneo = $resultados;
 
         // 7️⃣ Comprobar si la jornada ya ha empezado
         $bloqueada = false;
@@ -247,11 +256,18 @@ class LiguillaController extends Controller
             'jornadas',
             'usuario',
             'miPlantilla',
+            'plantillaUsuario',
             'jugadoresBase',
             'alineacionBase',
+            'alineacionActual',
             'misAlineaciones',
             'resultados',
+            'partidosTorneo',
+            'proximaJornada',
+            'jornadasDisponibles',
             'bloqueada',
+            'formaciones',
+            'formacionActual',
             'formacionesDisponibles',
             'formacionActiva'
         ));

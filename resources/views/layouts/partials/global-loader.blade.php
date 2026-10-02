@@ -1,13 +1,13 @@
-{{-- Overlay Global de Carga y Anti-Doble Clic --}}
+{{-- Overlay Global de Carga y Anti-Doble Clic (Tailwind Dark SaaS) --}}
 <div id="global-loading-overlay" class="global-loading-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Cargando">
     <div class="global-loading-card">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; border-width: 0.25rem;">
-            <span class="visually-hidden">Cargando...</span>
+        <div class="w-10 h-10 border-3 border-lime-400 border-t-transparent rounded-full animate-spin" role="status">
+            <span class="sr-only">Cargando...</span>
         </div>
-        <div class="global-loading-text mt-3 text-white fw-semibold">
+        <div class="global-loading-text mt-4 text-zinc-100 font-semibold tracking-tight text-sm">
             <span>Cargando</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
         </div>
-        <small class="text-white-50 mt-1">Por favor, espera un momento</small>
+        <span class="text-zinc-400 text-xs mt-1">Por favor, espera un momento</span>
     </div>
 </div>
 
@@ -162,10 +162,10 @@
 
             btn.dataset.btnLoadingActive = 'true';
             btn.dataset.originalHtml = btn.innerHTML;
-            btn.classList.add('disabled');
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
             btn.setAttribute('aria-disabled', 'true');
 
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cargando...';
+            btn.innerHTML = '<span class="inline-block w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin align-middle"></span>Cargando...';
 
             setTimeout(function() {
                 try {
@@ -185,7 +185,7 @@
                 delete btn.dataset.originalHtml;
             }
             btn.style.minWidth = '';
-            btn.classList.remove('disabled');
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
             btn.removeAttribute('aria-disabled');
             btn.disabled = false;
             delete btn.dataset.btnLoadingActive;
