@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/zonaAdmin') }}">
-            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="Logo" height="40" class="me-2 rounded-circle">
+            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="Logo" class="w-12 h-12 max-w-[48px] max-h-[48px] object-contain">
             Admin
             @auth
             {{ Auth::user()->name}}

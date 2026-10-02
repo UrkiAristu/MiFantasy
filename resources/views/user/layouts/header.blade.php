@@ -6,7 +6,7 @@
             <!-- Logo y Marca -->
             <div class="flex items-center gap-6">
                 <a href="{{ url('/') }}" class="flex items-center gap-2.5 group">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-8 w-8 rounded-xl object-contain ring-1 ring-zinc-800 group-hover:ring-lime-400/50 transition-all">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2">
                     <span class="text-base font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors">
                         MiFantasy
                     </span>

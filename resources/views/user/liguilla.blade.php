@@ -957,26 +957,28 @@
         div.dataset.posicion = posicion;
 
         let jugador = null;
-        if (slotData && slotData.jugador_id) {
+        if (slotData && slotData.jugador) {
+            jugador = slotData.jugador;
+        } else if (slotData && slotData.jugador_id) {
             jugador = plantillaCompleta.find(j => Number(j.id) === Number(slotData.jugador_id));
         }
 
         if (jugador) {
+            const jug = jugador;
             div.classList.add('ocupado');
             div.innerHTML = `
                 <div class="relative bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-700/80 hover:border-lime-400 rounded-2xl p-2 sm:p-2.5 w-20 sm:w-28 flex flex-col items-center justify-center shadow-xl transition-all">
+                    <button type="button" class="btn-eliminar-slot absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-rose-500 hover:bg-rose-400 text-white flex items-center justify-center text-[10px] shadow transition-all z-20 cursor-pointer" title="Quitar jugador">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                     <span class="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full bg-lime-400 text-zinc-950 font-mono font-bold text-[9px]">
                         ${posicion.substring(0, 3).toUpperCase()}
                     </span>
                     <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-950 border border-zinc-700 overflow-hidden mb-1">
                         <img src="${jugador.foto || '/assets/media/images/default-player.png'}" class="w-full h-full object-cover" onerror="this.src='/assets/media/images/default-player.png'">
                     </div>
-                    <span class="block text-[11px] sm:text-xs font-bold text-zinc-100 truncate w-full text-center group-hover:text-lime-400">
-                        ${jugador.nombre}
-                    </span>
-                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 truncate w-full text-center">
-                        ${jugador.apellido1 || ''}
-                    </span>
+                    <span class="block text-[11px] sm:text-xs font-bold text-zinc-100 truncate w-full text-center px-1">${jug.nombre} ${jug.apellido1 || ''}</span>
+                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 truncate w-full text-center px-1">${jug.equipo ? jug.equipo.nombre : (jug.club ? jug.club.nombre : 'Sin club')}</span>
                 </div>
             `;
         } else {
@@ -999,6 +1001,16 @@
 
     function vincularSlotsClicks() {
         document.querySelectorAll('.campo-futbol .slot').forEach(slot => {
+            const btnEliminar = slot.querySelector('.btn-eliminar-slot');
+            if (btnEliminar) {
+                btnEliminar.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const slotNum = slot.dataset.slot;
+                    delete slotsEstado[slotNum];
+                    renderCampoTactico(formacionActiva);
+                });
+            }
+
             slot.addEventListener('click', function() {
                 const slotNum = this.dataset.slot;
                 const posicion = this.dataset.posicion;
@@ -1105,21 +1117,19 @@
 
     function sincronizarHiddenInputs() {
         const container = document.getElementById('hiddenInputsContainer');
+        if (!container) return;
         container.innerHTML = '';
+
+        const hiddenForm = document.getElementById('hiddenFormacion');
+        if (hiddenForm) hiddenForm.value = formacionActiva;
 
         Object.entries(slotsEstado).forEach(([slotNum, data]) => {
             if (data && data.jugador_id) {
                 const inJugador = document.createElement('input');
                 inJugador.type = 'hidden';
-                inJugador.name = 'jugador_id[]';
+                inJugador.name = 'jugadores[]';
                 inJugador.value = data.jugador_id;
                 container.appendChild(inJugador);
-
-                const inSlot = document.createElement('input');
-                inSlot.type = 'hidden';
-                inSlot.name = 'slot[]';
-                inSlot.value = slotNum;
-                container.appendChild(inSlot);
             }
         });
     }
@@ -1163,26 +1173,100 @@
         }
     }
 
+    function normalizarPosicion(pos) {
+        const p = (pos || '').toLowerCase();
+        if (p === 'portero') return 'portero';
+        if (p === 'defensa') return 'defensa';
+        if (p === 'centrocampista' || p === 'medio') return 'centrocampista';
+        if (p === 'delantero') return 'delantero';
+        return p;
+    }
+
+    function inicializarSlotsDesdeAlineacionGuardada() {
+        slotsEstado = {};
+        // alineacionGuardada puede ser objeto Eloquent (con .jugadores) o array plano
+        const jugadores = Array.isArray(alineacionGuardada)
+            ? alineacionGuardada
+            : (alineacionGuardada && Array.isArray(alineacionGuardada.jugadores) ? alineacionGuardada.jugadores : []);
+
+        if (!jugadores || jugadores.length === 0) return;
+
+        // Usar la formación guardada si existe
+        if (alineacionGuardada && alineacionGuardada.formacion) {
+            formacionActiva = alineacionGuardada.formacion;
+            const sel = document.getElementById('selectFormacion');
+            if (sel) sel.value = formacionActiva;
+        }
+
+        const cuota = obtenerCuotaFormacion(formacionActiva);
+        const porPos = {
+            delantero: jugadores.filter(j => normalizarPosicion(j.posicion) === 'delantero'),
+            centrocampista: jugadores.filter(j => normalizarPosicion(j.posicion) === 'centrocampista'),
+            defensa: jugadores.filter(j => normalizarPosicion(j.posicion) === 'defensa'),
+            portero: jugadores.filter(j => normalizarPosicion(j.posicion) === 'portero'),
+        };
+
+        // Asignar slots en el mismo orden que renderCampoTactico: DEL → CEN → DEF → POR
+        let slotNumero = 1;
+        ['delantero', 'centrocampista', 'defensa', 'portero'].forEach(pos => {
+            const max = cuota[pos] || 0;
+            const lista = porPos[pos] || [];
+            for (let i = 0; i < max; i++) {
+                if (lista[i]) {
+                    slotsEstado[slotNumero] = {
+                        jugador_id: lista[i].id,
+                        slot: slotNumero,
+                        posicion: pos,
+                        jugador: lista[i]
+                    };
+                }
+                slotNumero++;
+            }
+        });
+    }
+
+    function reubicarJugadoresEnNuevaFormacion(nuevaFormacion) {
+        const cuota = obtenerCuotaFormacion(nuevaFormacion);
+        // Agrupar jugadores activos por posición normalizada
+        const porPos = { delantero: [], centrocampista: [], defensa: [], portero: [] };
+        Object.values(slotsEstado).forEach(data => {
+            if (!data || !data.jugador_id) return;
+            const pos = normalizarPosicion(data.posicion);
+            if (porPos[pos]) porPos[pos].push(data);
+        });
+
+        // Reconstruir slotsEstado respetando nuevas cuotas; sobrantes se descartan (vuelven al modal)
+        slotsEstado = {};
+        let slotNumero = 1;
+        ['delantero', 'centrocampista', 'defensa', 'portero'].forEach(pos => {
+            const max = cuota[pos] || 0;
+            const lista = porPos[pos] || [];
+            for (let i = 0; i < max; i++) {
+                if (lista[i]) {
+                    slotsEstado[slotNumero] = {
+                        jugador_id: lista[i].jugador_id,
+                        slot: slotNumero,
+                        posicion: pos,
+                        jugador: lista[i].jugador
+                    };
+                }
+                slotNumero++;
+            }
+        });
+    }
+
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
         // Cargar alineación previa en el estado
-        if (alineacionGuardada && Array.isArray(alineacionGuardada)) {
-            alineacionGuardada.forEach((item, index) => {
-                const slotIndex = item.pivot ? item.pivot.slot : (item.slot ?? (index + 1));
-                slotsEstado[slotIndex] = {
-                    jugador_id: item.id,
-                    slot: slotIndex,
-                    posicion: item.posicion
-                };
-            });
-        }
+        inicializarSlotsDesdeAlineacionGuardada();
 
         renderCampoTactico(formacionActiva);
 
-        // Event listener formación
+        // Event listener formación — reubicar jugadores antes de repintar
         const selectFormacion = document.getElementById('selectFormacion');
         if (selectFormacion) {
             selectFormacion.addEventListener('change', function() {
+                reubicarJugadoresEnNuevaFormacion(this.value);
                 renderCampoTactico(this.value);
             });
         }

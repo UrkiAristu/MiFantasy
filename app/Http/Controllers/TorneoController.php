@@ -382,7 +382,14 @@ class TorneoController extends Controller
     // /////////////////////////USER////////////////////
     public function mostrarPaginaTorneosUser()
     {
-        $torneos = Torneo::activos()->with('equipos')->get();
+        $torneos = Torneo::withoutGlobalScopes()
+            ->where(function ($q) {
+                $q->where('estado', 'activo')
+                  ->orWhere('estado', 1)
+                  ->orWhere('estado', true);
+            })
+            ->with('equipos')
+            ->get();
 
         return view('user.torneos', compact('torneos'));
     }

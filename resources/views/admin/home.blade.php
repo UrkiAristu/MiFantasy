@@ -8,7 +8,7 @@
     <!-- Header con Logo MiFantasy controlado -->
     <div class="text-center space-y-3">
         <div class="inline-block">
-            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-16 md:h-20 w-auto object-contain mx-auto max-w-full">
+            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="w-12 h-12 max-w-[48px] max-h-[48px] object-contain">
         </div>
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-xs font-semibold uppercase tracking-wider">
             <i class="bi bi-shield-lock"></i>

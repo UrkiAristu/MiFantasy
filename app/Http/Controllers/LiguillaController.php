@@ -205,14 +205,14 @@ class LiguillaController extends Controller
             ->get();
 
         // 4️⃣ Alineación BASE del usuario + alineaciones congeladas
-        $alineacionBase = Alineacion::with('jugadores')
+        $alineacionBase = Alineacion::with('jugadores.equipos')
             ->where('liguilla_id', $liguilla->id)
             ->where('user_id', $usuario->id)
             ->whereNull('jornada_id')
             ->first();
         $jugadoresBase = $alineacionBase ? $alineacionBase->jugadores : collect();
 
-        $misAlineaciones = Alineacion::with(['jornada', 'jugadores'])
+        $misAlineaciones = Alineacion::with(['jornada', 'jugadores.equipos'])
             ->where('liguilla_id', $liguilla->id)
             ->where('user_id', $usuario->id)
             ->whereNotNull('jornada_id') // solo las "fotos" de jornada
@@ -224,11 +224,26 @@ class LiguillaController extends Controller
             : collect();
 
         // Plantilla de usuario
-        $plantilla = Plantilla::with('jugadores')
+        $plantilla = Plantilla::with('jugadores.equipos')
             ->where('liguilla_id', $liguilla->id)
             ->where('user_id', $usuario->id)
             ->first();
         $miPlantilla = $plantilla ? $plantilla->jugadores : collect();
+
+        // Hidratar relación equipo para cada jugador
+        foreach ($miPlantilla as $jugador) {
+            $jugador->equipo = $jugador->equipos->first() ?? $jugador->equipoEnTorneo($liguilla->torneo_id);
+        }
+        if ($alineacionBase) {
+            foreach ($alineacionBase->jugadores as $jugador) {
+                $jugador->equipo = $jugador->equipos->first() ?? $jugador->equipoEnTorneo($liguilla->torneo_id);
+            }
+        }
+        foreach ($misAlineaciones as $alineacion) {
+            foreach ($alineacion->jugadores as $jugador) {
+                $jugador->equipo = $jugador->equipos->first() ?? $jugador->equipoEnTorneo($liguilla->torneo_id);
+            }
+        }
 
         // 6️⃣ Formaciones disponibles según la modalidad del torneo
         $modalidad = (string) ($liguilla->torneo->modalidad ?? 'sala');
