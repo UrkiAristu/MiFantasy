@@ -89,6 +89,8 @@
                             type="password"
                             name="password"
                             id="password"
+                            value=""
+                            autocomplete="new-password"
                             required
                             placeholder="••••••••"
                             class="w-full pl-10 pr-4 py-2.5 bg-zinc-950/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all {{ $errors->has('password') || $errors->has('login') ? '!border-rose-500/60 focus:!ring-rose-500' : '' }}"

@@ -506,39 +506,64 @@
     <div id="tab-pane-resultados" class="tab-pane hidden space-y-6">
 
         <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 space-y-6">
-            <div>
-                <h2 class="text-lg font-bold text-zinc-100">Resultados Oficiales</h2>
-                <p class="text-xs text-zinc-400">Marcadores de los partidos del torneo oficial.</p>
-            </div>
-
-            @if(isset($partidosTorneo) && $partidosTorneo->isNotEmpty())
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($partidosTorneo as $partido)
-                <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between gap-4">
-                    <!-- Local -->
-                    <div class="flex items-center gap-2.5 flex-1 min-w-0">
-                        <img src="{{ asset($partido->equipoLocal->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="">
-                        <span class="text-xs font-bold text-zinc-200 truncate">{{ $partido->equipoLocal->nombre ?? 'Local' }}</span>
-                    </div>
-
-                    <!-- Marcador -->
-                    <div class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-center shrink-0">
-                        <span class="text-sm font-bold font-mono text-zinc-100">
-                            {{ $partido->goles_local ?? '-' }} : {{ $partido->goles_visitante ?? '-' }}
-                        </span>
-                    </div>
-
-                    <!-- Visitante -->
-                    <div class="flex items-center justify-end gap-2.5 flex-1 min-w-0">
-                        <span class="text-xs font-bold text-zinc-200 truncate text-right">{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}</span>
-                        <img src="{{ asset($partido->equipoVisitante->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="">
-                    </div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/80">
+                <div>
+                    <h2 class="text-lg font-bold text-zinc-100">Resultados Oficiales</h2>
+                    <p class="text-xs text-zinc-400">Marcadores de los partidos del torneo oficial.</p>
                 </div>
-                @endforeach
+
+                <!-- Selector de Jornada -->
+                <div class="flex items-center gap-2">
+                    <label for="selectJornadaResultados" class="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                        Jornada:
+                    </label>
+                    <select
+                        id="selectJornadaResultados"
+                        onchange="cargarJornadaAjax(this.value)"
+                        class="bg-zinc-950 border border-zinc-800 text-zinc-100 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-lime-400 transition-all cursor-pointer">
+                        @foreach($jornadas as $jornada)
+                        <option value="{{ $jornada->id }}" {{ (isset($jornadaSeleccionada) && $jornadaSeleccionada && $jornadaSeleccionada->id == $jornada->id) ? 'selected' : '' }}>
+                            {{ $jornada->nombre ?? ('Jornada ' . ($jornada->numero ?? $jornada->orden ?? $loop->iteration)) }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            @else
-            <p class="text-xs text-zinc-500 text-center py-8">No hay partidos disponibles para mostrar en este momento.</p>
-            @endif
+
+            <div id="contenedor-partidos-ajax" class="transition-opacity duration-300">
+                @if(isset($partidos) && $partidos->isNotEmpty())
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($partidos as $partido)
+                    <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between gap-4">
+                        <!-- Local -->
+                        <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                            <img src="{{ asset($partido->equipoLocal->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoLocal->nombre ?? 'Local' }}" onerror="this.src='{{ asset('assets/media/images/default-team.png') }}';">
+                            <span class="text-xs font-bold text-zinc-200 truncate">{{ $partido->equipoLocal->nombre ?? 'Local' }}</span>
+                        </div>
+
+                        <!-- Marcador -->
+                        <div class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-center shrink-0">
+                            <span class="text-sm font-bold font-mono text-zinc-100">
+                                @if(is_null($partido->goles_local) || is_null($partido->goles_visitante))
+                                    - : -
+                                @else
+                                    {{ $partido->goles_local }} : {{ $partido->goles_visitante }}
+                                @endif
+                            </span>
+                        </div>
+
+                        <!-- Visitante -->
+                        <div class="flex items-center justify-end gap-2.5 flex-1 min-w-0">
+                            <span class="text-xs font-bold text-zinc-200 truncate text-right">{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}</span>
+                            <img src="{{ asset($partido->equipoVisitante->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}" onerror="this.src='{{ asset('assets/media/images/default-team.png') }}';">
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <p class="text-xs text-zinc-500 text-center py-8">No hay partidos disponibles para la jornada seleccionada.</p>
+                @endif
+            </div>
         </div>
 
     </div>
@@ -1257,6 +1282,12 @@
 
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+        if (tabParam) {
+            switchTab(tabParam);
+        }
+
         // Cargar alineación previa en el estado
         inicializarSlotsDesdeAlineacionGuardada();
 
@@ -1577,5 +1608,22 @@
             });
         });
     });
+
+    async function cargarJornadaAjax(jornadaId) {
+        const contenedor = document.getElementById('contenedor-partidos-ajax');
+        contenedor.style.opacity = '0.4'; // Efecto visual de carga
+        try {
+            const url = '?tab=resultados&jornada_id=' + jornadaId;
+            const response = await fetch(url);
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            contenedor.innerHTML = doc.getElementById('contenedor-partidos-ajax').innerHTML;
+            window.history.pushState({}, '', url); // Mantiene la URL correcta arriba
+        } catch (error) {
+            console.error('Error cargando los partidos:', error);
+        } finally {
+            contenedor.style.opacity = '1';
+        }
+    }
 </script>
 @endpush

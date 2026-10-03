@@ -15,14 +15,13 @@ class LoginController extends Controller
         $request->validate(
             [
                 'login' => 'required|string',
-                'password' => 'required|string|min:8',
+                'password' => 'required|string',
                 'remember' => 'sometimes|boolean',
             ],
             [
                 'login.required' => 'El email  o nombre de usuario es obligatorio.',
                 'login.string' => 'El email o nombre de usuario debe ser una cadena de texto.',
                 'password.required' => 'La contraseña es obligatoria.',
-                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
                 'password.string' => 'La contraseña debe ser una cadena de texto.',
             ]);
 
@@ -44,7 +43,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'login' => 'El usuario o la contraseña son incorrectos o la cuenta está inactiva.',
+            'login' => 'Credenciales incorrectas.',
         ])->onlyInput('login');
     }
 

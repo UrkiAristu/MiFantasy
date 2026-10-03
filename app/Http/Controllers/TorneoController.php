@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
+use App\Models\Jornada;
 use App\Models\Jugador;
+use App\Models\Partido;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -380,7 +382,7 @@ class TorneoController extends Controller
     }
 
     // /////////////////////////USER////////////////////
-    public function mostrarPaginaTorneosUser()
+    public function mostrarPaginaTorneosUser(Request $request)
     {
         $torneos = Torneo::withoutGlobalScopes()
             ->where(function ($q) {

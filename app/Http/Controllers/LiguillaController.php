@@ -264,11 +264,17 @@ class LiguillaController extends Controller
         // 7️⃣ Comprobar si la jornada ya ha empezado
         $bloqueada = false;
 
+        $jornadas = \App\Models\Jornada::where('torneo_id', $liguilla->torneo_id)->orderBy('orden')->get();
+        $jornadaSeleccionada = request()->filled('jornada_id') ? $jornadas->firstWhere('id', request('jornada_id')) : ($jornadas->where('fecha_fin', '<=', now()->toDateString())->last() ?? $jornadas->first());
+        $partidos = $jornadaSeleccionada ? \App\Models\Partido::where('jornada_id', $jornadaSeleccionada->id)->with(['equipoLocal', 'equipoVisitante'])->get() : collect();
+
         return view('user.liguilla', compact(
             'liguilla',
             'clasificacion',
             'jornadaActiva',
             'jornadas',
+            'jornadaSeleccionada',
+            'partidos',
             'usuario',
             'miPlantilla',
             'plantillaUsuario',
@@ -305,6 +311,11 @@ class LiguillaController extends Controller
             ->firstOrFail();
 
         return view('user.plantilla-participante', compact('liguilla', 'user', 'plantilla'));
+    }
+
+    public function plantillaParticipante($liguilla, $participante)
+    {
+        abort(404);
     }
 
     public function clasificacionAjax(Liguilla $liguilla, Request $request)

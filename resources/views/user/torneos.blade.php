@@ -61,7 +61,7 @@
                     <!-- Logo / Thumbnail -->
                     <div class="w-full h-40 rounded-xl bg-zinc-950/80 border border-zinc-800/80 p-4 flex items-center justify-center overflow-hidden mb-4 relative">
                         @if($torneo->logo)
-                            <img src="{{ asset($torneo->logo) }}" alt="{{ $torneo->nombre }}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
+                            <img src="{{ asset($torneo->logo) }}" alt="{{ $torneo->nombre }}" onerror="this.src='/assets/media/images/default-tournament.png'" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
                         @else
                             <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 group-hover:text-lime-400 transition-colors">
                                 <i class="bi bi-trophy text-2xl"></i>
