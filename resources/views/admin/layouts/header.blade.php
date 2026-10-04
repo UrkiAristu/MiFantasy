@@ -17,11 +17,11 @@
             Volver a la App
         </a>
 
-        <button class="navbar-toggler md:hidden p-2 text-zinc-400 hover:text-zinc-100 focus:outline-none border border-zinc-800 rounded-lg" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler md:hidden p-2 text-zinc-400 hover:text-zinc-100 focus:outline-none border border-zinc-800 rounded-lg" type="button" id="adminMenuBtn" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse absolute w-full left-0 top-full bg-zinc-900 z-50 shadow-2xl p-4 md:static md:w-auto md:bg-transparent md:z-auto md:shadow-none md:p-0" id="adminNavbar">
+        <div class="hidden md:block absolute w-full left-0 top-full bg-zinc-900 z-50 shadow-2xl p-4 md:static md:w-auto md:bg-transparent md:z-auto md:shadow-none md:p-0" id="adminNavbar">
             <ul class="navbar-nav ms-auto align-items-start md:align-items-center gap-1">
                 <li class="nav-item w-full md:w-auto">
                     <a class="nav-link text-zinc-200 hover:text-white px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors block" href="{{ url('/zonaAdmin') }}">Panel de Inicio</a>
@@ -56,3 +56,21 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('adminMenuBtn');
+        const menu = document.getElementById('adminNavbar');
+        if (btn && menu) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>

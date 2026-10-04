@@ -1,28 +1,28 @@
 <!-- Header Superior de Usuario -->
-<header class="sticky top-0 z-40 w-full bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80">
+<header class="sticky top-0 z-40 w-full bg-zinc-950/85 backdrop-blur-xl border-b border-zinc-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+        <div class="flex items-center justify-between h-16 flex-nowrap">
 
             <!-- Logo y Marca -->
-            <div class="flex items-center gap-6">
-                <a href="{{ url('/') }}" class="flex items-center gap-2.5 group">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2">
-                    <span class="text-base font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors">
+            <div class="flex items-center gap-6 flex-nowrap shrink-0">
+                <a href="{{ url('/') }}" class="flex items-center gap-2.5 group flex-nowrap">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2 shrink-0">
+                    <span class="text-base font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors whitespace-nowrap">
                         MiFantasy
                     </span>
                 </a>
 
                 <!-- Enlaces de Escritorio -->
-                <nav class="hidden md:flex items-center gap-1">
-                    <a href="{{ url('/user/liguillas') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors {{ request()->is('user/liguillas*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
+                <nav class="hidden md:flex items-center gap-1 flex-nowrap">
+                    <a href="{{ url('/user/liguillas') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors whitespace-nowrap {{ request()->is('user/liguillas*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
                         <i class="bi bi-trophy text-xs mr-1.5 {{ request()->is('user/liguillas*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                         Mis Liguillas
                     </a>
-                    <a href="{{ url('/user/torneos') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors {{ request()->is('user/torneos*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
+                    <a href="{{ url('/user/torneos') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors whitespace-nowrap {{ request()->is('user/torneos*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
                         <i class="bi bi-plus-circle text-xs mr-1.5 {{ request()->is('user/torneos*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                         Torneos Activos
                     </a>
-                    <a href="{{ url('/user/unirseLiguilla') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors {{ request()->is('user/unirseLiguilla*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
+                    <a href="{{ url('/user/unirseLiguilla') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors whitespace-nowrap {{ request()->is('user/unirseLiguilla*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
                         <i class="bi bi-bookmark-plus text-xs mr-1.5 {{ request()->is('user/unirseLiguilla*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                         Unirse a Liguilla
                     </a>
@@ -30,34 +30,34 @@
             </div>
 
             <!-- Acciones de Usuario a la Derecha -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 flex-nowrap shrink-0">
                 @auth
                     @if(Auth::user()->admin)
-                        <a href="{{ url('/zonaAdmin') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors">
+                        <a href="{{ url('/zonaAdmin') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors whitespace-nowrap">
                             <i class="bi bi-shield-lock-fill text-xs"></i>
-                            <span class="hidden sm:inline">Panel Admin</span>
+                            <span>Admin</span>
                         </a>
                     @endif
 
                     <!-- Perfil -->
-                    <a href="{{ url('/user/perfil') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 border border-zinc-800/80 transition-all">
-                        <div class="w-5 h-5 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-[10px]">
+                    <a href="{{ url('/user/perfil') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 border border-zinc-800/80 transition-all flex-nowrap">
+                        <div class="w-5 h-5 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-[10px] shrink-0">
                             {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                         </div>
-                        <span class="hidden sm:inline font-semibold">{{ Auth::user()->name }}</span>
+                        <span class="hidden sm:inline font-semibold max-w-[130px] truncate whitespace-nowrap">{{ Auth::user()->name }}</span>
                     </a>
 
                     <!-- Logout -->
                     <form action="{{ url('/logout') }}" method="POST" class="inline">
                         @csrf
-                        <button type="submit" class="p-2 text-zinc-400 hover:text-rose-400 hover:bg-zinc-900 rounded-lg border border-transparent hover:border-zinc-800 transition-colors cursor-pointer" title="Cerrar sesión">
+                        <button type="submit" class="p-2 text-zinc-400 hover:text-rose-400 hover:bg-zinc-900 rounded-lg border border-transparent hover:border-zinc-800 transition-colors cursor-pointer shrink-0" title="Cerrar sesión">
                             <i class="bi bi-box-arrow-right text-sm"></i>
                         </button>
                     </form>
                 @endauth
 
                 <!-- Botón hamburguesa móvil -->
-                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-lg border border-zinc-800" aria-label="Abrir menú">
+                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-lg border border-zinc-800 shrink-0 cursor-pointer" aria-label="Abrir menú">
                     <i class="bi bi-list text-lg"></i>
                 </button>
             </div>
@@ -66,27 +66,27 @@
     </div>
 </header>
 
-<!-- Drawer / Menú lateral móvil -->
+<!-- Drawer / Menú lateral móvil con z-50 y absolute -->
 <div id="mobileDrawer" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden flex pointer-events-none">
     <!-- Backdrop oscuro -->
     <div id="drawerBackdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto"></div>
 
     <!-- Panel Lateral -->
-    <div class="relative w-72 max-w-[80vw] bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col justify-between z-10 pointer-events-auto shadow-2xl shadow-zinc-950">
+    <div class="absolute inset-y-0 left-0 w-72 max-w-[85vw] bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col justify-between z-10 pointer-events-auto shadow-2xl shadow-zinc-950">
         <div>
             <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center gap-2.5">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-7 w-7 rounded-lg">
-                    <span class="text-sm font-bold text-zinc-100">MiFantasy</span>
+                <div class="flex items-center gap-2.5 flex-nowrap">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-7 w-7 rounded-lg shrink-0">
+                    <span class="text-sm font-bold text-zinc-100 truncate">MiFantasy</span>
                 </div>
-                <button onclick="toggleMobileMenu()" class="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg">
+                <button onclick="toggleMobileMenu()" class="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg cursor-pointer">
                     <i class="bi bi-x-lg text-sm"></i>
                 </button>
             </div>
 
             @auth
             <div class="mb-6 p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-xs">
+                <div class="w-8 h-8 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-xs shrink-0">
                     {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                 </div>
                 <div class="overflow-hidden">
@@ -104,19 +104,19 @@
                             <span>Zona Admin</span>
                         </a>
                     @endif
-                    <a href="{{ url('/user/perfil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
+                    <a href="{{ url('/user/perfil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
                         <i class="bi bi-person text-sm text-zinc-400"></i>
                         <span>Mi Perfil</span>
                     </a>
-                    <a href="{{ url('/user/liguillas') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
+                    <a href="{{ url('/user/liguillas') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
                         <i class="bi bi-trophy text-sm text-zinc-400"></i>
                         <span>Mis Liguillas</span>
                     </a>
-                    <a href="{{ url('/user/torneos') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
+                    <a href="{{ url('/user/torneos') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
                         <i class="bi bi-plus-circle text-sm text-zinc-400"></i>
                         <span>Torneos Activos</span>
                     </a>
-                    <a href="{{ url('/user/unirseLiguilla') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
+                    <a href="{{ url('/user/unirseLiguilla') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
                         <i class="bi bi-bookmark-plus text-sm text-zinc-400"></i>
                         <span>Unirse a Liguilla</span>
                     </a>

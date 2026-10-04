@@ -141,9 +141,9 @@
                 <div class="flex flex-col">
                     <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
                         MiFantasy
-                        <span class="text-[10px] uppercase font-bold tracking-widest text-lime-400 bg-lime-400/10 px-1.5 py-0.5 rounded border border-lime-400/20">PRO</span>
+                        <span class="text-[8px] uppercase font-bold tracking-widest text-lime-400 bg-lime-400/10 px-1 py-0 rounded border border-lime-400/20">PRO</span>
                     </span>
-                    <span class="text-[10px] text-zinc-400 -mt-1 tracking-wider uppercase font-semibold">Liga & Fantasy SaaS</span>
+                    <span class="text-[10px] text-zinc-400 -mt-1 tracking-wider uppercase font-semibold hidden sm:block">Liga & Fantasy SaaS</span>
                 </div>
             </a>
 
@@ -167,7 +167,7 @@
                     <a href="{{ route('login') }}" class="text-sm font-medium text-zinc-300 transition-colors duration-200 hover:text-white px-3 py-2">
                         Acceder
                     </a>
-                    <a href="{{ route('register') }}" class="relative inline-flex items-center justify-center px-4.5 py-2.5 text-sm font-bold text-zinc-950 bg-lime-400 rounded-xl transition-all duration-300 ease-out hover:bg-lime-300 hover:scale-[1.02] shadow-[0_0_20px_rgba(163,230,53,0.35)] active:scale-[0.98]">
+                    <a href="{{ route('register') }}" class="relative inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 text-sm font-bold text-zinc-950 bg-lime-400 rounded-xl transition-all duration-300 ease-out hover:bg-lime-300 hover:scale-[1.02] shadow-[0_0_20px_rgba(163,230,53,0.35)] active:scale-[0.98]">
                         Crear Liga
                         <svg class="ml-1.5 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
@@ -305,88 +305,88 @@
                                 <!-- Attackers Line (DEL) -->
                                 <div class="flex justify-around items-center">
                                     <!-- Player 1 -->
-                                    <div class="group relative flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group relative flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="relative w-12 h-12 rounded-full bg-zinc-900 border-2 border-lime-400/80 flex items-center justify-center shadow-lg group-hover:shadow-[0_0_20px_rgba(163,230,53,0.6)]">
                                             <span class="font-black text-xs text-white">7</span>
                                             <span class="absolute -top-1 -right-1 bg-lime-400 text-zinc-950 font-extrabold text-[9px] w-4 h-4 rounded-full flex items-center justify-center">C</span>
                                         </div>
-                                        <span class="mt-1 text-[11px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Vinícius (16p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Vinícius (16p)</span>
                                     </div>
 
                                     <!-- Player 2 -->
-                                    <div class="group relative flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group relative flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-12 h-12 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">9</span>
                                         </div>
-                                        <span class="mt-1 text-[11px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Lewandowski (11p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Lewandowski (11p)</span>
                                     </div>
 
                                     <!-- Player 3 -->
-                                    <div class="group relative flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group relative flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-12 h-12 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">11</span>
                                         </div>
-                                        <span class="mt-1 text-[11px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Nico Williams (9p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Nico Williams (9p)</span>
                                     </div>
                                 </div>
 
                                 <!-- Midfielders Line (MED) -->
                                 <div class="flex justify-around items-center px-6">
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">8</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Pedri (10p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Pedri (10p)</span>
                                     </div>
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">14</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Valverde (8p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Valverde (8p)</span>
                                     </div>
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">22</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Isco (12p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Isco (12p)</span>
                                     </div>
                                 </div>
 
                                 <!-- Defenders Line (DEF) -->
                                 <div class="flex justify-between items-center px-4">
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">2</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-1.5 py-0.5 rounded border border-zinc-800">Carvajal (7p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Carvajal (7p)</span>
                                     </div>
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">4</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-1.5 py-0.5 rounded border border-zinc-800">Araújo (9p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Araújo (9p)</span>
                                     </div>
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">5</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-1.5 py-0.5 rounded border border-zinc-800">Vivian (8p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Vivian (8p)</span>
                                     </div>
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border-2 border-zinc-400/80 flex items-center justify-center shadow-lg group-hover:border-lime-400">
                                             <span class="font-black text-xs text-white">3</span>
                                         </div>
-                                        <span class="mt-1 text-[10px] font-bold text-white bg-zinc-900/90 px-1.5 py-0.5 rounded border border-zinc-800">Gayà (6p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Gayà (6p)</span>
                                     </div>
                                 </div>
 
                                 <!-- Goalkeeper (POR) -->
                                 <div class="flex justify-center items-center">
-                                    <div class="group flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-110">
+                                    <div class="group flex flex-col items-center w-20 cursor-pointer transition-transform duration-200 hover:scale-110">
                                         <div class="w-12 h-12 rounded-full bg-amber-500/90 border-2 border-white flex items-center justify-center shadow-lg">
                                             <span class="font-black text-xs text-zinc-950">1</span>
                                         </div>
-                                        <span class="mt-1 text-[11px] font-bold text-white bg-zinc-900/90 px-2 py-0.5 rounded border border-zinc-800">Courtois (Clean Sheet +8p)</span>
+                                        <span class="mt-1 w-full max-w-[80px] text-[9px] font-bold text-white bg-zinc-900/90 px-1 py-0.5 rounded border border-zinc-800 truncate text-center block">Courtois (+8p)</span>
                                     </div>
                                 </div>
                             </div>

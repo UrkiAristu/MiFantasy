@@ -14,16 +14,16 @@
 @endphp
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
 
-    <!-- Header Bento de la Liguilla -->
-    <div class="relative overflow-hidden bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl shadow-zinc-950/60">
+    <!-- Header Bento de la Liguilla (Compacto para móvil - Above the fold) -->
+    <div class="relative overflow-hidden bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3 sm:p-8 shadow-xl shadow-zinc-950/60">
         <!-- Glow ambiental decorativo -->
         <div class="absolute -top-24 -right-24 w-80 h-80 bg-lime-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="relative z-10 flex flex-row items-center justify-between gap-3 sm:gap-6">
             <!-- Info Principal -->
-            <div class="flex items-center gap-5">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 p-2.5 flex items-center justify-center shrink-0 shadow-lg">
+            <div class="flex items-center gap-3 sm:gap-5 min-w-0">
+                <div class="w-10 h-10 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-zinc-950/80 border border-zinc-800/80 p-1.5 sm:p-2.5 flex items-center justify-center shrink-0 shadow-lg">
                     @if(!empty($liguilla->torneo->logo))
                     <img
                         src="{{ asset($liguilla->torneo->logo) }}"
@@ -31,49 +31,50 @@
                         class="max-h-full max-w-full object-contain filter drop-shadow-md"
                         loading="lazy"
                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="hidden text-amber-400 text-3xl items-center justify-center">
+                    <div class="hidden text-amber-400 text-xl sm:text-3xl items-center justify-center">
                         <i class="bi bi-trophy-fill"></i>
                     </div>
                     @else
-                    <div class="text-amber-400 text-3xl flex items-center justify-center">
+                    <div class="text-amber-400 text-xl sm:text-3xl flex items-center justify-center">
                         <i class="bi bi-trophy-fill"></i>
                     </div>
                     @endif
                 </div>
 
-                <div class="space-y-1.5">
-                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-xs font-semibold">
+                <div class="space-y-0.5 sm:space-y-1.5 min-w-0">
+                    <div class="inline-flex items-center gap-1.5 px-2 py-0.2 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[10px] sm:text-xs font-semibold truncate max-w-[140px] sm:max-w-none">
                         <i class="bi bi-shield-shaded"></i>
-                        <span>{{ $liguilla->torneo->nombre }}</span>
+                        <span class="truncate">{{ $liguilla->torneo->nombre }}</span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-100">
+                    <h1 class="text-base sm:text-3xl font-black tracking-tight text-zinc-100 truncate">
                         {{ $liguilla->nombre }}
                     </h1>
-                    <p class="text-xs sm:text-sm text-zinc-400 flex items-center gap-2">
-                        <span>Creada por <strong class="text-zinc-200">{{ $liguilla->creador->name ?? 'Administrador' }}</strong></span>
-                        <span class="text-zinc-600">•</span>
-                        <span>{{ $liguilla->usuarios?->count() ?? 0 }} managers compitiendo</span>
+                    <p class="text-[10px] sm:text-sm text-zinc-400 flex items-center gap-1.5 truncate">
+                        <span class="truncate">Creada por <strong class="text-zinc-200">{{ $liguilla->creador->name ?? 'Admin' }}</strong></span>
+                        <span class="hidden sm:inline text-zinc-600">•</span>
+                        <span class="hidden sm:inline">{{ $liguilla->usuarios?->count() ?? 0 }} managers</span>
                     </p>
                 </div>
             </div>
 
             <!-- Código de Invitación & Acciones -->
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2 shrink-0">
                 <button
                     type="button"
                     onclick="compartirEnlace('{{ $liguilla->codigo_unico }}')"
-                    class="py-2.5 px-4 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-200 hover:text-zinc-100 font-mono font-bold text-xs rounded-xl border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-2.5 shadow-sm group cursor-pointer"
-                    title="Hacer clic para compartir o copiar código">
-                    <span class="text-zinc-400 font-sans font-medium text-[11px] uppercase tracking-wider">Código:</span>
-                    <span class="text-lime-400 tracking-widest text-sm">{{ $liguilla->codigo_unico }}</span>
+                    class="py-1.5 px-2.5 sm:py-2.5 sm:px-4 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-200 hover:text-zinc-100 font-mono font-bold text-[11px] sm:text-xs rounded-xl border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-1.5 sm:gap-2.5 shadow-sm group cursor-pointer"
+                    title="Copiar código">
+                    <span class="hidden sm:inline text-zinc-400 font-sans font-medium text-[11px] uppercase tracking-wider">Código:</span>
+                    <span class="text-lime-400 tracking-wider sm:tracking-widest text-xs sm:text-sm">{{ $liguilla->codigo_unico }}</span>
                     <i class="bi bi-share text-zinc-400 group-hover:text-lime-400 transition-colors text-xs"></i>
                 </button>
 
                 <a
                     href="{{ url('/user/liguillas') }}"
-                    class="py-2.5 px-4 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 font-semibold text-xs rounded-xl border border-zinc-700/80 transition-all flex items-center gap-2">
+                    class="py-1.5 px-2.5 sm:py-2.5 sm:px-4 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 font-semibold text-xs rounded-xl border border-zinc-700/80 transition-all flex items-center gap-1.5"
+                    title="Mis Ligas">
                     <i class="bi bi-arrow-left"></i>
-                    <span>Mis Ligas</span>
+                    <span class="hidden sm:inline">Mis Ligas</span>
                 </a>
             </div>
         </div>
