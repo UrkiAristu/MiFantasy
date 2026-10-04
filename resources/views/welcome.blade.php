@@ -128,18 +128,18 @@
 
     <!-- ================= NAVBAR ================= -->
     <header class="sticky top-0 z-50 w-full border-b border-zinc-800/60 bg-zinc-950/75 backdrop-blur-xl transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 h-20 flex items-center justify-between">
 
             <!-- Logo & Brand identity -->
-            <a href="{{ url('/') }}" class="flex items-center gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded-xl px-1">
-                <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-lime-400/50 group-hover:shadow-[0_0_20px_rgba(163,230,53,0.25)]">
-                    <svg class="w-5 h-5 text-lime-400 transition-transform duration-300 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <a href="{{ url('/') }}" class="flex items-center gap-1.5 sm:gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded-xl px-1">
+                <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-lime-400/50 group-hover:shadow-[0_0_20px_rgba(163,230,53,0.25)] shrink-0">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-lime-400 transition-transform duration-300 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                     <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-lime-400 border-2 border-zinc-950"></span>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
+                    <span class="text-base sm:text-xl font-extrabold tracking-tight text-white flex items-center gap-1 sm:gap-1.5">
                         MiFantasy
                         <span class="text-[8px] uppercase font-bold tracking-widest text-lime-400 bg-lime-400/10 px-1 py-0 rounded border border-lime-400/20">PRO</span>
                     </span>
@@ -157,19 +157,19 @@
             </nav>
 
             <!-- Auth action CTA -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1 sm:gap-3">
                 @auth
-                    <a href="{{ route('home') }}" class="group relative inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 rounded-xl transition-all duration-300 hover:border-lime-400/50 hover:bg-zinc-800/80 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-lime-400 mr-2 animate-pulse"></span>
-                        Mi Panel de Control
+                    <a href="{{ route('home') }}" class="group relative inline-flex items-center justify-center px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 rounded-xl transition-all duration-300 hover:border-lime-400/50 hover:bg-zinc-800/80 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-lime-400 mr-1.5 sm:mr-2 animate-pulse"></span>
+                        Mi Panel
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm font-medium text-zinc-300 transition-colors duration-200 hover:text-white px-3 py-2">
+                    <a href="{{ route('login') }}" class="text-xs sm:text-sm font-medium text-zinc-300 transition-colors duration-200 hover:text-white px-1.5 sm:px-3 py-1.5">
                         Acceder
                     </a>
-                    <a href="{{ route('register') }}" class="relative inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 text-sm font-bold text-zinc-950 bg-lime-400 rounded-xl transition-all duration-300 ease-out hover:bg-lime-300 hover:scale-[1.02] shadow-[0_0_20px_rgba(163,230,53,0.35)] active:scale-[0.98]">
+                    <a href="{{ route('register') }}" class="relative inline-flex items-center justify-center whitespace-nowrap px-2 py-1.5 text-xs sm:px-4 sm:text-sm font-bold text-zinc-950 bg-lime-400 rounded-xl transition-all duration-300 ease-out hover:bg-lime-300 hover:scale-[1.02] shadow-[0_0_20px_rgba(163,230,53,0.35)] active:scale-[0.98]">
                         Crear Liga
-                        <svg class="ml-1.5 w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="ml-1 w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                     </a>

@@ -41,7 +41,7 @@
         <div class="group relative rounded-3xl bg-zinc-950/40 border border-zinc-800/80 hover:border-lime-400/40 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-lime-400/5 backdrop-blur-xl">
             <div class="space-y-4">
                 <div class="w-12 h-12 rounded-2xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-lime-400/20 transition-all shadow-inner">
-                    <i class="bi bi-trophy"></i>
+                    <i class="bi bi-award-fill"></i>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors">
@@ -65,7 +65,7 @@
         <div class="group relative rounded-3xl bg-zinc-950/40 border border-zinc-800/80 hover:border-lime-400/40 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-lime-400/10 backdrop-blur-xl">
             <div class="space-y-4">
                 <div class="w-12 h-12 rounded-2xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-lime-400/20 transition-all shadow-inner">
-                    <i class="bi bi-plus-circle"></i>
+                    <i class="bi bi-plus-circle-fill"></i>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors">
@@ -89,7 +89,7 @@
         <div class="group relative rounded-3xl bg-zinc-950/40 border border-zinc-800/80 hover:border-lime-400/40 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-lime-400/5 backdrop-blur-xl">
             <div class="space-y-4">
                 <div class="w-12 h-12 rounded-2xl bg-lime-400/10 border border-lime-400/20 text-lime-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-lime-400/20 transition-all shadow-inner">
-                    <i class="bi bi-bookmark-plus"></i>
+                    <i class="bi bi-door-open-fill"></i>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors">

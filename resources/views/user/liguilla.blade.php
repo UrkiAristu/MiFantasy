@@ -12,73 +12,98 @@
     };
     $esSala = ($modalidad === 'sala');
 @endphp
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
-    <!-- Header Bento de la Liguilla (Compacto para móvil - Above the fold) -->
-    <div class="relative overflow-hidden bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3 sm:p-8 shadow-xl shadow-zinc-950/60">
-        <!-- Glow ambiental decorativo -->
-        <div class="absolute -top-24 -right-24 w-80 h-80 bg-lime-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-row items-center justify-between gap-3 sm:gap-6">
-            <!-- Info Principal -->
-            <div class="flex items-center gap-3 sm:gap-5 min-w-0">
-                <div class="w-10 h-10 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-zinc-950/80 border border-zinc-800/80 p-1.5 sm:p-2.5 flex items-center justify-center shrink-0 shadow-lg">
-                    @if(!empty($liguilla->torneo->logo))
-                    <img
-                        src="{{ asset($liguilla->torneo->logo) }}"
-                        alt="{{ $liguilla->torneo->nombre }}"
-                        class="max-h-full max-w-full object-contain filter drop-shadow-md"
-                        loading="lazy"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="hidden text-amber-400 text-xl sm:text-3xl items-center justify-center">
-                        <i class="bi bi-trophy-fill"></i>
-                    </div>
-                    @else
-                    <div class="text-amber-400 text-xl sm:text-3xl flex items-center justify-center">
-                        <i class="bi bi-trophy-fill"></i>
-                    </div>
-                    @endif
-                </div>
-
-                <div class="space-y-0.5 sm:space-y-1.5 min-w-0">
-                    <div class="inline-flex items-center gap-1.5 px-2 py-0.2 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[10px] sm:text-xs font-semibold truncate max-w-[140px] sm:max-w-none">
-                        <i class="bi bi-shield-shaded"></i>
-                        <span class="truncate">{{ $liguilla->torneo->nombre }}</span>
-                    </div>
-                    <h1 class="text-base sm:text-3xl font-black tracking-tight text-zinc-100 truncate">
-                        {{ $liguilla->nombre }}
-                    </h1>
-                    <p class="text-[10px] sm:text-sm text-zinc-400 flex items-center gap-1.5 truncate">
-                        <span class="truncate">Creada por <strong class="text-zinc-200">{{ $liguilla->creador->name ?? 'Admin' }}</strong></span>
-                        <span class="hidden sm:inline text-zinc-600">•</span>
-                        <span class="hidden sm:inline">{{ $liguilla->usuarios?->count() ?? 0 }} managers</span>
-                    </p>
-                </div>
+    <!-- Header Bento Acordeón Ultra Fino (Above the fold) -->
+    <details class="group relative overflow-hidden bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-zinc-950/60 transition-all duration-300">
+        <!-- Barra Fina Cerrada (Summary) -->
+        <summary class="flex items-center justify-between py-2 px-4 cursor-pointer list-none select-none hover:bg-zinc-800/40 transition-colors">
+            <!-- Izquierda: Nombre de la liga + Badge torneo -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-lime-400 shrink-0 animate-pulse"></span>
+                <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-zinc-100 truncate">
+                    {{ $liguilla->nombre }}
+                </h1>
+                <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[10px] font-semibold shrink-0">
+                    <i class="bi bi-shield-shaded"></i>
+                    <span>{{ $liguilla->torneo->nombre }}</span>
+                </span>
             </div>
 
-            <!-- Código de Invitación & Acciones -->
+            <!-- Derecha: Código + Botón Mis Ligas + Chevron -->
             <div class="flex items-center gap-2 shrink-0">
                 <button
                     type="button"
-                    onclick="compartirEnlace('{{ $liguilla->codigo_unico }}')"
-                    class="py-1.5 px-2.5 sm:py-2.5 sm:px-4 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-200 hover:text-zinc-100 font-mono font-bold text-[11px] sm:text-xs rounded-xl border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-1.5 sm:gap-2.5 shadow-sm group cursor-pointer"
+                    onclick="event.stopPropagation(); compartirEnlace('{{ $liguilla->codigo_unico }}')"
+                    class="py-1 px-2.5 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-200 hover:text-zinc-100 font-mono font-bold text-[11px] rounded-lg border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-1.5 shadow-sm group/btn cursor-pointer"
                     title="Copiar código">
-                    <span class="hidden sm:inline text-zinc-400 font-sans font-medium text-[11px] uppercase tracking-wider">Código:</span>
-                    <span class="text-lime-400 tracking-wider sm:tracking-widest text-xs sm:text-sm">{{ $liguilla->codigo_unico }}</span>
-                    <i class="bi bi-share text-zinc-400 group-hover:text-lime-400 transition-colors text-xs"></i>
+                    <span class="hidden sm:inline text-zinc-400 font-sans font-medium text-[10px] uppercase tracking-wider">Código:</span>
+                    <span class="text-lime-400 tracking-wider text-xs">{{ $liguilla->codigo_unico }}</span>
+                    <i class="bi bi-share text-zinc-400 group-hover/btn:text-lime-400 transition-colors text-[10px]"></i>
                 </button>
 
                 <a
                     href="{{ url('/user/liguillas') }}"
-                    class="py-1.5 px-2.5 sm:py-2.5 sm:px-4 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 font-semibold text-xs rounded-xl border border-zinc-700/80 transition-all flex items-center gap-1.5"
+                    onclick="event.stopPropagation();"
+                    class="py-1 px-2.5 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 font-semibold text-[11px] rounded-lg border border-zinc-700/80 transition-all hidden sm:flex items-center gap-1"
                     title="Mis Ligas">
                     <i class="bi bi-arrow-left"></i>
-                    <span class="hidden sm:inline">Mis Ligas</span>
+                    <span>Mis Ligas</span>
                 </a>
+
+                <!-- Icono Chevron Abajo / Arriba -->
+                <div class="p-1 text-zinc-400 group-open:rotate-180 transition-transform duration-300 flex items-center justify-center">
+                    <i class="bi bi-chevron-down text-xs"></i>
+                </div>
+            </div>
+        </summary>
+
+        <!-- Contenido Expandido (Detalles completos de la liguilla) -->
+        <div class="border-t border-zinc-800/80 p-4 sm:p-6 bg-zinc-950/40 relative z-10">
+            <!-- Glow ambiental decorativo -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 sm:gap-5 min-w-0">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-zinc-950/80 border border-zinc-800/80 p-1.5 flex items-center justify-center shrink-0 shadow-lg">
+                        @if(!empty($liguilla->torneo->logo))
+                        <img
+                            src="{{ asset($liguilla->torneo->logo) }}"
+                            alt="{{ $liguilla->torneo->nombre }}"
+                            class="max-h-full max-w-full object-contain filter drop-shadow-md"
+                            loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="hidden text-amber-400 text-2xl items-center justify-center">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        @else
+                        <div class="text-amber-400 text-2xl flex items-center justify-center">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        @endif
+                    </div>
+
+                    <div class="space-y-1 min-w-0">
+                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-xs font-semibold">
+                            <i class="bi bi-shield-shaded"></i>
+                            <span class="truncate">{{ $liguilla->torneo->nombre }}</span>
+                        </div>
+                        <p class="text-xs text-zinc-400 flex items-center gap-2">
+                            <span>Creada por <strong class="text-zinc-200">{{ $liguilla->creador->name ?? 'Admin' }}</strong></span>
+                            <span class="text-zinc-600">•</span>
+                            <span>{{ $liguilla->usuarios?->count() ?? 0 }} managers</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="sm:hidden w-full pt-2 border-t border-zinc-800/60 flex items-center justify-between text-xs text-zinc-400">
+                    <a href="{{ url('/user/liguillas') }}" class="text-lime-400 font-semibold flex items-center gap-1">
+                        <i class="bi bi-arrow-left"></i> Mis Ligas
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    </details>
 
     <!-- Navegación por Pestañas (Pill Tabs Minimalistas) -->
     <div class="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl overflow-x-auto scrollbar-none shadow-lg">
@@ -147,18 +172,13 @@
         ========================================== -->
         <div id="tab-pane-alineacion" class="tab-pane space-y-6">
 
-            <!-- Panel de Control Táctico Bento -->
-            <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-2xl shadow-zinc-950/40 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div class="flex flex-wrap items-center gap-4">
-                    <!-- Selector de Formación -->
+            <!-- Panel de Control Táctico Compacto -->
+            <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 mb-4 flex flex-col gap-3 shadow-sm mx-auto w-full">
+                <!-- Fila superior: Esquema + Jornada -->
+                <div class="flex justify-between items-center w-full">
                     <div class="flex items-center gap-2">
-                        <label for="selectFormacion" class="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                            Esquema:
-                        </label>
-                        <select
-                            id="selectFormacion"
-                            name="formacion"
-                            class="bg-zinc-950 border border-zinc-800 text-zinc-100 text-sm font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all cursor-pointer">
+                        <label for="selectFormacion" class="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider mb-0">Esquema:</label>
+                        <select name="formacion" id="selectFormacion" class="py-1 px-2 text-xs rounded-md bg-zinc-950 border border-zinc-800 text-zinc-200 outline-none focus:border-lime-400 transition-colors cursor-pointer">
                             @foreach($formaciones as $clave => $nombre)
                             <option value="{{ $clave }}" {{ ($formacionActual ?? '4-3-3') == $clave ? 'selected' : '' }}>
                                 {{ $nombre }}
@@ -167,29 +187,23 @@
                         </select>
                     </div>
 
-                    <!-- Badge Próxima Jornada -->
-                    @if(isset($proximaJornada) && $proximaJornada)
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-xs text-zinc-300">
-                        <i class="bi bi-clock-history text-lime-400"></i>
+                    <div class="text-[10px] sm:text-xs px-2.5 py-1 rounded-md bg-zinc-800/80 text-zinc-300 inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="bi bi-clock"></i>
+                        @if(isset($proximaJornada) && $proximaJornada)
                         <span>{{ $proximaJornada->nombre ?? ('Jornada ' . ($proximaJornada->orden ?? '')) }}</span>
                         @if($proximaJornada->fecha_inicio)
                         <span class="text-zinc-500">• {{ \Carbon\Carbon::parse($proximaJornada->fecha_inicio)->format('d/m/Y H:i') }}</span>
                         @endif
+                        @else
+                        <span>Jornada actual</span>
+                        @endif
                     </div>
-                    @endif
                 </div>
 
-                <!-- Estado y Botón Guardar -->
-                <div class="flex items-center gap-3">
-                    <span id="mensajeAlineacion" class="text-xs font-medium text-zinc-400 hidden"></span>
-                    <button
-                        type="button"
-                        id="btnGuardarAlineacion"
-                        class="py-2.5 px-6 bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold text-xs rounded-xl shadow-lg shadow-lime-400/10 hover:shadow-lime-400/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="bi bi-check-circle-fill text-sm"></i>
-                        <span>Guardar alineación</span>
-                    </button>
-                </div>
+                <!-- Botón Guardar -->
+                <button type="button" id="btnGuardarAlineacion" class="w-full py-2 bg-lime-400 hover:bg-lime-500 text-zinc-950 text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2 border-none shadow-sm cursor-pointer">
+                    <i class="bi bi-check-circle-fill text-base"></i> Guardar alineación
+                </button>
             </div>
 
             <!-- Contenedor del Campo de Fútbol Táctico Bento -->
@@ -270,74 +284,78 @@
 
             <!-- Grupos de Posiciones -->
             @php
-            $posicionesMap = [
-            'portero' => ['titulo' => 'Porteros', 'icono' => 'bi-shield-shaded', 'color' => 'amber'],
-            'defensa' => ['titulo' => 'Defensas', 'icono' => 'bi-shield-check', 'color' => 'blue'],
-            'centrocampista' => ['titulo' => 'Centrocampistas', 'icono' => 'bi-diagram-2', 'color' => 'emerald'],
-            'delantero' => ['titulo' => 'Delanteros', 'icono' => 'bi-lightning-charge', 'color' => 'rose'],
-            ];
+                $posicionesOrden = ['portero', 'defensa', 'centrocampista', 'delantero'];
+                $plantillaAgrupada = $plantillaUsuario ? $plantillaUsuario->groupBy(function($j) {
+                    return strtolower($j->posicion ?? '');
+                })->sortKeysUsing(function($a, $b) use ($posicionesOrden) {
+                    return array_search($a, $posicionesOrden) <=> array_search($b, $posicionesOrden);
+                }) : collect();
+
+                $posicionesMeta = [
+                    'portero' => ['titulo' => 'Porteros', 'icono' => 'bi-shield-shaded', 'color' => 'amber'],
+                    'defensa' => ['titulo' => 'Defensas', 'icono' => 'bi-shield-check', 'color' => 'blue'],
+                    'centrocampista' => ['titulo' => 'Centrocampistas', 'icono' => 'bi-diagram-2', 'color' => 'emerald'],
+                    'delantero' => ['titulo' => 'Delanteros', 'icono' => 'bi-lightning-charge', 'color' => 'rose'],
+                ];
             @endphp
 
-            <div class="space-y-6" id="plantilla">
-                @foreach($posicionesMap as $posClave => $posMeta)
-                @php
-                $jugadoresPos = $plantillaUsuario ? $plantillaUsuario->filter(function($j) use ($posClave) {
-                return strtolower($j->posicion ?? '') === $posClave;
-                }) : collect();
-                @endphp
+            <div class="space-y-4" id="plantilla">
+                @forelse($plantillaAgrupada as $posClave => $jugadoresPos)
+                    @php
+                        $posMeta = $posicionesMeta[$posClave] ?? ['titulo' => ucfirst($posClave), 'icono' => 'bi-person', 'color' => 'zinc'];
+                    @endphp
 
-                <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-zinc-800/80">
-                        <div class="flex items-center gap-2.5">
-                            <i class="bi {{ $posMeta['icono'] }} text-lime-400 text-base"></i>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-200">{{ $posMeta['titulo'] }}</h3>
-                        </div>
-                        <span class="px-2 py-0.5 rounded-md bg-zinc-800 text-[11px] font-semibold text-zinc-400">
-                            {{ $jugadoresPos?->count() ?? 0 }}
-                        </span>
-                    </div>
-
-                    @if($jugadoresPos->isEmpty())
-                    <p class="text-xs text-zinc-500 py-3 text-center">No tienes {{ strtolower($posMeta['titulo']) }} en tu plantilla.</p>
-                    @else
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                        @foreach($jugadoresPos as $jugador)
-                        <div
-                            data-jugador-id="{{ $jugador->id }}"
-                            class="jugador-card group bg-zinc-950/70 hover:bg-zinc-900 border border-zinc-800/80 hover:border-lime-500/40 rounded-xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center group-hover:border-lime-500/40 transition-colors">
-                                    <img
-                                        src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
-                                        alt="{{ $jugador->nombre }}"
-                                        class="w-full h-full object-cover"
-                                        loading="lazy"
-                                        onerror="this.src='{{ asset('assets/media/images/default-player.png') }}';">
-                                </div>
-                                <div class="min-w-0">
-                                    <h4 class="text-xs font-bold text-zinc-100 group-hover:text-lime-400 transition-colors truncate">
-                                        {{ $jugador->nombre }} {{ $jugador->apellido1 }}
-                                    </h4>
-                                    <p class="text-[11px] text-zinc-400 truncate">
-                                        {{ $jugador->equipo->nombre ?? 'Sin club' }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="text-right shrink-0 pl-2">
-                                <span class="block text-xs font-bold font-mono text-zinc-200">
-                                    {{ number_format($jugador->precio ?? 0, 0, ',', '.') }} €
-                                </span>
-                                <span class="text-[10px] text-lime-400 font-semibold">
-                                    {{ $jugador->puntos_totales ?? 0 }} pts
+                    <details class="group bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-zinc-950/40" open>
+                        <summary class="flex items-center justify-between p-6 cursor-pointer list-none select-none">
+                            <div class="flex items-center gap-2.5">
+                                <i class="bi {{ $posMeta['icono'] }} text-lime-400 text-base"></i>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-200">{{ $posMeta['titulo'] }}</h3>
+                                <span class="px-2 py-0.5 rounded-md bg-zinc-800 text-[11px] font-semibold text-zinc-400">
+                                    {{ $jugadoresPos->count() }}
                                 </span>
                             </div>
+                            <i class="bi bi-chevron-down text-zinc-500 transition-transform duration-300 group-open:-rotate-180"></i>
+                        </summary>
+
+                        <div class="px-6 pb-6 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                            @foreach($jugadoresPos as $jugador)
+                                <div
+                                    data-jugador-id="{{ $jugador->id }}"
+                                    class="jugador-card group bg-zinc-950/70 hover:bg-zinc-900 border border-zinc-800/80 hover:border-lime-500/40 rounded-xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center group-hover:border-lime-500/40 transition-colors">
+                                            <img
+                                                src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
+                                                alt="{{ $jugador->nombre }}"
+                                                class="w-full h-full object-cover"
+                                                loading="lazy"
+                                                onerror="this.src='{{ asset('assets/media/images/default-player.png') }}';">
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="text-xs font-bold text-zinc-100 group-hover:text-lime-400 transition-colors truncate">
+                                                {{ $jugador->nombre }} {{ $jugador->apellido1 }}
+                                            </h4>
+                                            <p class="text-[11px] text-zinc-400 truncate">
+                                                {{ $jugador->equipo->nombre ?? 'Sin club' }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-right shrink-0 pl-2">
+                                        <span class="block text-xs font-bold font-mono text-zinc-200">
+                                            {{ number_format($jugador->precio ?? 0, 0, ',', '.') }} €
+                                        </span>
+                                        <span class="text-[10px] text-lime-400 font-semibold">
+                                            {{ $jugador->puntos_totales ?? 0 }} pts
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        @endforeach
-                    </div>
-                    @endif
-                </div>
-                @endforeach
+                    </details>
+                @empty
+                    <p class="text-xs text-zinc-500 py-3 text-center">No tienes jugadores en tu plantilla.</p>
+                @endforelse
             </div>
 
         </div>

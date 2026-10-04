@@ -25,7 +25,7 @@
         <div class="flex items-center gap-3">
             <!-- Botón Volver a la App (PC) -->
             <a href="{{ url('/') }}" class="hidden md:inline-flex items-center gap-1.5 bg-lime-400 hover:bg-lime-500 text-zinc-950 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors">
-                <i class="bi bi-house"></i> Volver a la App
+                <i class="bi bi-house-fill"></i> Volver a la App
             </a>
 
             <!-- Botón Hamburguesa Móvil -->
@@ -37,18 +37,18 @@
 </nav>
 
 <!-- Backdrop Oscuro -->
-<div id="adminBackdrop" class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-40 hidden"></div>
+<div id="adminBackdrop" class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-[1050] hidden"></div>
 
 <!-- Off-Canvas Drawer (Menú lateral izquierdo) -->
-<div id="adminDrawer" class="fixed inset-y-0 left-0 w-64 bg-zinc-950 z-50 transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col p-6">
-    <div class="flex items-center justify-between pb-4 border-b border-zinc-800/80 mb-6">
-        <a class="flex items-center gap-3 text-decoration-none" href="{{ url('/zonaAdmin') }}">
-            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="Logo" class="w-8 h-8 object-contain">
-            <span class="text-zinc-100 font-bold text-sm">
-                Admin @auth {{ Auth::user()->name }} @else Panel @endauth
+<div id="adminDrawer" class="fixed inset-y-0 left-0 w-[80vw] max-w-xs h-[100dvh] overflow-y-auto bg-zinc-950 z-[1060] transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-zinc-800/80 mb-4 gap-2">
+        <a class="flex items-center gap-3 min-w-0 flex-1 text-decoration-none" href="{{ url('/zonaAdmin') }}">
+            <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="Logo" class="w-8 h-8 object-contain shrink-0">
+            <span class="block truncate text-zinc-100 font-bold text-sm">
+                Admin {{ Auth::user()->name ?? '' }}
             </span>
         </a>
-        <button type="button" id="adminDrawerCloseBtn" class="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 transition-colors cursor-pointer" aria-label="Cerrar menú">
+        <button type="button" id="adminDrawerCloseBtn" class="shrink-0 p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 transition-colors cursor-pointer" aria-label="Cerrar menú">
             <i class="bi bi-x-lg text-base"></i>
         </button>
     </div>
@@ -59,30 +59,30 @@
             <span>Panel de Inicio</span>
         </a>
         <a class="text-zinc-200 hover:text-white hover:bg-zinc-900 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3 text-xs font-semibold {{ request()->is('admin/usuarios*') ? 'bg-zinc-900 text-lime-400' : '' }}" href="{{ url('/admin/usuarios') }}">
-            <i class="bi bi-people text-base text-zinc-400"></i>
+            <i class="bi bi-people-fill text-base text-zinc-400"></i>
             <span>Usuarios</span>
         </a>
         <a class="text-zinc-200 hover:text-white hover:bg-zinc-900 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3 text-xs font-semibold {{ request()->is('admin/liguillas*') ? 'bg-zinc-900 text-lime-400' : '' }}" href="{{ url('/admin/liguillas') }}">
-            <i class="bi bi-award text-base text-zinc-400"></i>
+            <i class="bi bi-award-fill text-base text-zinc-400"></i>
             <span>Liguillas</span>
         </a>
         <a class="text-zinc-200 hover:text-white hover:bg-zinc-900 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3 text-xs font-semibold {{ request()->is('admin/torneos*') ? 'bg-zinc-900 text-lime-400' : '' }}" href="{{ url('/admin/torneos') }}">
-            <i class="bi bi-trophy text-base text-zinc-400"></i>
+            <i class="bi bi-trophy-fill text-base text-zinc-400"></i>
             <span>Torneos</span>
         </a>
         <a class="text-zinc-200 hover:text-white hover:bg-zinc-900 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3 text-xs font-semibold {{ request()->is('admin/equipos*') ? 'bg-zinc-900 text-lime-400' : '' }}" href="{{ url('/admin/equipos') }}">
-            <i class="bi bi-shield text-base text-zinc-400"></i>
+            <i class="bi bi-shield-fill text-base text-zinc-400"></i>
             <span>Equipos</span>
         </a>
         <a class="text-zinc-200 hover:text-white hover:bg-zinc-900 px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3 text-xs font-semibold {{ request()->is('admin/jugadores*') ? 'bg-zinc-900 text-lime-400' : '' }}" href="{{ url('/admin/jugadores') }}">
-            <i class="bi bi-person-badge text-base text-zinc-400"></i>
+            <i class="bi bi-person-lines-fill text-base text-zinc-400"></i>
             <span>Jugadores</span>
         </a>
     </nav>
 
     <div class="pt-4 border-t border-zinc-800/80 space-y-2 mt-auto">
         <a class="bg-lime-400 hover:bg-lime-500 text-zinc-950 font-bold px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-xs" href="{{ url('/') }}">
-            <i class="bi bi-house"></i>
+            <i class="bi bi-house-fill"></i>
             <span>Volver a la App</span>
         </a>
         <form action="{{ url('/logout') }}" method="POST" class="w-full">

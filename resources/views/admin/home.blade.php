@@ -21,7 +21,7 @@
         <div class="lg:col-span-3 group bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:-translate-y-1 hover:border-lime-500 hover:shadow-md transition-all duration-300">
             <div class="flex items-start gap-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-2xl text-lime-600">
-                    <i class="bi bi-person-circle"></i>
+                    <i class="bi bi-people-fill"></i>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-slate-900">Usuarios</h2>
@@ -37,7 +37,7 @@
         <div class="lg:col-span-3 group bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:-translate-y-1 hover:border-lime-500 hover:shadow-md transition-all duration-300">
             <div class="flex items-start gap-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-2xl text-lime-600">
-                    <i class="bi bi-award"></i>
+                    <i class="bi bi-award-fill"></i>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-slate-900">Liguillas</h2>
@@ -85,7 +85,7 @@
         <div class="lg:col-span-2 group bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:-translate-y-1 hover:border-lime-500 hover:shadow-md transition-all duration-300">
             <div class="flex items-start gap-4">
                 <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-xl text-lime-600">
-                    <i class="bi bi-people-fill"></i>
+                    <i class="bi bi-person-lines-fill"></i>
                 </div>
                 <div>
                     <h2 class="text-lg font-bold text-slate-900">Jugadores</h2>

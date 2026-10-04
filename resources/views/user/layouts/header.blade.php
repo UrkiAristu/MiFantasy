@@ -15,15 +15,15 @@
                 <!-- Enlaces de Escritorio -->
                 <nav class="hidden md:flex items-center gap-1 flex-nowrap">
                     <a href="{{ url('/user/liguillas') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors whitespace-nowrap {{ request()->is('user/liguillas*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
-                        <i class="bi bi-trophy text-xs mr-1.5 {{ request()->is('user/liguillas*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
+                        <i class="bi bi-award-fill text-xs mr-1.5 {{ request()->is('user/liguillas*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                         Mis Liguillas
                     </a>
                     <a href="{{ url('/user/torneos') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors whitespace-nowrap {{ request()->is('user/torneos*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
-                        <i class="bi bi-plus-circle text-xs mr-1.5 {{ request()->is('user/torneos*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
+                        <i class="bi bi-trophy-fill text-xs mr-1.5 {{ request()->is('user/torneos*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                         Torneos Activos
                     </a>
                     <a href="{{ url('/user/unirseLiguilla') }}" class="px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors whitespace-nowrap {{ request()->is('user/unirseLiguilla*') ? 'bg-zinc-800/80 text-lime-400 font-semibold' : '' }}">
-                        <i class="bi bi-bookmark-plus text-xs mr-1.5 {{ request()->is('user/unirseLiguilla*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
+                        <i class="bi bi-door-open-fill text-xs mr-1.5 {{ request()->is('user/unirseLiguilla*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                         Unirse a Liguilla
                     </a>
                 </nav>
@@ -105,19 +105,19 @@
                         </a>
                     @endif
                     <a href="{{ url('/user/perfil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-person text-sm text-zinc-400"></i>
+                        <i class="bi bi-person-fill text-sm text-zinc-400"></i>
                         <span>Mi Perfil</span>
                     </a>
                     <a href="{{ url('/user/liguillas') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-trophy text-sm text-zinc-400"></i>
+                        <i class="bi bi-award-fill text-sm text-zinc-400"></i>
                         <span>Mis Liguillas</span>
                     </a>
                     <a href="{{ url('/user/torneos') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-plus-circle text-sm text-zinc-400"></i>
+                        <i class="bi bi-trophy-fill text-sm text-zinc-400"></i>
                         <span>Torneos Activos</span>
                     </a>
                     <a href="{{ url('/user/unirseLiguilla') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-bookmark-plus text-sm text-zinc-400"></i>
+                        <i class="bi bi-door-open-fill text-sm text-zinc-400"></i>
                         <span>Unirse a Liguilla</span>
                     </a>
                 @endauth
