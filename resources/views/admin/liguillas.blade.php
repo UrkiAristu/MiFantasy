@@ -3,64 +3,69 @@
 @section('title', 'Liguillas')
 
 @section('content')
-<div class="container mt-5">
+<div class="max-w-7xl mx-auto px-4 py-8 text-zinc-200">
     <!-- Mensajes -->
     @if ($errors->any())
-    <div class="alert alert-danger">
+    <div class="mb-6 bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-sm">
         @foreach ($errors->all() as $error)
-        {{ $error }}<br>
+        <p>{{ $error }}</p>
         @endforeach
     </div>
     @endif
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Liguillas</h1>
-    </div>
 
     @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm">
+        {{ session('success') }}
+    </div>
     @endif
 
-    <div class="table-responsive">
-        <table id="tablaLiguillas" class="table table-striped table-hover align-middle mt-5 text-center">
-            <thead class="table-dark">
-                <tr>
-                    <th class="text-center">ID</th>
-                    <th class="text-center">Nombre</th>
-                    <th class="text-center">Torneo</th>
-                    <th class="text-center">Creador</th>
-                    <th class="text-center">Nº Participantes</th>
-                    <th class="text-center">Fecha de Creación</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($liguillas as $liguilla)
-                <tr>
-                    <td class="text-center">{{ $liguilla->id }}</td>
-                    <td class="text-center">{{ $liguilla->nombre }}</td>
-                    <td class="text-center">
-                        <div class="d-flex flex-column align-items-center">
-                            @if(!empty($liguilla->torneo->logo))
-                            <img src="{{ asset($liguilla->torneo->logo) }}" alt="Logo" style="width:50px; height:50px; object-fit:contain;" class="mb-2">
-                            @endif
-                            <div>{{ $liguilla->torneo->nombre }}</div>
-                        </div>
-                    </td>
-                    <td class="text-center">{{ $liguilla->creador->name ?? 'Desconocido' }}</td>
-                    <td class="text-center">{{ $liguilla->usuarios()->count() }} / {{ $liguilla->max_usuarios }}</td>
-                    <td class="text-center">{{ $liguilla->created_at }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="8" class="text-center">No hay liguillas creadas.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-extrabold tracking-tight text-zinc-100">Liguillas</h1>
     </div>
 
+    <!-- Tabla Container -->
+    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm p-6">
+        <div class="overflow-x-auto">
+            <table id="tablaLiguillas" class="w-full text-left text-sm text-zinc-300">
+                <thead class="bg-zinc-950/80 text-zinc-400 uppercase text-xs tracking-wider border-b border-zinc-800">
+                    <tr>
+                        <th class="py-3 px-4 text-center">ID</th>
+                        <th class="py-3 px-4 text-center">Nombre</th>
+                        <th class="py-3 px-4 text-center">Torneo</th>
+                        <th class="py-3 px-4 text-center">Creador</th>
+                        <th class="py-3 px-4 text-center">Nº Participantes</th>
+                        <th class="py-3 px-4 text-center">Fecha de Creación</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800/60">
+                    @forelse($liguillas as $liguilla)
+                    <tr class="hover:bg-zinc-800/30 transition-colors">
+                        <td class="py-3 px-4 text-center font-mono text-zinc-400">{{ $liguilla->id }}</td>
+                        <td class="py-3 px-4 text-center font-bold text-zinc-100">{{ $liguilla->nombre }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex flex-col items-center gap-2">
+                                @if(!empty($liguilla->torneo->logo))
+                                <img src="{{ asset($liguilla->torneo->logo) }}" alt="Logo" class="w-10 h-10 object-contain rounded-lg bg-zinc-950 p-1 border border-zinc-800">
+                                @endif
+                                <span class="text-zinc-300">{{ $liguilla->torneo->nombre }}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-center text-zinc-300">{{ $liguilla->creador->name ?? 'Desconocido' }}</td>
+                        <td class="py-3 px-4 text-center text-zinc-300">{{ $liguilla->usuarios()->count() }} / {{ $liguilla->max_usuarios }}</td>
+                        <td class="py-3 px-4 text-center text-zinc-400 text-xs">{{ $liguilla->created_at }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-zinc-500">No hay liguillas creadas.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 @endsection
+
 @push('scripts')
 <script>
     $(document).ready(function() {
@@ -77,5 +82,4 @@
         });
     });
 </script>
-
 @endpush
