@@ -31,16 +31,16 @@
     <div class="flex items-center justify-between mb-6">
         <!-- Selector de vista (toggle) a la izquierda -->
         <div class="flex items-center gap-2">
-            <button id="btnVistaTabs" type="button" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-900 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium" title="Vista pestañas">
-                <i class="bi bi-card-list"><span>Pestañas</span></i>
+            <button id="btnVistaTabs" type="button" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-900 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium cursor-pointer" title="Vista pestañas">
+                <i class="bi bi-card-list"></i> <span>Pestañas</span>
             </button>
-            <button id="btnVistaCards" type="button" class="bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-600 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium" title="Vista cards">
-                <i class="bi bi-grid-3x3-gap"><span>Cuadrícula</span></i>
+            <button id="btnVistaCards" type="button" class="bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-600 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium cursor-pointer" title="Vista cards">
+                <i class="bi bi-grid-3x3-gap"></i> <span>Cuadrícula</span>
             </button>
         </div>
 
         <!-- Botón Crear Jornada a la derecha -->
-        <button type="button" onclick="openModal('modalCrearJornada')" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-md flex items-center gap-2">
+        <button type="button" onclick="openModal('modalCrearJornada')" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-md flex items-center gap-2 cursor-pointer">
             <i class="bi bi-plus-lg"></i> Crear Jornada
         </button>
     </div>
@@ -50,7 +50,7 @@
         <div class="flex flex-wrap gap-2 border-b border-zinc-200 pb-4 mb-6" role="tablist">
             @foreach($torneo->jornadas as $index => $jornada)
             <button
-                class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors jornada-tab-btn {{ $index == 0 ? 'bg-lime-400 text-zinc-950 shadow-md' : 'bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900' }}"
+                class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors jornada-tab-btn cursor-pointer {{ $index == 0 ? 'bg-lime-400 text-zinc-950 shadow-md' : 'bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900' }}"
                 data-target="jornada-{{ $jornada->id }}"
                 type="button"
                 role="tab">
@@ -72,9 +72,9 @@
                         <p class="text-xs text-zinc-600">
                             {{ $jornada->fecha_inicio ? \Carbon\Carbon::parse($jornada->fecha_inicio)->format('d/m/Y') : '-' }} -
                             {{ $jornada->fecha_fin ? \Carbon\Carbon::parse($jornada->fecha_fin)->format('d/m/Y') : '-' }}
-                            · Cierre alineaciones:
+                            &middot; Cierre alineaciones:
                             @if($jornada->fecha_cierre_alineaciones)
-                            <strong class="text-zinc-900">{{ $jornada->fecha_cierre_alineaciones->format('d/m/Y H:i') }}</strong>
+                            <strong class="text-zinc-900">{{ \Carbon\Carbon::parse($jornada->fecha_cierre_alineaciones)->format('d/m/Y H:i') }}</strong>
                             @else
                             -
                             @endif
@@ -84,12 +84,12 @@
                         <button
                             type="button"
                             onclick="abrirModalCrearPartido('{{ $jornada->id }}', '{{ $jornada->nombre }}')"
-                            class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-colors shadow-sm inline-flex items-center gap-1">
+                            class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-colors shadow-sm inline-flex items-center gap-1 cursor-pointer">
                             <i class="bi bi-plus-lg"></i> Añadir Partido
                         </button>
                         <button type="button"
                             onclick="abrirModalEditarJornada('{{ $jornada->id }}', '{{ $jornada->nombre }}', '{{ $jornada->fecha_inicio }}', '{{ $jornada->fecha_fin }}', '{{ $jornada->fecha_cierre_alineaciones }}')"
-                            class="bg-amber-50 hover:bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border border-amber-200">
+                            class="bg-amber-50 hover:bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border border-amber-200 cursor-pointer">
                             <i class="bi bi-pencil"></i> Editar
                         </button>
                     </div>
@@ -125,7 +125,7 @@
                                         <a href="{{ url('/admin/partidos/'.$partido->id) }}" class="inline-flex items-center gap-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors">
                                             <i class="bi bi-eye"></i> Ver
                                         </a>
-                                        <button type="button" class="inline-flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                                        <button type="button" class="inline-flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
                                             onclick="abrirModalResultado('{{ $partido->id }}', '{{ $partido->equipoLocal->nombre }}', '{{ $partido->equipoVisitante->nombre }}', '{{ $partido->goles_local }}', '{{ $partido->goles_visitante }}')">
                                             <i class="bi bi-pencil-square"></i> Resultado
                                         </button>
@@ -157,10 +157,10 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="abrirModalCrearPartido('{{ $jornada->id }}', '{{ $jornada->nombre }}')" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-colors shadow-sm inline-flex items-center gap-1">
+                    <button type="button" onclick="abrirModalCrearPartido('{{ $jornada->id }}', '{{ $jornada->nombre }}')" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-colors shadow-sm inline-flex items-center gap-1 cursor-pointer">
                         <i class="bi bi-plus-lg"></i> Añadir Partido
                     </button>
-                    <button type="button" onclick="abrirModalEditarJornada('{{ $jornada->id }}', '{{ $jornada->nombre }}', '{{ $jornada->fecha_inicio }}', '{{ $jornada->fecha_fin }}', '{{ $jornada->fecha_cierre_alineaciones }}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border border-amber-200">
+                    <button type="button" onclick="abrirModalEditarJornada('{{ $jornada->id }}', '{{ $jornada->nombre }}', '{{ $jornada->fecha_inicio }}', '{{ $jornada->fecha_fin }}', '{{ $jornada->fecha_cierre_alineaciones }}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border border-amber-200 cursor-pointer">
                         <i class="bi bi-pencil"></i> Editar
                     </button>
                 </div>
@@ -179,7 +179,7 @@
                             {{ $partido->goles_local ?? '-' }} : {{ $partido->goles_visitante ?? '-' }}
                         </div>
                         <div class="flex flex-col gap-1">
-                            <button type="button" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors" onclick="abrirModalResultado('{{ $partido->id }}', '{{ $partido->equipoLocal->nombre }}', '{{ $partido->equipoVisitante->nombre }}', '{{ $partido->goles_local }}', '{{ $partido->goles_visitante }}')">
+                            <button type="button" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer" onclick="abrirModalResultado('{{ $partido->id }}', '{{ $partido->equipoLocal->nombre }}', '{{ $partido->equipoVisitante->nombre }}', '{{ $partido->goles_local }}', '{{ $partido->goles_visitante }}')">
                                 Resultado
                             </button>
                         </div>
@@ -203,7 +203,7 @@
                 @csrf
                 <div class="flex items-center justify-between p-6 border-b border-zinc-200">
                     <h5 class="text-lg font-bold text-zinc-900">Crear Jornada</h5>
-                    <button type="button" onclick="closeModal('modalCrearJornada')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100">
+                    <button type="button" onclick="closeModal('modalCrearJornada')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100 cursor-pointer">
                         <i class="bi bi-x-lg text-lg"></i>
                     </button>
                 </div>
@@ -228,8 +228,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-end gap-3 p-6 border-t border-zinc-200 bg-zinc-50">
-                    <button type="button" onclick="closeModal('modalCrearJornada')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md">Crear Jornada</button>
+                    <button type="button" onclick="closeModal('modalCrearJornada')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
+                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md cursor-pointer">Crear Jornada</button>
                 </div>
             </form>
         </div>
@@ -243,7 +243,7 @@
                 @method('PUT')
                 <div class="flex items-center justify-between p-6 border-b border-zinc-200">
                     <h5 class="text-lg font-bold text-zinc-900">Editar Jornada</h5>
-                    <button type="button" onclick="closeModal('modalEditarJornada')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100">
+                    <button type="button" onclick="closeModal('modalEditarJornada')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100 cursor-pointer">
                         <i class="bi bi-x-lg text-lg"></i>
                     </button>
                 </div>
@@ -268,8 +268,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-end gap-3 p-6 border-t border-zinc-200 bg-zinc-50">
-                    <button type="button" onclick="closeModal('modalEditarJornada')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md">Guardar Cambios</button>
+                    <button type="button" onclick="closeModal('modalEditarJornada')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
+                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md cursor-pointer">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -283,7 +283,7 @@
                 <input type="hidden" id="partido_jornada_id" name="jornada_id">
                 <div class="flex items-center justify-between p-6 border-b border-zinc-200">
                     <h5 class="text-lg font-bold text-zinc-900" id="tituloModalPartido">Añadir Partido</h5>
-                    <button type="button" onclick="closeModal('modalCrearPartido')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100">
+                    <button type="button" onclick="closeModal('modalCrearPartido')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100 cursor-pointer">
                         <i class="bi bi-x-lg text-lg"></i>
                     </button>
                 </div>
@@ -312,8 +312,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-end gap-3 p-6 border-t border-zinc-200 bg-zinc-50">
-                    <button type="button" onclick="closeModal('modalCrearPartido')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md">Guardar Partido</button>
+                    <button type="button" onclick="closeModal('modalCrearPartido')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
+                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md cursor-pointer">Guardar Partido</button>
                 </div>
             </form>
         </div>
@@ -327,7 +327,7 @@
                 @method('PUT')
                 <div class="flex items-center justify-between p-6 border-b border-zinc-200">
                     <h5 class="text-lg font-bold text-zinc-900" id="tituloModalResultado">Actualizar Resultado</h5>
-                    <button type="button" onclick="closeModal('modalResultado')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100">
+                    <button type="button" onclick="closeModal('modalResultado')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100 cursor-pointer">
                         <i class="bi bi-x-lg text-lg"></i>
                     </button>
                 </div>
@@ -344,8 +344,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-end gap-3 p-6 border-t border-zinc-200 bg-zinc-50">
-                    <button type="button" onclick="closeModal('modalResultado')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md">Actualizar</button>
+                    <button type="button" onclick="closeModal('modalResultado')" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
+                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md cursor-pointer">Actualizar</button>
                 </div>
             </form>
         </div>
@@ -355,12 +355,8 @@
 
 @push('scripts')
 <script>
-    function openModal(id) {
-        document.getElementById(id).classList.remove('hidden');
-    }
-    function closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
-    }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     document.addEventListener('DOMContentLoaded', function() {
         const btnTabs = document.getElementById('btnVistaTabs');
@@ -372,15 +368,15 @@
             btnTabs.addEventListener('click', function() {
                 vistaTabs.classList.remove('hidden');
                 vistaCards.classList.add('hidden');
-                btnTabs.className = "bg-zinc-200 hover:bg-zinc-300 text-zinc-900 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium";
-                btnCards.className = "bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-600 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium";
+                btnTabs.className = "bg-zinc-200 hover:bg-zinc-300 text-zinc-900 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium cursor-pointer";
+                btnCards.className = "bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-600 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium cursor-pointer";
             });
 
             btnCards.addEventListener('click', function() {
                 vistaCards.classList.remove('hidden');
                 vistaTabs.classList.add('hidden');
-                btnCards.className = "bg-zinc-200 hover:bg-zinc-300 text-zinc-900 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium";
-                btnTabs.className = "bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-600 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium";
+                btnCards.className = "bg-zinc-200 hover:bg-zinc-300 text-zinc-900 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium cursor-pointer";
+                btnTabs.className = "bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-600 px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1 font-medium cursor-pointer";
             });
         }
 
@@ -392,9 +388,9 @@
                 document.getElementById(target).classList.remove('hidden');
 
                 tabBtns.forEach(b => {
-                    b.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900";
+                    b.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900 cursor-pointer";
                 });
-                this.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-lime-400 text-zinc-950 shadow-md";
+                this.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-lime-400 text-zinc-950 shadow-md cursor-pointer";
             });
         });
     });

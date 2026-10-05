@@ -3,213 +3,150 @@
 @section('title', 'Detalle del Jugador')
 
 @section('content')
-<div class="container mt-5">
-    <h1 class="mb-4">Detalle del Jugador</h1>
+<div class="max-w-7xl mx-auto px-4 py-8 text-zinc-900">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-extrabold tracking-tight text-zinc-900">Detalle del Jugador</h1>
+        <a href="{{ url('/admin/equipos') }}" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-medium px-4 py-2 rounded-xl text-sm transition-colors">Volver</a>
+    </div>
 
     @if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Se encontraron errores:</strong>
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="mb-6 bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm">
+        @foreach ($errors->all() as $error)
+        <p>{{ $error }}</p>
+        @endforeach
     </div>
     @endif
 
     @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl text-sm">
+        {{ session('success') }}
+    </div>
     @endif
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Información del Jugador</h5>
-            <form method="POST" action="{{ url('/admin/jugadores/'.$jugador->id.'/editar') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="row">
-                    <!-- Columna izquierda: Foto Actual -->
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label">Foto Actual</label><br>
-                        @if($jugador->foto)
-                        <img src="{{ asset($jugador->foto) }}"
-                            alt="Foto del jugador"
-                            class="img-thumbnail"
-                            style="max-width: 160px; height: auto;">
-                        <!-- Checkbox para eliminar foto -->
-                        <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" name="eliminar_foto" id="eliminar_foto" value="1">
-                            <label class="form-check-label" for="eliminar_foto">
-                                Eliminar foto actual
-                            </label>
-                        </div>
-                        @else
-                        <p class="text-muted">Sin foto</p>
-                        @endif
+    <div class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-6 mb-8">
+        <h2 class="text-lg font-bold text-zinc-900 mb-6">Información del Jugador</h2>
+        <form method="POST" action="{{ url('/admin/jugadores/'.$jugador->id.'/editar') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+                <div class="md:col-span-1 text-center">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-2">Foto Actual</label>
+                    @if($jugador->foto)
+                    <img src="{{ asset($jugador->foto) }}" alt="Foto del jugador" class="w-32 h-32 object-cover mx-auto rounded-xl bg-white p-2 border border-zinc-200 mb-3" onerror="this.outerHTML='<div class=\'w-32 h-32 mx-auto rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-400 text-xs font-bold border border-zinc-200 mb-3\'>N/A</div>'">
+                    <div class="flex items-center justify-center gap-2">
+                        <input class="w-4 h-4 rounded bg-white border-zinc-300 text-red-600 focus:ring-red-500" type="checkbox" name="eliminar_foto" id="eliminar_foto" value="1">
+                        <label class="text-xs font-semibold text-zinc-700 cursor-pointer" for="eliminar_foto">Eliminar foto</label>
                     </div>
+                    @else
+                    <div class="w-32 h-32 mx-auto rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-400 text-xs font-bold border border-zinc-200 mb-3">Sin foto</div>
+                    @endif
+                </div>
 
-                    <!-- Columna derecha: Formulario -->
-                    <div class="col-md-9">
-                        <!-- Fila 1: Cambiar Foto + Nombre -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="foto" class="form-label">Cambiar Foto</label>
-                                <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre', $jugador->nombre) }}" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="apellido1" class="form-label">Primer Apellido</label>
-                                <input type="text" class="form-control" id="apellido1" name="apellido1" value="{{ old('apellido1', $jugador->apellido1) }}" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="apellido2" class="form-label">Segundo Apellido</label>
-                                <input type="text" class="form-control" id="apellido2" name="apellido2" value="{{ old('apellido2', $jugador->apellido2) }}" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ old('fecha_nacimiento', $jugador->fecha_nacimiento) }}" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="posicion" class="form-label">Posición</label>
-                                <input type="text" class="form-control" id="posicion" name="posicion" value="{{ old('posicion', $jugador->posicion) }}">
-                            </div>
+                <div class="md:col-span-3 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="foto" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Cambiar Foto</label>
+                            <input type="file" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-600 text-xs focus:outline-none focus:border-lime-500 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-800 hover:file:bg-zinc-200" id="foto" name="foto" accept="image/*">
                         </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
-                        <a href="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}"
-                            class="btn btn-danger btn-eliminar-jugador"
-                            title="Eliminar el jugador"
-                            data-url="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}">
-                            Eliminar
-                        </a>
-                        <a href="{{ url('/admin/equipos') }}" class="btn btn-secondary">Volver</a>
+                        <div>
+                            <label for="nombre" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Nombre</label>
+                            <input type="text" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm focus:outline-none focus:border-lime-500" id="nombre" name="nombre" value="{{ old('nombre', $jugador->nombre) }}" required>
+                        </div>
+                        <div>
+                            <label for="apellido1" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">1º Apellido</label>
+                            <input type="text" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm focus:outline-none focus:border-lime-500" id="apellido1" name="apellido1" value="{{ old('apellido1', $jugador->apellido1) }}" required>
+                        </div>
+                        <div>
+                            <label for="apellido2" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">2º Apellido</label>
+                            <input type="text" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm focus:outline-none focus:border-lime-500" id="apellido2" name="apellido2" value="{{ old('apellido2', $jugador->apellido2) }}" required>
+                        </div>
+                        <div>
+                            <label for="fecha_nacimiento" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Fecha Nacimiento</label>
+                            <input type="date" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm focus:outline-none focus:border-lime-500" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ old('fecha_nacimiento', $jugador->fecha_nacimiento) }}" required>
+                        </div>
+                        <div>
+                            <label for="posicion" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Posición</label>
+                            <input type="text" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm focus:outline-none focus:border-lime-500" id="posicion" name="posicion" value="{{ old('posicion', $jugador->posicion) }}">
+                        </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+            <div class="mt-6 flex items-center justify-end gap-3 border-t border-zinc-200 pt-4">
+                <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md">Guardar Cambios</button>
+                <a href="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}"
+                    class="bg-red-50 hover:bg-red-100 text-red-700 font-medium px-4 py-2.5 rounded-xl text-sm transition-colors btn-eliminar-jugador"
+                    data-url="{{ url('/admin/jugadores/'.$jugador->id.'/eliminar') }}">
+                    Eliminar
+                </a>
+            </div>
+        </form>
     </div>
-    <!-- Card Equipos  -->
-    <div class="card mt-5">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Equipos</h5>
-                <!-- Botón para abrir modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal">
-                    Añadir Equipos
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-bold text-zinc-900">Equipos</h2>
+                <button type="button" onclick="openModal('equipoModal')" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-md flex items-center gap-2">
+                    <i class="bi bi-plus-lg"></i> Añadir Equipos
                 </button>
             </div>
-
             @if($jugador->equipos->count())
-            <table id="tablaEquiposJugador" class="table table-striped align-middle">
-                <thead>
+            <table id="tablaEquiposJugador" class="w-full text-left text-sm text-zinc-700">
+                <thead class="bg-zinc-50 border-b border-zinc-200 text-zinc-600 uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="text-center">#</th>
-                        <th class="text-center">Logo</th>
-                        <th class="text-center">Nombre del Equipo</th>
-                        <th class="text-center">Acciones</th>
+                        <th class="py-3 px-4 text-center">#</th>
+                        <th class="py-3 px-4 text-center">Logo</th>
+                        <th class="py-3 px-4">Equipo</th>
+                        <th class="py-3 px-4 text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-zinc-100">
                     @foreach($jugador->equipos as $index => $equipo)
-                    <tr>
-                        <td class="text-center">{{ $index + 1 }}</td>
-                        <td class="text-center">
+                    <tr class="hover:bg-zinc-50/50 transition-colors">
+                        <td class="py-3 px-4 text-center font-mono text-zinc-500">{{ $index + 1 }}</td>
+                        <td class="py-3 px-4 text-center">
                             @if($equipo->logo)
-                            <img src="{{ asset($equipo->logo) }}" alt="Logo" style="width:40px; height:40px; object-fit:contain;">
+                            <img src="{{ asset($equipo->logo) }}" alt="Logo" class="w-10 h-10 object-contain mx-auto rounded-lg bg-white p-1 border border-zinc-200" onerror="this.outerHTML='<div class=\'w-10 h-10 mx-auto rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 text-[10px] font-bold border border-zinc-200\'>N/A</div>'">
                             @else
-                            <span class="text-muted">Sin logo</span>
+                            <div class="w-10 h-10 mx-auto rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 text-[10px] font-bold border border-zinc-200">N/A</div>
                             @endif
                         </td>
-                        <td class="text-center">{{ $equipo->nombre }}</td>
-                        <td class="text-center">
-                            <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-info btn-sm" title="Ver equipo">
+                        <td class="py-3 px-4 font-bold text-zinc-900">{{ $equipo->nombre }}</td>
+                        <td class="py-3 px-4 text-center space-x-1">
+                            <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="inline-flex items-center gap-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
-                            <a href="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/'.$equipo->id.'/eliminar') }}"
-                                class="btn btn-danger btn-sm btn-dejar-equipo"
-                                title="Desapuntar del torneo"
-                                data-url="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/'.$equipo->id.'/eliminar') }}">
+                            <button type="button" class="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors btn-dejar-equipo cursor-pointer" data-url="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/'.$equipo->id.'/eliminar') }}">
                                 <i class="bi bi-x-circle"></i> Quitar
-                            </a>
+                            </button>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
             @else
-            <p class="text-muted mb-0">No hay equipos todavía.</p>
+            <p class="text-zinc-500 text-center py-4">No hay equipos todavía.</p>
             @endif
         </div>
-    </div>
-    <!-- Card Estadisticas -->
-    <div class="card mt-5">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Estadisticas</h5>
-            </div>
 
+        <div class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-6">
+            <h2 class="text-lg font-bold text-zinc-900 mb-6">Estadísticas</h2>
             @if($jugador->participaciones->count())
-            <table id="tablaTorneosJugador" class="table table-striped align-middle">
-                <thead>
+            <table id="tablaTorneosJugador" class="w-full text-left text-sm text-zinc-700">
+                <thead class="bg-zinc-50 border-b border-zinc-200 text-zinc-600 uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="text-center">#</th>
-                        <th class="text-center">Torneo</th>
-                        <th class="text-center">Equipo</th>
-                        <th class="text-center">Goles</th>
-                        <th class="text-center">Asistencias</th>
-                        <th class="text-center">Puntos</th>
-                        <th class="text-center">Acciones</th>
+                        <th class="py-3 px-4 text-center">Torneo</th>
+                        <th class="py-3 px-4 text-center">Pts</th>
+                        <th class="py-3 px-4 text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach($jugador->participaciones as $index => $torneo)
-                    @php
-                    $equipo = \App\Models\Equipo::find($torneo->pivot->equipo_id);
-                    @endphp
-                    <tr>
-                        <td class="text-center">{{ $index + 1 }}</td>
-
-                        <!-- Torneo: Logo + Nombre -->
-                        <td class="text-center">
-                            <div class="d-flex flex-column align-items-center">
-                                @if($torneo->logo)
-                                <img src="{{ asset($torneo->logo) }}" alt="Logo Torneo" style="width:40px; height:40px; object-fit:contain;">
-                                @else
-                                <span class="text-muted d-block">Sin logo</span>
-                                @endif
-                                <small class="mt-1">{{ $torneo->nombre }}</small>
-                            </div>
-                        </td>
-
-                        <!-- Equipo: Logo + Nombre -->
-                        <td class="text-center">
-                            <div class="d-flex flex-column align-items-center">
-                                @if($equipo && $equipo->logo)
-                                <img src="{{ asset($equipo->logo) }}" alt="Logo Equipo" style="width:40px; height:40px; object-fit:contain;">
-                                @else
-                                <span class="text-muted d-block">Sin logo</span>
-                                @endif
-                                <small class="mt-1">{{ $equipo ? $equipo->nombre : 'Sin equipo' }}</small>
-                            </div>
-                        </td>
-
-                        <td class="text-center">{{ $torneo->pivot->goles }}</td>
-                        <td class="text-center">{{ $torneo->pivot->asistencias }}</td>
-                        <td class="text-center">{{ $torneo->pivot->puntos }}</td>
-
-                        <td class="text-center">
-                            <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="btn btn-info btn-sm" title="Ver torneo">
-                                <i class="bi bi-trophy"></i> Torneo
-                            </a>
-                            <a href="{{ url('/admin/equipos/'.$equipo->id) }}" class="btn btn-dark btn-sm" title="Ver equipo">
-                                <i class="bi bi-shield"></i> Equipo
-                            </a>
-                            <a href="{{ url('/admin/torneos/'.$torneo->id.'/equipos/'.$equipo->id.'/jugadores') }}" class="btn btn-warning btn-sm" title="Ver plantilla">
-                                <i class="bi bi-people"></i> Plantilla
+                <tbody class="divide-y divide-zinc-100">
+                    @foreach($jugador->participaciones as $torneo)
+                    <tr class="hover:bg-zinc-50/50 transition-colors">
+                        <td class="py-3 px-4 text-center">{{ $torneo->nombre }}</td>
+                        <td class="py-3 px-4 text-center font-bold text-zinc-900">{{ $torneo->pivot->puntos }}</td>
+                        <td class="py-3 px-4 text-center space-x-1">
+                            <a href="{{ url('/admin/torneos/'.$torneo->id) }}" class="inline-flex items-center gap-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors">
+                                <i class="bi bi-trophy"></i>
                             </a>
                         </td>
                     </tr>
@@ -217,175 +154,93 @@
                 </tbody>
             </table>
             @else
-            <p class="text-muted mb-0">No ha participado en ningún torneo.</p>
+            <p class="text-zinc-500 text-center py-4">No ha participado en ningún torneo.</p>
             @endif
-
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title" id="equipoModalLabel">Gestionar Equipos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+<div id="equipoModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-sm">
+    <div class="bg-white border border-zinc-200 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl relative">
+        <div class="flex items-center justify-between p-6 border-b border-zinc-200">
+            <h5 class="text-lg font-bold text-zinc-900">Gestionar Equipos</h5>
+            <button type="button" onclick="closeModal('equipoModal')" class="text-zinc-500 hover:text-zinc-900 p-1.5 rounded-lg hover:bg-zinc-100 cursor-pointer">
+                <i class="bi bi-x-lg text-lg"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <div class="flex gap-2 border-b border-zinc-200 pb-4 mb-4" role="tablist">
+                <button class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-lime-400 text-zinc-950 shadow-sm" id="tabSelBtn" onclick="switchTab('seleccionar')">Seleccionar</button>
+                <button class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-zinc-100 text-zinc-600 hover:text-zinc-900" id="tabCrearBtn" onclick="switchTab('crear')">Crear</button>
             </div>
-
-            <div class="modal-body">
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs mb-3" id="equipoTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="seleccionar-tab" data-bs-toggle="tab" data-bs-target="#seleccionar" type="button" role="tab">Seleccionar Equipo</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="crear-tab" data-bs-toggle="tab" data-bs-target="#crear" type="button" role="tab">Crear Nuevo Equipo</button>
-                    </li>
-                </ul>
-
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <!-- Tab Seleccionar -->
-                    <div class="tab-pane fade show active" id="seleccionar" role="tabpanel">
-                        <form method="POST" action="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/agregar') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="equipo_existente" class="form-label">Equipo Existente</label>
-                                <select class="form-select" id="equipo_existente" name="equipo_id" required>
-                                    <option value="">Selecciona un equipo</option>
-                                    @foreach($equiposDisponibles as $equipo)
-                                    <option value="{{ $equipo->id }}">{{ $equipo->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-success">Añadir al Torneo</button>
-                        </form>
+            <div id="paneSeleccionar">
+                <form method="POST" action="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/agregar') }}">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Equipo</label>
+                        <select class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm" name="equipo_id" required>
+                            <option value="">Selecciona</option>
+                            @foreach($equiposDisponibles as $equipo)
+                            <option value="{{ $equipo->id }}">{{ $equipo->nombre }}</option>
+                            @endforeach
+                        </select>
                     </div>
-
-                    <!-- Tab Crear -->
-                    <div class="tab-pane fade" id="crear" role="tabpanel">
-                        <form method="POST" action="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/crear') }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="nuevo_nombre" class="form-label">Nombre del Equipo</label>
-                                <input type="text" class="form-control" id="nuevo_nombre" name="nombre" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="logo" class="form-label">Logo</label>
-                                <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
-                            </div>
-                            <button type="submit" class="btn btn-success">Crear y Añadir</button>
-                        </form>
-                    </div>
-                </div>
+                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors w-full">Añadir</button>
+                </form>
             </div>
-
+            <div id="paneCrear" class="hidden">
+                <form method="POST" action="{{ url('/admin/jugadores/'.$jugador->id.'/equipos/crear') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Nombre</label>
+                        <input type="text" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-900 text-sm" name="nombre" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-1">Logo</label>
+                        <input type="file" class="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-zinc-600 text-xs" name="logo" accept="image/*">
+                    </div>
+                    <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors w-full">Crear y Añadir</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 @endsection
+
 @push('scripts')
 <script>
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function switchTab(tab) {
+        const sel = document.getElementById('paneSeleccionar');
+        const cre = document.getElementById('paneCrear');
+        if(tab === 'seleccionar') { sel.classList.remove('hidden'); cre.classList.add('hidden'); }
+        else { cre.classList.remove('hidden'); sel.classList.remove('hidden'); }
+    }
+
     $(document).ready(function() {
-        $('#equipo_existente').select2({
-            width: '100%',
-            dropdownParent: $('#equipoModal'),
-            placeholder: 'Selecciona un equipo',
-            allowClear: true,
-            language: {
-                noResults: function() {
-                    return "No se encontraron equipos";
-                }
-            }
-        });
-        $('#tablaEquiposJugador').DataTable({
-            destroy: true,
-            order: false,
-            locale: "es",
-            colReorder: true,
-            dom: 'frtip',
-            stateSave: true,
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print',
-            ]
-        });
-        $('#tablaTorneosJugador').DataTable({
-            destroy: true,
-            order: false,
-            locale: "es",
-            colReorder: true,
-            dom: 'frtip',
-            stateSave: true,
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print',
-            ]
+        $('#tablaEquiposJugador, #tablaTorneosJugador').DataTable({
+            destroy: true, order: false, locale: "es", colReorder: true, dom: 'Bfrtip', stateSave: true,
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
         });
     });
-</script>
-<script>
+
     document.addEventListener('DOMContentLoaded', function() {
         const createAndSubmitDeleteForm = (url) => {
             const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
-            const methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            methodInput.value = 'DELETE';
-            form.appendChild(csrfInput);
-            form.appendChild(methodInput);
-            document.body.appendChild(form);
-            form.submit();
+            form.method = 'POST'; form.action = url;
+            const csrf = document.createElement('input'); csrf.type = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
+            const method = document.createElement('input'); method.type = 'hidden'; method.name = '_method'; method.value = 'DELETE';
+            form.appendChild(csrf); form.appendChild(method); document.body.appendChild(form); form.submit();
         };
-
-        const botonesEliminar = document.querySelectorAll('.btn-dejar-equipo');
-        botonesEliminar.forEach(boton => {
-            boton.addEventListener('click', function(e) {
+        document.querySelectorAll('.btn-dejar-equipo, .btn-eliminar-jugador').forEach(btn => {
+            btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const url = this.getAttribute('data-url');
                 Swal.fire({
-                    title: '¿Estás seguro de que deseas expulsar este jugador del equipo?',
-                    text: "El jugador no formará parte del equipo.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, expulsar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        createAndSubmitDeleteForm(url);
-                    }
-                });
+                    title: '¿Estás seguro?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#a3e635', cancelButtonColor: '#ef4444', confirmButtonText: 'Sí'
+                }).then((res) => { if (res.isConfirmed) createAndSubmitDeleteForm(this.dataset.url); });
             });
         });
-
-        const botonEliminarJugador = document.querySelector('.btn-eliminar-jugador');
-        if (botonEliminarJugador) {
-            botonEliminarJugador.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = this.getAttribute('data-url');
-                Swal.fire({
-                    title: '¿Estás seguro de que deseas eliminar este jugador?',
-                    text: "Esta acción no se puede deshacer.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        createAndSubmitDeleteForm(url);
-                    }
-                });
-            });
-        }
     });
 </script>
 @endpush
