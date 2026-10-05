@@ -766,7 +766,7 @@
             <div id="alineacionModalSlots" class="relative z-10 grid grid-cols-4 sm:grid-cols-6 gap-2.5">
                 @for($i = 1; $i <= $limiteSlots; $i++)
                     <div class="slot vacio bg-zinc-900/80 border border-zinc-800 rounded-xl p-2 text-center flex flex-col items-center justify-center min-h-[80px]" data-slot="{{ $i }}">
-                    <div class="card-body p-1 flex flex-col items-center justify-center">
+                    <div class="flex flex-col items-center justify-center p-1">
                         <small class="text-zinc-500 text-[10px]">Vacío</small>
                     </div>
                 </div>
@@ -1287,7 +1287,7 @@
         const slots = slotsWrap.querySelectorAll('.slot');
         slots.forEach(s => {
             s.className = 'slot vacio bg-zinc-900/80 border border-zinc-800 rounded-xl p-2 text-center flex flex-col items-center justify-center min-h-[80px]';
-            s.innerHTML = '<div class="card-body p-1 flex flex-col items-center justify-center"><small class="text-zinc-500 text-[10px]">Vacío</small></div>';
+            s.innerHTML = '<div class="flex flex-col items-center justify-center"><small class="text-zinc-500 text-[10px]">Vacío</small></div>';
         });
 
         if (data.status === 'ok' && data.jugadores) {
