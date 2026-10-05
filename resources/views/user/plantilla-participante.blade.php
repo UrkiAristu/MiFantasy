@@ -3,160 +3,136 @@
 @section('title', 'Plantilla de ' . $user->name)
 
 @section('content')
-<div class="container my-4">
+<div class="max-w-7xl mx-auto px-4 py-8 text-zinc-200">
 
     {{-- Título --}}
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">{{ $user->name }}</h2>
-        <p class="text-primary">Plantilla en la liguilla: <strong>{{ $liguilla->nombre }}</strong></p>
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-extrabold tracking-tight text-zinc-100">{{ $user->name }}</h2>
+        <p class="text-lime-400 text-sm mt-1">Plantilla en la liguilla: <strong class="text-zinc-100">{{ $liguilla->nombre }}</strong></p>
     </div>
 
     {{-- Botón volver --}}
-    <div class="mb-3">
-        <a href="{{ url('/user/liguillas/'.$liguilla->id) }}" class="btn btn-primary">
+    <div class="mb-6">
+        <a href="{{ url('/user/liguillas/'.$liguilla->id) }}" class="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium py-2 px-4 rounded-xl transition-colors text-sm">
             <i class="bi bi-arrow-left"></i> Volver a la Liguilla
         </a>
     </div>
 
     {{-- Card principal --}}
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 md:p-8 shadow-xl backdrop-blur-sm">
 
-            <h4 class="card-title mb-3">Plantilla del participante</h4>
-            <p class="text-muted mb-4">
-                Jugadores: <strong>{{ $plantilla->jugadores->count() }}</strong>
-            </p>
+        <h4 class="text-lg font-bold text-zinc-100 mb-1">Plantilla del participante</h4>
+        <p class="text-zinc-400 text-sm mb-6">
+            Jugadores: <strong class="text-zinc-200">{{ $plantilla->jugadores->count() }}</strong>
+        </p>
 
-            @if($plantilla->jugadores->isEmpty())
-            <div class="alert alert-info text-center">
-                Este usuario todavía no tiene jugadores en su plantilla.
-            </div>
-            @else
-
-            {{-- Grid de jugadores --}}
-            <div class="row g-3">
-                @foreach($plantilla->jugadores as $jugador)
-                @php
-                    $equipoTorneo = $jugador->equipoEnTorneo($liguilla->torneo_id);
-                @endphp
-                <div class="col-6 col-md-4 col-lg-3">
-                    <div class="card jugador-card h-100 text-center p-2" data-jugador-id="{{ $jugador->id }}">
-
-                        <div class="card-body text-center p-2">
-
-                            {{-- Escudo del equipo en ese torneo --}}
-                            <div class="jugador-avatar mb-2">
-                                <img src="{{ $equipoTorneo && $equipoTorneo->logo
-                                                ? asset($equipoTorneo->logo)
-                                                : asset('assets/media/images/default-team.png') }}"
-                                    alt="{{ $equipoTorneo ? $equipoTorneo->nombre : 'Sin equipo' }}"
-                                    class="position-absolute top-0 start-0 m-2"
-                                    width="36" height="36"
-                                    loading="lazy"
-                                    decoding="async"
-                                    style="object-fit: contain;">
-                            </div>
-
-                            {{-- Foto del jugador --}}
-                            <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
-                                alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}"
-                                width="80"
-                                height="80"
-                                loading="lazy"
-                                decoding="async"
-                                class="rounded-circle mb-2"
-                                style="object-fit: cover; height: 80px; width: 80px;">
-
-                            {{-- Nombre --}}
-                            <h3 class="mb-0 fw-bold" style="font-size: 0.95rem;">
-                                {{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}
-                            </h3>
-
-                            {{-- Equipo --}}
-                            <h5 class="badge bg-primary mt-1">
-                                {{ $equipoTorneo ? $equipoTorneo->nombre : 'Sin equipo' }}
-                            </h5>
-
-                            {{-- Posición --}}
-                            <h6 class="text-muted mb-0" style="font-size: 0.85rem;">
-                                {{ $jugador->posicion }}
-                            </h6>
-
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            <!-- Modal Jugador -->
-            <div class="modal fade" id="modalJugador" tabindex="-1" aria-labelledby="modalJugadorLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-md">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalJugadorLabel">Información del Jugador</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Nombre y foto -->
-                            <div class="text-center mb-4">
-                                <img id="modalJugadorFoto" src="" alt="Foto jugador" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
-                                <h2 id="modalJugadorNombre" class="fw-bold"></h2>
-                            </div>
-
-                            <!-- Estadísticas distribuidas en columnas -->
-                            <div class="row text-center">
-                                <!-- Columna 1 -->
-                                <div class="col-4 mb-3">
-                                    <p><strong>Equipo:</strong> <span id="modalJugadorEquipo"></span></p>
-                                    <p><strong>Posición:</strong> <span id="modalJugadorPosicion"></span></p>
-                                    <p><strong>Edad:</strong> <span id="modalJugadorEdad"></span></p>
-                                    <p><strong>Partidos:</strong> <span id="modalJugadorPartidos"></span></p>
-                                </div>
-
-                                <!-- Columna 2 -->
-                                <div class="col-4 mb-3">
-                                    <p><strong>Goles:</strong> <span id="modalJugadorGoles"></span></p>
-                                    <p><strong>Asistencias:</strong> <span id="modalJugadorAsistencias"></span></p>
-                                    <p><strong>Paradas:</strong> <span id="modalJugadorParadas"></span></p>
-                                </div>
-
-                                <!-- Columna 3 -->
-                                <div class="col-4 mb-3">
-                                    <p><strong>Amarillas:</strong> <span id="modalJugadorAmarillas"></span></p>
-                                    <p><strong>Rojas:</strong> <span id="modalJugadorRojas"></span></p>
-                                    <p><strong>Faltas:</strong> <span id="modalJugadorFaltas"></span></p>
-                                </div>
-                            </div>
-
-                            <!-- Puntos al final -->
-                            <div class="text-center mt-3">
-                                <h4><strong>Puntos:</strong> <span id="modalJugadorPuntos"></span></h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-
+        @if($plantilla->jugadores->isEmpty())
+        <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-4 text-center text-zinc-400 text-sm">
+            Este usuario todavía no tiene jugadores en su plantilla.
         </div>
+        @else
+
+        {{-- Grid de jugadores --}}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @foreach($plantilla->jugadores as $jugador)
+            @php
+                $equipoTorneo = $jugador->equipoEnTorneo($liguilla->torneo_id);
+            @endphp
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-4 text-center cursor-pointer hover:border-zinc-700 transition-all flex flex-col items-center relative jugador-card group" data-jugador-id="{{ $jugador->id }}">
+
+                {{-- Escudo del equipo en ese torneo --}}
+                <div class="absolute top-2 left-2 w-8 h-8 rounded-lg bg-zinc-950/80 border border-zinc-800 p-1 flex items-center justify-center">
+                    <img src="{{ $equipoTorneo && $equipoTorneo->logo
+                                    ? asset($equipoTorneo->logo)
+                                    : asset('assets/media/images/default-team.png') }}"
+                        alt="{{ $equipoTorneo ? $equipoTorneo->nombre : 'Sin equipo' }}"
+                        class="w-full h-full object-contain"
+                        loading="lazy"
+                        decoding="async">
+                </div>
+
+                {{-- Foto del jugador --}}
+                <img src="{{ $jugador->foto ? asset($jugador->foto) : asset('assets/media/images/default-player.png') }}"
+                    alt="{{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}"
+                    class="w-20 h-20 rounded-full object-cover mb-3 border-2 border-zinc-800 group-hover:border-lime-400/50 transition-colors"
+                    loading="lazy"
+                    decoding="async">
+
+                {{-- Nombre --}}
+                <h3 class="text-sm font-bold text-zinc-100 mb-1 line-clamp-1">
+                    {{ $jugador->nombre }} {{ $jugador->apellido1 }} {{ $jugador->apellido2 }}
+                </h3>
+
+                {{-- Equipo --}}
+                <span class="inline-block px-2 py-0.5 rounded-md bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[11px] font-semibold mb-1">
+                    {{ $equipoTorneo ? $equipoTorneo->nombre : 'Sin equipo' }}
+                </span>
+
+                {{-- Posición --}}
+                <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">
+                    {{ $jugador->posicion }}
+                </span>
+
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Modal Jugador (Tailwind) -->
+        <div id="modalJugador" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative">
+                <div class="flex items-center justify-between p-4 border-b border-zinc-800">
+                    <h5 class="text-base font-bold text-zinc-100" id="modalJugadorLabel">Información del Jugador</h5>
+                    <button type="button" onclick="cerrarModalJugador()" class="text-zinc-400 hover:text-zinc-100 p-1 rounded-lg hover:bg-zinc-800">
+                        <i class="bi bi-x-lg text-lg"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <!-- Nombre y foto -->
+                    <div class="text-center">
+                        <img id="modalJugadorFoto" src="" alt="Foto jugador" class="w-24 h-24 rounded-full object-cover mx-auto mb-3 border-2 border-zinc-800 shadow-md">
+                        <h2 id="modalJugadorNombre" class="text-lg font-bold text-zinc-100"></h2>
+                    </div>
+
+                    <!-- Estadísticas distribuidas en columnas -->
+                    <div class="grid grid-cols-3 gap-4 text-center text-xs bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-4">
+                        <div class="space-y-2">
+                            <p class="text-zinc-400">Equipo: <span id="modalJugadorEquipo" class="font-bold text-zinc-200 block"></span></p>
+                            <p class="text-zinc-400">Posición: <span id="modalJugadorPosicion" class="font-bold text-zinc-200 block"></span></p>
+                            <p class="text-zinc-400">Edad: <span id="modalJugadorEdad" class="font-bold text-zinc-200 block"></span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-zinc-400">Partidos: <span id="modalJugadorPartidos" class="font-bold text-zinc-200 block"></span></p>
+                            <p class="text-zinc-400">Goles: <span id="modalJugadorGoles" class="font-bold text-lime-400 block"></span></p>
+                            <p class="text-zinc-400">Asistencias: <span id="modalJugadorAsistencias" class="font-bold text-lime-400 block"></span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-zinc-400">Amarillas: <span id="modalJugadorAmarillas" class="font-bold text-amber-400 block"></span></p>
+                            <p class="text-zinc-400">Rojas: <span id="modalJugadorRojas" class="font-bold text-red-400 block"></span></p>
+                            <p class="text-zinc-400">Puntos: <span id="modalJugadorPuntos" class="font-bold text-lime-400 text-sm block"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
     </div>
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .jugador-card {
-        cursor: pointer;
-        transition: transform .2s;
-    }
-
-    .jugador-card:hover {
-        transform: scale(1.05);
-    }
-</style>
-@endpush
 @push('scripts')
 <script>
     const cacheJugadores = {};
+
+    function abrirModalJugador() {
+        const modal = document.getElementById('modalJugador');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function cerrarModalJugador() {
+        const modal = document.getElementById('modalJugador');
+        if (modal) modal.classList.add('hidden');
+    }
 
     function renderModalJugador(data) {
         document.getElementById('modalJugadorFoto').src = data.foto || '/assets/media/images/default-player.png';
@@ -173,11 +149,10 @@
         document.getElementById('modalJugadorRojas').textContent = data.tarjetas_rojas;
         document.getElementById('modalJugadorPuntos').textContent = data.puntos;
 
-        const modal = new bootstrap.Modal(document.getElementById('modalJugador'));
-        modal.show();
+        abrirModalJugador();
     }
 
-    //Seleccionar jugador en plantilla modal
+    // Seleccionar jugador en plantilla modal
     document.querySelectorAll('.jugador-card').forEach(card => {
         card.addEventListener('click', function() {
             const idJugador = this.dataset.jugadorId;
@@ -200,6 +175,13 @@
                     alert('No se pudo cargar la información del jugador.');
                 });
         });
+    });
+
+    // Cerrar con Escape
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            cerrarModalJugador();
+        }
     });
 </script>
 @endpush
