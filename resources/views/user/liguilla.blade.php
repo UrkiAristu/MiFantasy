@@ -726,6 +726,14 @@
             </div>
         </div>
 
+        <!-- Historial de Jornadas -->
+        <div class="pt-4 border-t border-zinc-800/80 mt-4">
+            <h5 class="text-[10px] uppercase font-semibold text-zinc-500 mb-2">Historial de Puntos</h5>
+            <div id="modalInfoHistorial" class="flex items-end gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+                <!-- Inyectado por JS -->
+            </div>
+        </div>
+
         <div class="pt-2 flex justify-end">
             <button
                 type="button"
@@ -917,6 +925,34 @@
             document.getElementById('modalInfoPrecio').textContent = precio;
             document.getElementById('modalInfoPuntos').textContent = puntos;
             document.getElementById('modalInfoFoto').src = foto;
+
+            const historialContainer = document.getElementById('modalInfoHistorial');
+            if (historialContainer) {
+                if (j.historial_jornadas && j.historial_jornadas.length > 0) {
+                    let html = '';
+                    j.historial_jornadas.forEach(h => {
+                        const nombreJornada = h.jornada;
+                        const puntosJornada = h.puntos;
+                        let colorClase = 'bg-zinc-700';
+                        if (puntosJornada >= 6) {
+                            colorClase = 'bg-lime-400';
+                        } else if (puntosJornada > 0) {
+                            colorClase = 'bg-amber-400';
+                        }
+                        html += `
+                            <div class="flex flex-col items-center justify-end min-w-[3rem] shrink-0">
+                                <span class="text-[9px] uppercase font-bold text-zinc-500 mb-1 whitespace-nowrap truncate max-w-[4.5rem] px-1 text-center" title="${nombreJornada}">${nombreJornada}</span>
+                                <span class="text-sm font-bold text-zinc-100">${puntosJornada}</span>
+                                <div class="w-full h-1 mt-1.5 rounded-full ${colorClase}"></div>
+                            </div>
+                        `;
+                    });
+                    historialContainer.innerHTML = html;
+                } else {
+                    historialContainer.innerHTML = '<span class="text-xs text-zinc-500 py-2">Sin datos recientes</span>';
+                }
+            }
+
             openModal('modalJugadorInfo');
         } catch (e) {
             console.error('Error al abrir modal de jugador:', e);
@@ -1214,6 +1250,34 @@
         document.getElementById('modalInfoPosicion').textContent = j.posicion || 'Jugador';
         document.getElementById('modalInfoPrecio').textContent = `${Number(j.precio || 0).toLocaleString()} €`;
         document.getElementById('modalInfoPuntos').textContent = `${j.puntos_totales ?? 0} pts`;
+
+        const historialContainer = document.getElementById('modalInfoHistorial');
+        if (historialContainer) {
+            if (j.historial_jornadas && j.historial_jornadas.length > 0) {
+                let html = '';
+                j.historial_jornadas.forEach(h => {
+                    const nombreJornada = h.jornada;
+                    const puntosJornada = h.puntos;
+                    let colorClase = 'bg-zinc-700';
+                    if (puntosJornada >= 6) {
+                        colorClase = 'bg-lime-400';
+                    } else if (puntosJornada > 0) {
+                        colorClase = 'bg-amber-400';
+                    }
+                    html += `
+                        <div class="flex flex-col items-center justify-end min-w-[3rem] shrink-0">
+                            <span class="text-[9px] uppercase font-bold text-zinc-500 mb-1 whitespace-nowrap truncate max-w-[4.5rem] px-1 text-center" title="${nombreJornada}">${nombreJornada}</span>
+                            <span class="text-sm font-bold text-zinc-100">${puntosJornada}</span>
+                            <div class="w-full h-1 mt-1.5 rounded-full ${colorClase}"></div>
+                        </div>
+                    `;
+                });
+                historialContainer.innerHTML = html;
+            } else {
+                historialContainer.innerHTML = '<span class="text-xs text-zinc-500 py-2">Sin datos recientes</span>';
+            }
+        }
+
         openModal('modalJugadorInfo');
     }
 

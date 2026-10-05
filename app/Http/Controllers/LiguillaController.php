@@ -236,6 +236,7 @@ class LiguillaController extends Controller
             $stats = $jugador->resumenEstadisticasEnTorneo($liguilla->torneo_id);
             $jugador->puntos_totales = $stats['puntos'];
             $jugador->precio = $jugador->precio ?? 1000000;
+            $jugador->historial_jornadas = $jugador->historialJornadasEnTorneo($liguilla->torneo_id);
         }
         if ($alineacionBase) {
             foreach ($alineacionBase->jugadores as $jugador) {

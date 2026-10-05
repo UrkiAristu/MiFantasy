@@ -101,6 +101,36 @@ class Jugador extends Model
         ];
     }
 
+    public function historialJornadasEnTorneo($torneoId)
+    {
+        $jornadas = DB::table('jornadas')
+            ->where('torneo_id', $torneoId)
+            ->orderBy('orden')
+            ->get(['id', 'nombre', 'orden']);
+
+        $puntosJornadas = DB::table('estadisticas as e')
+            ->join('partidos as p', 'p.id', '=', 'e.partido_id')
+            ->join('jornadas as j', 'j.id', '=', 'p.jornada_id')
+            ->where('j.torneo_id', $torneoId)
+            ->where('e.jugador_id', $this->id)
+            ->groupBy('j.id')
+            ->select('j.id', DB::raw('SUM(e.puntos) as puntos'))
+            ->pluck('puntos', 'id')
+            ->toArray();
+
+        $historial = [];
+        foreach ($jornadas as $jornada) {
+            $nombreJornada = !empty($jornada->nombre) ? $jornada->nombre : ('J' . ($jornada->orden ?? $jornada->id));
+            $puntos = (int) ($puntosJornadas[$jornada->id] ?? 0);
+            $historial[] = [
+                'jornada' => $nombreJornada,
+                'puntos' => $puntos,
+            ];
+        }
+
+        return $historial;
+    }
+
     /**
      * @return BelongsToMany<Plantilla, $this>
      */
