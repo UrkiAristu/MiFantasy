@@ -268,18 +268,9 @@
         ========================================== -->
         <div id="tab-pane-plantilla" class="tab-pane hidden space-y-6">
 
-            <!-- Resumen de Plantilla Bento -->
-            <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-lg font-bold text-zinc-100">Jugadores en tu Plantilla</h2>
-                    <p class="text-xs text-zinc-400">Haz clic en cualquier jugador para ver sus estadísticas completas del torneo.</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-xs font-semibold text-zinc-200">
-                        <i class="bi bi-people-fill text-lime-400"></i>
-                        <span>Total: {{ $plantillaUsuario?->count() ?? 0 }} jugadores</span>
-                    </span>
-                </div>
+            <div class="flex items-center justify-between mb-4 px-1">
+                <h2 class="text-lg font-extrabold text-zinc-100">Mi Plantilla</h2>
+                <span class="bg-lime-400/10 border border-lime-400/20 text-lime-400 text-xs px-2.5 py-1 rounded-lg font-bold">Total: {{ $plantillaUsuario?->count() ?? 0 }} jugadores</span>
             </div>
 
             <!-- Grupos de Posiciones -->
@@ -320,7 +311,11 @@
                         <div class="px-6 pb-6 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                             @foreach($jugadoresPos as $jugador)
                                 <div
+                                    onclick="event.stopPropagation(); abrirModalJugador(this)"
+                                    data-jugador='@json($jugador)'
                                     data-jugador-id="{{ $jugador->id }}"
+                                    data-puntos="{{ $jugador->puntos_totales ?? 0 }}"
+                                    data-precio="{{ $jugador->precio ?? 0 }}"
                                     class="jugador-card group bg-zinc-950/70 hover:bg-zinc-900 border border-zinc-800/80 hover:border-lime-500/40 rounded-xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg">
                                     <div class="flex items-center gap-3 min-w-0">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center group-hover:border-lime-500/40 transition-colors">
@@ -897,6 +892,37 @@
         }
     }
 
+    function abrirModalJugador(elemento) {
+        try {
+            const ptsAttr = elemento.getAttribute('data-puntos');
+            const prcAttr = elemento.getAttribute('data-precio');
+
+            const rawData = elemento.getAttribute('data-jugador');
+            const j = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+            if (!j) return;
+
+            const pts = ptsAttr !== null ? ptsAttr : (j.puntos_totales ?? 0);
+            const prc = prcAttr !== null ? prcAttr : (j.precio ?? 0);
+
+            const foto = j.foto ? (j.foto.startsWith('http') || j.foto.startsWith('/') ? j.foto : '/' + j.foto) : '/assets/media/images/default-player.png';
+            const nombreCompleta = `${j.nombre || ''} ${j.apellido1 || ''} ${j.apellido2 || ''}`.trim();
+            const equipoNombre = j.equipo && j.equipo.nombre ? j.equipo.nombre : (j.club && j.club.nombre ? j.club.nombre : 'Sin club');
+            const posicion = j.posicion || 'Jugador';
+            const precio = Number(prc).toLocaleString() + ' €';
+            const puntos = pts + ' pts';
+
+            document.getElementById('modalInfoNombre').textContent = nombreCompleta;
+            document.getElementById('modalInfoEquipo').textContent = equipoNombre;
+            document.getElementById('modalInfoPosicion').textContent = posicion;
+            document.getElementById('modalInfoPrecio').textContent = precio;
+            document.getElementById('modalInfoPuntos').textContent = puntos;
+            document.getElementById('modalInfoFoto').src = foto;
+            openModal('modalJugadorInfo');
+        } catch (e) {
+            console.error('Error al abrir modal de jugador:', e);
+        }
+    }
+
     // Cerrar modales con Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -1422,27 +1448,6 @@
             });
         }
 
-        // Click en cards de plantilla para ver stats
-        const torneoId = "{{ $liguilla->torneo_id }}";
-        document.querySelectorAll('#plantilla .jugador-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const jugadorId = this.dataset.jugadorId;
-                if (!jugadorId) return;
-
-                if (cacheModales.jugadores[jugadorId]) {
-                    mostrarModalJugador(cacheModales.jugadores[jugadorId]);
-                    return;
-                }
-
-                fetch(`/user/jugadores/${jugadorId}/info/torneo/${torneoId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        cacheModales.jugadores[jugadorId] = data;
-                        mostrarModalJugador(data);
-                    })
-                    .catch(err => console.error(err));
-            });
-        });
 
         // AJAX Clasificación
         const selectClasif = document.getElementById('selectClasificacion');

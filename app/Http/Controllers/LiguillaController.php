@@ -230,9 +230,12 @@ class LiguillaController extends Controller
             ->first();
         $miPlantilla = $plantilla ? $plantilla->jugadores : collect();
 
-        // Hidratar relación equipo para cada jugador
+        // Hidratar relación equipo y puntos para cada jugador
         foreach ($miPlantilla as $jugador) {
             $jugador->equipo = $jugador->equipos->first() ?? $jugador->equipoEnTorneo($liguilla->torneo_id);
+            $stats = $jugador->resumenEstadisticasEnTorneo($liguilla->torneo_id);
+            $jugador->puntos_totales = $stats['puntos'];
+            $jugador->precio = $jugador->precio ?? 1000000;
         }
         if ($alineacionBase) {
             foreach ($alineacionBase->jugadores as $jugador) {
