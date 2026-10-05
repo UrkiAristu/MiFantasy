@@ -3,10 +3,10 @@
 @section('title', 'Usuarios')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 py-8 text-zinc-200">
+<div class="max-w-7xl mx-auto px-4 py-8 text-zinc-900">
     <!-- Mensajes -->
     @if ($errors->any())
-    <div class="mb-6 bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-sm">
+    <div class="mb-6 bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm">
         @foreach ($errors->all() as $error)
         <p>{{ $error }}</p>
         @endforeach
@@ -14,20 +14,20 @@
     @endif
 
     @if(session('success'))
-    <div class="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm">
+    <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl text-sm">
         {{ session('success') }}
     </div>
     @endif
 
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-extrabold tracking-tight text-zinc-100">Usuarios Registrados</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-zinc-900">Usuarios Registrados</h1>
     </div>
 
     <!-- Tabla Container -->
-    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm p-6">
+    <div class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-6">
         <div class="overflow-x-auto">
-            <table id="tablaUsuarios" class="w-full text-left text-sm text-zinc-300">
-                <thead class="bg-zinc-950/80 text-zinc-400 uppercase text-xs tracking-wider border-b border-zinc-800">
+            <table id="tablaUsuarios" class="w-full text-left text-sm text-zinc-700">
+                <thead class="bg-zinc-50 border-b border-zinc-200 text-zinc-600 uppercase text-xs tracking-wider">
                     <tr>
                         <th class="py-3 px-4 text-center">ID</th>
                         <th class="py-3 px-4 text-center">Nombre de Usuario</th>
@@ -38,36 +38,36 @@
                         <th class="py-3 px-4 text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-800/60">
+                <tbody class="divide-y divide-zinc-100">
                     @forelse($usuarios as $usuario)
-                    <tr class="hover:bg-zinc-800/30 transition-colors">
-                        <td class="py-3 px-4 text-center font-mono text-zinc-400">{{ $usuario->id }}</td>
-                        <td class="py-3 px-4 text-center font-bold text-zinc-100">{{ $usuario->name }}</td>
-                        <td class="py-3 px-4 text-center text-zinc-400">{{ $usuario->email }}</td>
+                    <tr class="hover:bg-zinc-50/50 transition-colors">
+                        <td class="py-3 px-4 text-center font-mono text-zinc-500">{{ $usuario->id }}</td>
+                        <td class="py-3 px-4 text-center font-bold text-zinc-900">{{ $usuario->name }}</td>
+                        <td class="py-3 px-4 text-center text-zinc-600">{{ $usuario->email }}</td>
                         <td class="py-3 px-4 text-center">
                             @if($usuario->admin)
-                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">Sí</span>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">Sí</span>
                             @else
-                            <span class="inline-block px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 text-xs font-semibold">No</span>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-xs font-semibold">No</span>
                             @endif
                         </td>
-                        <td class="py-3 px-4 text-center text-zinc-300 text-xs">{{ $usuario->created_at->format('d/m/Y') }}</td>
+                        <td class="py-3 px-4 text-center text-zinc-600 text-xs">{{ $usuario->created_at->format('d/m/Y') }}</td>
                         <td class="py-3 px-4 text-center">
                             @if($usuario->active)
-                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">Sí</span>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">Sí</span>
                             @else
-                            <span class="inline-block px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold">No</span>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">No</span>
                             @endif
                         </td>
                         <td class="py-3 px-4 text-center space-x-1">
-                            <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="inline-flex items-center gap-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors" title="Ver usuario">
+                            <a href="{{ url('/admin/usuarios/'.$usuario->id) }}" class="inline-flex items-center gap-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors" title="Ver usuario">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                             <form action="{{ url('/admin/usuarios/'.$usuario->id.'/toggle') }}" method="POST" class="inline-block form-toggle-usuario">
                                 @csrf
                                 @method('PUT')
                                 <button type="submit"
-                                    class="inline-flex items-center gap-1 {{ $usuario->active ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400' : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400' }} px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                                    class="inline-flex items-center gap-1 {{ $usuario->active ? 'bg-red-50 hover:bg-red-100 text-red-700' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700' }} px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
                                     data-nombre="{{ $usuario->name }}"
                                     data-estado="{{ $usuario->active ? 'inhabilitar' : 'habilitar' }}">
                                     <i class="bi {{ $usuario->active ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
@@ -120,8 +120,8 @@
                     text: estado === 'inhabilitar' ?
                         'El usuario no podrá acceder al sistema.' : 'El usuario podrá volver a acceder.',
                     icon: 'warning',
-                    background: '#18181b',
-                    color: '#f4f4f5',
+                    background: '#ffffff',
+                    color: '#18181b',
                     showCancelButton: true,
                     confirmButtonColor: '#a3e635',
                     cancelButtonColor: '#ef4444',
