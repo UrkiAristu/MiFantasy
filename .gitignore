@@ -1,33 +1,65 @@
-*.log
+# ==========================================
+# 1. Archivos del Sistema Operativo
+# ==========================================
 .DS_Store
+Thumbs.db
+
+# ==========================================
+# 2. Logs y Archivos de Servidor
+# ==========================================
+*.log
 server.pid
+
+# ==========================================
+# 3. Variables de Entorno y Credenciales
+# ==========================================
 .env
 .env.backup
 .env.production
 .env.local
 .env.*.local
 .env*.local
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/.claude
 /auth.json
-/node_modules
-/public/build
-/public/hot
+
+# ==========================================
+# 4. Dependencias de Backend (PHP / Laravel)
+# ==========================================
+/vendor
+composer.phar
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
 Homestead.json
 Homestead.yaml
-Thumbs.db
 
+# ==========================================
+# 5. Dependencias de Frontend (Node / Vite)
+# ==========================================
+/node_modules
+/public/build
+/public/hot
 .dist
 
-composer.phar
+# ==========================================
+# 6. Entornos de Desarrollo e IDEs (Editores)
+# ==========================================
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+/.claude
+.phpactor.json
+
+# ==========================================
+# 7. Testing y Reportes
+# ==========================================
+# -> PHPUnit
+.phpunit.result.cache
+/.phpunit.cache
+
+# -> Playwright (Tests E2E)
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
