@@ -24,7 +24,7 @@
             <div class="shrink-0 flex items-center justify-center">
                 <div class="relative group">
                     <div class="absolute inset-0 bg-gradient-to-tr from-lime-400/20 to-emerald-400/20 rounded-3xl blur-2xl group-hover:scale-110 transition-transform"></div>
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-contain ring-1 ring-zinc-800/80 bg-zinc-950/80 p-3 shadow-2xl shadow-zinc-950">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}" alt="MiFantasy" class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-contain ring-1 ring-zinc-800/80 bg-zinc-950/80 p-3 shadow-2xl shadow-zinc-950">
                 </div>
             </div>
         </div>

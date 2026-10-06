@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <!-- Degradado Sport-Tech (Lime a Cyan) -->
+    <linearGradient id="sportTechGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a3e635" /> <!-- Tailwind lime-400 -->
+      <stop offset="100%" stop-color="#06b6d4" /> <!-- Tailwind cyan-500 -->
+    </linearGradient>
+  </defs>
+  
+  <!-- Escudo Exterior Geométrico -->
+  <path d="M50 5 L85 20 V60 C85 75 65 90 50 95 C35 90 15 75 15 60 V20 L50 5Z" 
+        stroke="url(#sportTechGrad)" stroke-width="6" stroke-linejoin="round"/>
+  
+  <!-- Monograma 'MF' (Espina compartida) -->
+  <!-- Letra M completa -->
+  <path d="M 26 65 L 26 36 L 43 52 L 60 36 L 60 65" 
+        stroke="url(#sportTechGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        
+  <!-- Barras horizontales de la F (nacen de la pata derecha de la M) -->
+  <path d="M 60 36 L 74 36 M 60 50 L 70 50" 
+        stroke="url(#sportTechGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

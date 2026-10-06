@@ -6,7 +6,7 @@
             <!-- Logo y Marca Admin -->
             <div class="flex items-center gap-6 flex-nowrap shrink-0">
                 <a href="{{ url('/zonaAdmin') }}" class="flex items-center gap-2.5 group flex-nowrap">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="Logo Admin" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2 shrink-0">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}" alt="Logo Admin" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2 shrink-0">
                     <span class="text-base font-bold tracking-tight text-zinc-900 group-hover:text-lime-600 transition-colors whitespace-nowrap">
                         Admin @auth {{ Auth::user()->name }} @else Panel @endauth
                     </span>
@@ -66,7 +66,7 @@
         <div>
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-200">
                 <div class="flex items-center gap-2.5 flex-nowrap">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-7 w-7 rounded-full shrink-0">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}" alt="MiFantasy" class="h-7 w-7 rounded-full shrink-0">
                     <span class="text-sm font-bold text-zinc-900 truncate">Panel Admin</span>
                 </div>
                 <button onclick="toggleAdminMenu()" class="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg cursor-pointer">

@@ -112,8 +112,9 @@ html,
 body {
     font-size: 14px !important;
 }
-html, body {
-    background-color: #181c32 !important;
+
+html,
+body {
     overscroll-behavior-y: contain;
 }
 
@@ -159,6 +160,7 @@ html, body {
     .footerP {
         padding-bottom: 80px !important;
     }
+
     body {
         padding-bottom: 80px;
     }

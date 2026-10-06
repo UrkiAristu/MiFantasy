@@ -6,7 +6,7 @@
             <!-- Logo y Marca -->
             <div class="flex items-center gap-6 flex-nowrap shrink-0">
                 <a href="{{ url('/') }}" class="flex items-center gap-2.5 group flex-nowrap">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2 shrink-0">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}" alt="MiFantasy" class="w-10 h-10 max-w-[40px] max-h-[40px] object-contain rounded-full mr-2 shrink-0">
                     <span class="text-base font-bold tracking-tight text-zinc-100 group-hover:text-lime-400 transition-colors whitespace-nowrap">
                         MiFantasy
                     </span>
@@ -32,28 +32,28 @@
             <!-- Acciones de Usuario a la Derecha -->
             <div class="flex items-center gap-3 flex-nowrap shrink-0">
                 @auth
-                    @if(Auth::user()->admin)
-                        <a href="{{ url('/zonaAdmin') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors whitespace-nowrap">
-                            <i class="bi bi-shield-lock-fill text-xs"></i>
-                            <span>Admin</span>
-                        </a>
-                    @endif
+                @if(Auth::user()->admin)
+                <a href="{{ url('/zonaAdmin') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors whitespace-nowrap">
+                    <i class="bi bi-shield-lock-fill text-xs"></i>
+                    <span>Admin</span>
+                </a>
+                @endif
 
-                    <!-- Perfil -->
-                    <a href="{{ url('/user/perfil') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 border border-zinc-800/80 transition-all flex-nowrap">
-                        <div class="w-5 h-5 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-[10px] shrink-0">
-                            {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                        </div>
-                        <span class="hidden sm:inline font-semibold max-w-[130px] truncate whitespace-nowrap">{{ Auth::user()->name }}</span>
-                    </a>
+                <!-- Perfil -->
+                <a href="{{ url('/user/perfil') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 border border-zinc-800/80 transition-all flex-nowrap">
+                    <div class="w-5 h-5 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-[10px] shrink-0">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    </div>
+                    <span class="hidden sm:inline font-semibold max-w-[130px] truncate whitespace-nowrap">{{ Auth::user()->name }}</span>
+                </a>
 
-                    <!-- Logout -->
-                    <form action="{{ url('/logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="p-2 text-zinc-400 hover:text-rose-400 hover:bg-zinc-900 rounded-lg border border-transparent hover:border-zinc-800 transition-colors cursor-pointer shrink-0" title="Cerrar sesión">
-                            <i class="bi bi-box-arrow-right text-sm"></i>
-                        </button>
-                    </form>
+                <!-- Logout -->
+                <form action="{{ url('/logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="p-2 text-zinc-400 hover:text-rose-400 hover:bg-zinc-900 rounded-lg border border-transparent hover:border-zinc-800 transition-colors cursor-pointer shrink-0" title="Cerrar sesión">
+                        <i class="bi bi-box-arrow-right text-sm"></i>
+                    </button>
+                </form>
                 @endauth
 
                 <!-- Botón hamburguesa móvil -->
@@ -76,7 +76,7 @@
         <div>
             <div class="flex items-center justify-between mb-8">
                 <div class="flex items-center gap-2.5 flex-nowrap">
-                    <img src="{{ asset('assets/media/logos/logo-fantasy.png') }}" alt="MiFantasy" class="h-7 w-7 rounded-lg shrink-0">
+                    <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}" alt="MiFantasy" class="h-7 w-7 rounded-lg shrink-0">
                     <span class="text-sm font-bold text-zinc-100 truncate">MiFantasy</span>
                 </div>
                 <button onclick="toggleMobileMenu()" class="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg cursor-pointer">
@@ -98,28 +98,28 @@
 
             <nav class="space-y-1.5 text-xs font-medium">
                 @auth
-                    @if(Auth::user()->admin)
-                        <a href="{{ url('/zonaAdmin') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 font-semibold mb-3">
-                            <i class="bi bi-shield-lock-fill text-sm"></i>
-                            <span>Zona Admin</span>
-                        </a>
-                    @endif
-                    <a href="{{ url('/user/perfil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-person-fill text-sm text-zinc-400"></i>
-                        <span>Mi Perfil</span>
-                    </a>
-                    <a href="{{ url('/user/liguillas') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-award-fill text-sm text-zinc-400"></i>
-                        <span>Mis Liguillas</span>
-                    </a>
-                    <a href="{{ url('/user/torneos') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-trophy-fill text-sm text-zinc-400"></i>
-                        <span>Torneos Activos</span>
-                    </a>
-                    <a href="{{ url('/user/unirseLiguilla') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
-                        <i class="bi bi-door-open-fill text-sm text-zinc-400"></i>
-                        <span>Unirse a Liguilla</span>
-                    </a>
+                @if(Auth::user()->admin)
+                <a href="{{ url('/zonaAdmin') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 font-semibold mb-3">
+                    <i class="bi bi-shield-lock-fill text-sm"></i>
+                    <span>Zona Admin</span>
+                </a>
+                @endif
+                <a href="{{ url('/user/perfil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+                    <i class="bi bi-person-fill text-sm text-zinc-400"></i>
+                    <span>Mi Perfil</span>
+                </a>
+                <a href="{{ url('/user/liguillas') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+                    <i class="bi bi-award-fill text-sm text-zinc-400"></i>
+                    <span>Mis Liguillas</span>
+                </a>
+                <a href="{{ url('/user/torneos') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+                    <i class="bi bi-trophy-fill text-sm text-zinc-400"></i>
+                    <span>Torneos Activos</span>
+                </a>
+                <a href="{{ url('/user/unirseLiguilla') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+                    <i class="bi bi-door-open-fill text-sm text-zinc-400"></i>
+                    <span>Unirse a Liguilla</span>
+                </a>
                 @endauth
             </nav>
         </div>
