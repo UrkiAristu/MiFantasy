@@ -5,17 +5,26 @@
 *.html diff=html
 *.md diff=markdown
 *.php diff=php
+*.svg diff=html
 
+# --- ARCHIVOS EXCLUIDOS AL EXPORTAR (git archive / descargas ZIP) ---
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+/tests export-ignore
+playwright.config.js export-ignore
+docker-compose.yml export-ignore
+vite.config.js export-ignore
+phpstan.neon export-ignore
+phpunit.xml export-ignore
+
+# --- DOCUMENTACIÓN (Para estadísticas de GitHub) ---
+docs/* linguist-documentation=true
 
 # --- IGNORAR LIBRERÍAS DE TERCEROS Y PLUGINS ---
 vendor/* linguist-vendored=true
 node_modules/* linguist-vendored=true
-
 public/assets/** linguist-vendored=true
-
 public/build/* linguist-vendored=true
 public/css/* linguist-vendored=true
 public/js/* linguist-vendored=true

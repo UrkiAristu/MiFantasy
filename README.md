@@ -1,6 +1,6 @@
-![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-nobg.png)
+![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-pitch.svg)
 
-# Sobre MiFantasy [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/UrkiAirstu/MiFantasy)
+# Sobre MiFantasy [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/UrkiAristu/MiFantasy)
 
 MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy personalizadas a partir de torneos de fútbol no profesionales, como competiciones locales, amateur o solidarias. El proyecto surge como una alternativa flexible a las plataformas fantasy tradicionales, habitualmente limitadas a ligas oficiales, permitiendo adaptar el sistema fantasy a contextos más cercanos y personalizados.
 
@@ -9,7 +9,7 @@ MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy per
 El proyecto está construido bajo una arquitectura moderna, garantizando escalabilidad, persistencia de datos y adaptabilidad a dispositivos móviles:
 
 - **Backend:** Laravel (PHP)
-- **Frontend:** Blade, Bootstrap y JavaScript
+- **Frontend:** Blade, Tailwind CSS, Bootstrap y JavaScript
 - **Base de datos:** MySQL
 - **Despliegue y Contenedores:** Docker y Docker Compose
 - **Aplicación Web Progresiva (PWA):** Service Workers y Web App Manifest para instalación nativa en dispositivos.

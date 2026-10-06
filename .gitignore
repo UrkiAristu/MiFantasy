@@ -17,6 +17,7 @@ server.pid
 .env.backup
 .env.production
 .env.local
+.env.testing
 .env.*.local
 .env*.local
 /auth.json
@@ -38,10 +39,10 @@ Homestead.yaml
 /node_modules
 /public/build
 /public/hot
-.dist
+/.dist
 
 # ==========================================
-# 6. Entornos de Desarrollo e IDEs (Editores)
+# 6. Entornos de Desarrollo, IDEs e Integraciones
 # ==========================================
 /.fleet
 /.idea
@@ -49,6 +50,7 @@ Homestead.yaml
 /.vscode
 /.zed
 /.claude
+/.pagokit
 .phpactor.json
 
 # ==========================================

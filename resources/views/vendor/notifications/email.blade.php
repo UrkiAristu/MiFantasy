@@ -1,6 +1,6 @@
 <x-mail::message>
     <div style="text-align: center; margin-bottom: 16px;">
-        <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}"
+        <img src="{{ asset('assets/media/logos/logo-fantasy-nobg.png') }}"
             alt="MiFantasy Logo"
             style="height: 100px;">
     </div>
