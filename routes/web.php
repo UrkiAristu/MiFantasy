@@ -73,7 +73,7 @@ Route::middleware('guest')->group(function () {
 // Ruta pública de bienvenida / Landing Page SaaS
 Route::get('/', function () {
     if (auth()->check()) {
-        return view('user/home');
+        return redirect()->route('home');
     }
 
     return view('welcome');

@@ -50,10 +50,10 @@ class RegisterController extends Controller
         if (! empty($validated['plan'])) {
             return redirect()->route('subscription.checkout', [
                 'plan' => $validated['plan'],
-                'org' => $validated['organizacion'] ?? ('Liga de '.$user->name),
+                'org' => $validated['organizacion'] ?? ('Liga de ' . $user->name),
             ]);
         }
 
-        return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, '.$user->name.'!');
+        return redirect()->intended(route('home'))->with('success', 'Registro exitoso. ¡Bienvenido, ' . $user->name . '!');
     }
 }

@@ -23,7 +23,8 @@ class LoginController extends Controller
                 'login.string' => 'El email o nombre de usuario debe ser una cadena de texto.',
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.string' => 'La contraseña debe ser una cadena de texto.',
-            ]);
+            ]
+        );
 
         $login = $request->login;
 
@@ -39,7 +40,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/'); // o /dashboard
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([
@@ -87,6 +88,6 @@ class LoginController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, '.$user->name.'!');
+        return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, ' . $user->name . '!');
     }
 }
