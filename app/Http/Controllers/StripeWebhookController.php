@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 class StripeWebhookController extends CashierWebhookController
 {
     /**
-     * @pagokit:signature-verified (Regla 1: Cashier via VerifyWebhookSignature verifica el raw body con Stripe\Webhook)
+     * pagokit:signature-verified (Regla 1: Cashier via VerifyWebhookSignature verifica el raw body con Stripe\Webhook)
      * Regla 2: Cashier comprueba el timestamp de la firma permitiendo una deriva máxima de 300s (config('cashier.webhook.tolerance')).
      * Regla 8: Usa cashier.webhook.secret que debe ser distinto de la API Key.
      * Regla 9: Cashier usa la SDK oficial para comprobar la firma (hash_equals seguro contra timing attacks).

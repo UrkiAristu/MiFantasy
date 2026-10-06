@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property \App\Models\Equipo|null $equipo
+ * @property int|null $puntos_totales
+ * @property int|null $precio
+ * @property array|null $historial_jornadas
+ */
 class Jugador extends Model
 {
     use HasFactory;
@@ -120,7 +126,7 @@ class Jugador extends Model
 
         $historial = [];
         foreach ($jornadas as $jornada) {
-            $nombreJornada = ! empty($jornada->nombre) ? $jornada->nombre : ('J'.($jornada->orden ?? $jornada->id));
+            $nombreJornada = ! empty($jornada->nombre) ? $jornada->nombre : ('J' . ($jornada->orden ?? $jornada->id));
             $puntos = (int) ($puntosJornadas[$jornada->id] ?? 0);
             $historial[] = [
                 'jornada' => $nombreJornada,
