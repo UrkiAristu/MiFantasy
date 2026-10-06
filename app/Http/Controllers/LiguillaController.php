@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Actions\Plantilla\GenerarPlantillaAleatoriaAction;
 use App\Models\Alineacion;
+use App\Models\Jornada;
 use App\Models\Liguilla;
+use App\Models\Partido;
 use App\Models\Plantilla;
 use App\Models\Torneo;
 use App\Models\User;
@@ -268,9 +270,9 @@ class LiguillaController extends Controller
         // 7️⃣ Comprobar si la jornada ya ha empezado
         $bloqueada = false;
 
-        $jornadas = \App\Models\Jornada::where('torneo_id', $liguilla->torneo_id)->orderBy('orden')->get();
+        $jornadas = Jornada::where('torneo_id', $liguilla->torneo_id)->orderBy('orden')->get();
         $jornadaSeleccionada = request()->filled('jornada_id') ? $jornadas->firstWhere('id', request('jornada_id')) : ($jornadas->where('fecha_fin', '<=', now()->toDateString())->last() ?? $jornadas->first());
-        $partidos = $jornadaSeleccionada ? \App\Models\Partido::where('jornada_id', $jornadaSeleccionada->id)->with(['equipoLocal', 'equipoVisitante'])->get() : collect();
+        $partidos = $jornadaSeleccionada ? Partido::where('jornada_id', $jornadaSeleccionada->id)->with(['equipoLocal', 'equipoVisitante'])->get() : collect();
 
         return view('user.liguilla', compact(
             'liguilla',

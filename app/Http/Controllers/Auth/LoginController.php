@@ -88,6 +88,6 @@ class LoginController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, ' . $user->name . '!');
+        return redirect()->intended('/')->with('success', 'Registro exitoso. ¡Bienvenido, '.$user->name.'!');
     }
 }

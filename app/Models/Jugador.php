@@ -120,7 +120,7 @@ class Jugador extends Model
 
         $historial = [];
         foreach ($jornadas as $jornada) {
-            $nombreJornada = !empty($jornada->nombre) ? $jornada->nombre : ('J' . ($jornada->orden ?? $jornada->id));
+            $nombreJornada = ! empty($jornada->nombre) ? $jornada->nombre : ('J'.($jornada->orden ?? $jornada->id));
             $puntos = (int) ($puntosJornadas[$jornada->id] ?? 0);
             $historial[] = [
                 'jornada' => $nombreJornada,

@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Carbon;
 
 class StripeWebhookController extends CashierWebhookController
 {
@@ -30,8 +30,8 @@ class StripeWebhookController extends CashierWebhookController
 
         // Regla 7: Loguear solo id, type, created. NUNCA el payload completo.
         Log::info('Stripe Webhook Recibido', [
-            'event_id'      => $eventId,
-            'event_type'    => $eventType,
+            'event_id' => $eventId,
+            'event_type' => $eventType,
             'event_created' => $eventCreated,
         ]);
 
@@ -41,16 +41,17 @@ class StripeWebhookController extends CashierWebhookController
 
             if ($processed) {
                 Log::info("Webhook idempotente: El evento {$eventId} ya fue procesado.");
+
                 return new Response('Webhook Already Processed', 200);
             }
 
             DB::table('webhook_events_processed')->insert([
-                'id'                => $eventId,
-                'type'              => $eventType,
+                'id' => $eventId,
+                'type' => $eventType,
                 'created_at_stripe' => $eventCreated ? Carbon::createFromTimestamp($eventCreated)->toDateTimeString() : null,
-                'processed_at'      => now(),
-                'created_at'        => now(),
-                'updated_at'        => now(),
+                'processed_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
 

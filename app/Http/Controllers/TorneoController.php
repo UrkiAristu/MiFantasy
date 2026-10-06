@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
-use App\Models\Jornada;
 use App\Models\Jugador;
-use App\Models\Partido;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -387,8 +385,8 @@ class TorneoController extends Controller
         $torneos = Torneo::withoutGlobalScopes()
             ->where(function ($q) {
                 $q->where('estado', 'activo')
-                  ->orWhere('estado', 1)
-                  ->orWhere('estado', true);
+                    ->orWhere('estado', 1)
+                    ->orWhere('estado', true);
             })
             ->with('equipos')
             ->get();

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Laravel\Cashier\Checkout;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -15,7 +17,7 @@ class SubscriptionController extends Controller
     /**
      * Iniciar sesión de Stripe Checkout o simulación segura en local.
      */
-    public function checkout(Request $request): Response|\Illuminate\Http\RedirectResponse|\Laravel\Cashier\Checkout
+    public function checkout(Request $request): Response|RedirectResponse|Checkout
     {
         /** @var User $user */
         $user = $request->user();
@@ -40,12 +42,12 @@ class SubscriptionController extends Controller
             try {
                 // Rule 5: SAQ A compliant redirect (nunca tocamos PAN o CVV).
                 // Rule 3: Claves de idempotencia como UUID v4 fuerte.
-                $idempotencyKey = \Illuminate\Support\Str::uuid()->toString();
+                $idempotencyKey = Str::uuid()->toString();
 
-                \Illuminate\Support\Facades\DB::table('idempotency_keys')->insert([
-                    'id'      => $idempotencyKey,
+                DB::table('idempotency_keys')->insert([
+                    'id' => $idempotencyKey,
                     'user_id' => $user->id,
-                    'scope'   => 'subscription_checkout_' . $planKey,
+                    'scope' => 'subscription_checkout_'.$planKey,
                     'used_at' => now(),
                 ]);
 

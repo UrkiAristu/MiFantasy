@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use Stripe\WebhookSignature;
 use Tests\TestCase;
 
 class SubscriptionOnboardingTest extends TestCase
@@ -211,7 +212,7 @@ class SubscriptionOnboardingTest extends TestCase
         config(['cashier.webhook.tolerance' => 300]);
 
         $payload = [
-            'id' => 'evt_valid_sig_' . uniqid(),
+            'id' => 'evt_valid_sig_'.uniqid(),
             'type' => 'customer.subscription.updated',
             'created' => time(),
             'data' => [
@@ -224,7 +225,7 @@ class SubscriptionOnboardingTest extends TestCase
 
         $payloadJson = json_encode($payload);
         $timestamp = time();
-        $signatureHeader = \Stripe\WebhookSignature::generateSignatureHeader($payloadJson, $secret, $timestamp);
+        $signatureHeader = WebhookSignature::generateSignatureHeader($payloadJson, $secret, $timestamp);
 
         $response = $this->call(
             'POST',
@@ -248,7 +249,7 @@ class SubscriptionOnboardingTest extends TestCase
         config(['cashier.webhook.secret' => $secret]);
 
         $payload = [
-            'id' => 'evt_forged_sig_' . uniqid(),
+            'id' => 'evt_forged_sig_'.uniqid(),
             'type' => 'invoice.payment_succeeded',
             'created' => time(),
             'data' => [
@@ -260,7 +261,7 @@ class SubscriptionOnboardingTest extends TestCase
 
         $payloadJson = json_encode($payload);
         // Generar firma con secret incorrecto / forjada
-        $forgedSignatureHeader = \Stripe\WebhookSignature::generateSignatureHeader($payloadJson, 'whsec_attacker_evil_secret', time());
+        $forgedSignatureHeader = WebhookSignature::generateSignatureHeader($payloadJson, 'whsec_attacker_evil_secret', time());
 
         $response = $this->call(
             'POST',
@@ -286,7 +287,7 @@ class SubscriptionOnboardingTest extends TestCase
         config(['cashier.webhook.tolerance' => 300]);
 
         $payload = [
-            'id' => 'evt_replayed_sig_' . uniqid(),
+            'id' => 'evt_replayed_sig_'.uniqid(),
             'type' => 'invoice.payment_succeeded',
             'created' => time() - 600,
             'data' => [
@@ -299,7 +300,7 @@ class SubscriptionOnboardingTest extends TestCase
         $payloadJson = json_encode($payload);
         // Generar firma con timestamp de hace 600 segundos (supera los 300s de tolerancia)
         $replayedTimestamp = time() - 600;
-        $replayedHeader = \Stripe\WebhookSignature::generateSignatureHeader($payloadJson, $secret, $replayedTimestamp);
+        $replayedHeader = WebhookSignature::generateSignatureHeader($payloadJson, $secret, $replayedTimestamp);
 
         $response = $this->call(
             'POST',
