@@ -1,59 +1,30 @@
 {
   "version": 1,
   "skills": {
-    "api-security-testing": {
-      "source": "usestrix/strix",
+    "docker-compose-orchestration": {
+      "source": "manutej/luxor-claude-marketplace",
       "sourceType": "github",
-      "skillPath": "skills/api-security-testing/SKILL.md",
-      "computedHash": "2cda580144136513c89ccca81b15481a1a5b0f7ffd0fe390d61a0ef40006bd0e"
+      "skillPath": "plugins/luxor-devops-suite/skills/docker-compose-orchestration/SKILL.md",
+      "computedHash": "01831d0723a2ac491e233bd9bfdffdac8c0ae5500f140a3ca0382ac5f4a26159"
     },
-    "application-security-testing": {
-      "source": "usestrix/strix",
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "ref": "main",
       "sourceType": "github",
-      "skillPath": "skills/application-security-testing/SKILL.md",
-      "computedHash": "3869b05bff8e91d2eee9ec98845e5a0fe0a73cca74ceef8c80b7dadc011431ff"
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "d6cb30212b3b19f531378574784af1da09928b2e5078f299eaeaedd50191a4af"
     },
-    "ci-security-scanning-with-strix": {
-      "source": "usestrix/strix",
+    "laravel-specialist": {
+      "source": "jeffallan/claude-skills",
       "sourceType": "github",
-      "skillPath": "skills/ci-security-scanning-with-strix/SKILL.md",
-      "computedHash": "4b66df85a4c3d9fe9d873738584c5d19e5bbdbb68cf526e042658eef8344d5ad"
+      "skillPath": "skills/laravel-specialist/SKILL.md",
+      "computedHash": "54d63412e4b4024f384edaa7758e9ad7e76a5ff91a134f8042dbf6200b031800"
     },
-    "find-security-vulnerabilities-in-code": {
-      "source": "usestrix/strix",
+    "tailwind-design-system": {
+      "source": "wshobson/agents",
       "sourceType": "github",
-      "skillPath": "skills/find-security-vulnerabilities-in-code/SKILL.md",
-      "computedHash": "b9aaebedb74653bed108ad54790be164fc70e60ca6fbca844e379cb0408498cf"
-    },
-    "fix-security-vulnerabilities-with-strix": {
-      "source": "usestrix/strix",
-      "sourceType": "github",
-      "skillPath": "skills/fix-security-vulnerabilities-with-strix/SKILL.md",
-      "computedHash": "1f91d165671877f77b0c23f34a4596375dc425de388f5b17d2a4742194a8bfb8"
-    },
-    "managed-pentesting-with-strix": {
-      "source": "usestrix/strix",
-      "sourceType": "github",
-      "skillPath": "skills/managed-pentesting-with-strix/SKILL.md",
-      "computedHash": "64c0544b9c50750f3d417cae3fdc5cb8710ca0a0d6ac29ed3b81807e37d63ee1"
-    },
-    "owasp-top-10-testing": {
-      "source": "usestrix/strix",
-      "sourceType": "github",
-      "skillPath": "skills/owasp-top-10-testing/SKILL.md",
-      "computedHash": "82a5e167fd58e3641e61097f9206c8ecaab30e18bbf932499c85a4f58a6a49ba"
-    },
-    "penetration-testing-with-strix": {
-      "source": "usestrix/strix",
-      "sourceType": "github",
-      "skillPath": "skills/penetration-testing-with-strix/SKILL.md",
-      "computedHash": "fa60081abea5dd1b85cf771156d2998ba021429db8abfcf09da171eb171afb1b"
-    },
-    "web-app-penetration-testing": {
-      "source": "usestrix/strix",
-      "sourceType": "github",
-      "skillPath": "skills/web-app-penetration-testing/SKILL.md",
-      "computedHash": "4a26881a2e8d289611e12557aea27f729facfa4aef777ddcb43a6b6f7d6fe2ee"
+      "skillPath": "plugins/frontend-mobile-development/skills/tailwind-design-system/SKILL.md",
+      "computedHash": "9e60f9fad6a645b173f076102b76f67d2dc4a1c0867e26c4bff9b9c7dd7f99cd"
     }
   }
 }
