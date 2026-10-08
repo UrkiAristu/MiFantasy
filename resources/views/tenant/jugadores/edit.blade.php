@@ -12,19 +12,19 @@
             @method('PUT')
             <div>
                 <label class="block text-sm font-medium text-zinc-400 mb-1">Nombre</label>
-                <input type="text" name="nombre" value="{{ $jugador->nombre }}" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent" required>
+                <input type="text" name="nombre" value="{{ $jugador->nombre }}" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-zinc-100 focus:border-lime-400 focus:ring-1 focus:ring-lime-400 outline-none" required>
             </div>
             <div>
                 <label class="block text-sm font-medium text-zinc-400 mb-1">Posición</label>
-                <input type="text" name="posicion" value="{{ $jugador->posicion }}" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent" required>
+                <input type="text" name="posicion" value="{{ $jugador->posicion }}" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-zinc-100 focus:border-lime-400 focus:ring-1 focus:ring-lime-400 outline-none" required>
             </div>
             <div>
                 <label class="block text-sm font-medium text-zinc-400 mb-1">Valor</label>
-                <input type="number" name="valor" value="{{ $jugador->valor }}" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent" required>
+                <input type="number" name="valor" value="{{ $jugador->valor }}" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-zinc-100 focus:border-lime-400 focus:ring-1 focus:ring-lime-400 outline-none" required>
             </div>
             <div>
                 <label class="block text-sm font-medium text-zinc-400 mb-1">Equipo</label>
-                <select name="equipo_id" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent" required>
+                <select name="equipo_id" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-zinc-100 focus:border-lime-400 focus:ring-1 focus:ring-lime-400 outline-none" required>
                     <option value="">Selecciona un equipo</option>
                     @foreach($equipos as $equipo)
                         <option value="{{ $equipo->id }}" {{ $jugador->equipo->contains($equipo->id) ? 'selected' : '' }}>{{ $equipo->nombre }}</option>

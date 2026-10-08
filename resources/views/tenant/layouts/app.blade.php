@@ -18,16 +18,16 @@
             </a>
         </div>
         <nav class="flex-1 p-4 space-y-1.5 text-xs font-medium overflow-y-auto">
-            <a href="{{ route('tenant.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-zinc-800/80 text-lime-400 font-semibold">
-                <i class="bi bi-speedometer2 text-base text-lime-400"></i>
+            <a href="{{ route('tenant.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('tenant.dashboard') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200' }} transition-colors">
+                <i class="bi bi-speedometer2 text-base {{ request()->routeIs('tenant.dashboard') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors">
-                <i class="bi bi-shield-shaded text-base text-zinc-400"></i>
+            <a href="{{ route('tenant.equipos.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('tenant.equipos.*') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200' }} transition-colors">
+                <i class="bi bi-shield-shaded text-base {{ request()->routeIs('tenant.equipos.*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                 <span>Equipos</span>
             </a>
-            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors">
-                <i class="bi bi-people-fill text-base text-zinc-400"></i>
+            <a href="{{ route('tenant.jugadores.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('tenant.jugadores.*') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200' }} transition-colors">
+                <i class="bi bi-people-fill text-base {{ request()->routeIs('tenant.jugadores.*') ? 'text-lime-400' : 'text-zinc-400' }}"></i>
                 <span>Jugadores</span>
             </a>
             <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 transition-colors">

@@ -22,6 +22,8 @@ class Jugador extends Model
 
     public $timestamps = true;
 
+    protected $guarded = [];
+
     protected array $equiposTorneoMemo = [];
 
     /**
@@ -145,6 +147,11 @@ class Jugador extends Model
         return $this->belongsToMany(Plantilla::class, 'jugador_plantilla')
             ->withPivot('posicion')
             ->withTimestamps();
+    }
+
+    public function equipo()
+    {
+        return $this->belongsToMany(Equipo::class, 'equipo_jugador')->withTimestamps();
     }
 
     /**

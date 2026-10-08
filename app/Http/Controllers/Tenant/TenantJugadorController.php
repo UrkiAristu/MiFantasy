@@ -23,14 +23,22 @@ class TenantJugadorController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'posicion' => 'required|string|max:50',
             'valor' => 'required|numeric',
             'equipo_id' => 'required|exists:equipos,id',
         ]);
-        Jugador::create($request->all());
-        return redirect()->route('tenant.jugadores.index')->with('success', 'Jugador creado.');
+
+        $jugador = Jugador::create([
+            'nombre' => $validated['nombre'],
+            'posicion' => $validated['posicion'],
+            'precio' => $validated['valor'],
+        ]);
+
+        $jugador->equipos()->sync([$validated['equipo_id']]);
+
+        return redirect()->route('tenant.jugadores.index')->with('success', 'Jugador creado correctamente.');
     }
 
     public function edit(Jugador $jugador)
@@ -41,14 +49,22 @@ class TenantJugadorController extends Controller
 
     public function update(Request $request, Jugador $jugador)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'posicion' => 'required|string|max:50',
             'valor' => 'required|numeric',
             'equipo_id' => 'required|exists:equipos,id',
         ]);
-        $jugador->update($request->all());
-        return redirect()->route('tenant.jugadores.index')->with('success', 'Jugador actualizado.');
+
+        $jugador->update([
+            'nombre' => $validated['nombre'],
+            'posicion' => $validated['posicion'],
+            'precio' => $validated['valor'],
+        ]);
+
+        $jugador->equipos()->sync([$validated['equipo_id']]);
+
+        return redirect()->route('tenant.jugadores.index')->with('success', 'Jugador actualizado correctamente.');
     }
 
     public function destroy(Jugador $jugador)
