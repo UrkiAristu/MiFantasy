@@ -10,7 +10,7 @@
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between">
             <div>
                 <p class="text-zinc-400 text-[11px] font-bold uppercase tracking-wider">Torneos Activos</p>
-                <p class="text-3xl font-bold text-white mt-1">1</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $data['torneos'] ?? 0 }}</p>
             </div>
             <div class="p-3 rounded-xl bg-lime-400/10 text-lime-400">
                 <i class="bi bi-trophy text-xl"></i>
@@ -20,7 +20,7 @@
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between">
             <div>
                 <p class="text-zinc-400 text-[11px] font-bold uppercase tracking-wider">Equipos Inscritos</p>
-                <p class="text-3xl font-bold text-white mt-1">20</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $data['equipos'] ?? 0 }}</p>
             </div>
             <div class="p-3 rounded-xl bg-lime-400/10 text-lime-400">
                 <i class="bi bi-shield text-xl"></i>
@@ -30,7 +30,7 @@
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between">
             <div>
                 <p class="text-zinc-400 text-[11px] font-bold uppercase tracking-wider">Jugadores en Base</p>
-                <p class="text-3xl font-bold text-white mt-1">140</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $data['jugadores'] ?? 0 }}</p>
             </div>
             <div class="p-3 rounded-xl bg-lime-400/10 text-lime-400">
                 <i class="bi bi-people text-xl"></i>
@@ -39,8 +39,8 @@
         {{-- Partidos Pendientes --}}
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between">
             <div>
-                <p class="text-zinc-400 text-[11px] font-bold uppercase tracking-wider">Partidos Pendientes</p>
-                <p class="text-3xl font-bold text-white mt-1">10</p>
+                <p class="text-zinc-400 text-[11px] font-bold uppercase tracking-wider">Partidos Registrados</p>
+                <p class="text-3xl font-bold text-white mt-1">{{ $data['partidos'] ?? 0 }}</p>
             </div>
             <div class="p-3 rounded-xl bg-lime-400/10 text-lime-400">
                 <i class="bi bi-calendar-check text-xl"></i>
