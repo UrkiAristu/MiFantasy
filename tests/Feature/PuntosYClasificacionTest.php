@@ -50,7 +50,7 @@ class PuntosYClasificacionTest extends TestCase
     {
         parent::setUp();
         $this->withoutMiddleware(ValidateCsrfToken::class);
-        Cache::flush();
+        Cache::store(config('cache.default'))->flush();
 
         // 1. Crear usuarios
         $this->userA = User::factory()->create(['name' => 'Usuario A', 'email' => 'a@test.com', 'active' => true]);

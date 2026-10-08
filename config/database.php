@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => (($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? env('APP_ENV')) === 'testing') ? 'sqlite' : env('DB_CONNECTION', 'sqlite'),
 
     /*
     |--------------------------------------------------------------------------
@@ -143,7 +143,7 @@ return [
 
     'redis' => [
 
-        'client' => env('REDIS_CLIENT', 'phpredis'),
+        'client' => env('REDIS_CLIENT', 'predis'),
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),

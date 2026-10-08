@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => (($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? env('APP_ENV')) === 'testing') ? 'array' : env('SESSION_DRIVER', 'database'),
 
     /*
     |--------------------------------------------------------------------------

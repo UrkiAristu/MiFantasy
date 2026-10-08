@@ -29,6 +29,8 @@
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
         <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+        <env name="DB_CACHE_LOCK_CONNECTION" value="sqlite" force="true"/>
+        <env name="REDIS_CLIENT" value="predis" force="true"/>
         <server name="DB_CONNECTION" value="sqlite" force="true"/>
         <server name="DB_DATABASE" value=":memory:" force="true"/>
     </php>

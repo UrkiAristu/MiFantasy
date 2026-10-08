@@ -36,7 +36,7 @@ return [
         DatabaseTenancyBootstrapper::class,
         CacheTenancyBootstrapper::class,
         FilesystemTenancyBootstrapper::class,
-        QueueTenancyBootstrapper::class,
+        // QueueTenancyBootstrapper::class,
         // Stancl\Tenancy\Bootstrappers\RedisTenancyBootstrapper::class, // Note: phpredis is needed
     ],
 

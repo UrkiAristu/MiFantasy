@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    'default' => (($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? env('APP_ENV')) === 'testing') ? 'sync' : env('QUEUE_CONNECTION', 'database'),
 
     /*
     |--------------------------------------------------------------------------
