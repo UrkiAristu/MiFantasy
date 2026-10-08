@@ -13,7 +13,7 @@
     <aside class="w-64 bg-zinc-950 border-r border-zinc-800/80 flex flex-col shrink-0">
         <div class="h-16 flex items-center px-6 border-b border-zinc-800/80">
             <a href="{{ route('tenant.dashboard') }}" class="flex items-center gap-2.5 font-bold text-zinc-100">
-                <img src="{{ asset('assets/media/logos/logo-fantasy.svg') }}" alt="MiFantasy" class="w-8 h-8 rounded-full object-contain">
+                <i class="bi bi-hexagon-fill text-lime-400 text-2xl"></i>
                 <span>Panel Torneo</span>
             </a>
         </div>
@@ -40,7 +40,7 @@
             </a>
         </nav>
         <div class="p-4 border-t border-zinc-800/80">
-            <a href="http://localhost:8080" class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-zinc-900 text-zinc-400 hover:text-zinc-100 border border-zinc-800 text-xs transition-colors">
+            <a href="http://localhost:8080/home" class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-zinc-900 text-zinc-400 hover:text-zinc-100 border border-zinc-800 text-xs transition-colors">
                 <i class="bi bi-box-arrow-left"></i>
                 <span>Volver al Sitio Principal</span>
             </a>
