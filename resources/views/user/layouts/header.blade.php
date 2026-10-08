@@ -39,10 +39,21 @@
                 </a>
                 @endif
 
+                <!-- Botón Admin B2B -->
+                @php
+                $userTenant = \App\Models\Tenant::where('user_id', Auth::user()->id)->first();
+                @endphp
+                @if($userTenant && $userTenant->domains->isNotEmpty())
+                <a href="{{ tenant_route($userTenant->domains->first()->domain, 'tenant.dashboard') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors whitespace-nowrap">
+                    <i class="bi bi-building-gear text-xs"></i>
+                    <span>Gestión de Torneo</span>
+                </a>
+                @endif
+
                 <!-- Perfil -->
                 <a href="{{ url('/user/perfil') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60 border border-zinc-800/80 transition-all flex-nowrap">
                     <div class="w-5 h-5 rounded-full bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold text-[10px] shrink-0">
-                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                        {{ strtoupper(substr(Auth::user()->name ?? 'User', 0, 1)) }}
                     </div>
                     <span class="hidden sm:inline font-semibold max-w-[130px] truncate whitespace-nowrap">{{ Auth::user()->name }}</span>
                 </a>
@@ -104,6 +115,15 @@
                     <span>Zona Admin</span>
                 </a>
                 @endif
+
+                <!-- Botón Admin B2B Móvil -->
+                @if(Auth::user()->tenant_id || \App\Models\Tenant::where('user_id', Auth::user()->id)->exists())
+                <a href="{{ tenant_route($userTenant->domains->first()->domain, 'tenant.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 font-semibold mb-3">
+                    <i class="bi bi-building-gear text-sm"></i>
+                    <span>Gestión de Torneo</span>
+                </a>
+                @endif
+
                 <a href="{{ url('/user/perfil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
                     <i class="bi bi-person-fill text-sm text-zinc-400"></i>
                     <span>Mi Perfil</span>

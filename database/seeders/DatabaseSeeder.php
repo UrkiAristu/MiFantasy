@@ -807,6 +807,67 @@ class DatabaseSeeder extends Seeder
                 ]);
         }
 
+        // -------------------------------------------------------------
+        // 10. TENANT B2B Y ADMIN LOCAL (Spatie Teams)
+        // -------------------------------------------------------------
+        $this->command->info('Creando Tenant de prueba y asignando Admin Local...');
+
+        $tenantUser = User::firstOrCreate(
+            ['email' => 'b2badmin@mifantasy.com'],
+            [
+                'name' => 'Admin Inquilino B2B',
+                'password' => Hash::make('password'),
+                'admin' => false,
+                'active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $tenantId = '1';
+        $orgName = 'Liga Corporativa B2B';
+        $planKey = 'pro';
+
+        $tenant = \App\Models\Tenant::firstOrCreate(
+            ['id' => $tenantId],
+            [
+                'name' => $orgName,
+                'user_id' => $tenantUser->id,
+                'plan' => $planKey,
+                'data' => [
+                    'name' => $orgName,
+                    'user_id' => $tenantUser->id,
+                    'plan' => $planKey,
+                    'owner_email' => $tenantUser->email,
+                ],
+            ]
+        );
+        $tenant->domains()->create(['domain' => 'b2b.localhost']);
+
+        setPermissionsTeamId($tenant->id);
+
+        $roleName = config('saas.default_admin_role', 'Admin Local');
+        $role = \Spatie\Permission\Models\Role::firstOrCreate([
+            'name' => $roleName,
+            'guard_name' => 'web',
+            'team_id' => $tenant->id,
+        ]);
+
+        $permissions = config('saas.default_permissions', []);
+        foreach ($permissions as $permissionName) {
+            $permission = \Spatie\Permission\Models\Permission::firstOrCreate([
+                'name' => $permissionName,
+                'guard_name' => 'web',
+            ]);
+
+            if (! $role->hasPermissionTo($permission)) {
+                $role->givePermissionTo($permission);
+            }
+        }
+
+        if (! $tenantUser->hasRole($roleName)) {
+            $tenantUser->assignRole($role);
+        }
+
         $this->command->info('¡Base de datos de MiFantasy poblada con éxito con datos realistas y coherentes!');
     }
 }
