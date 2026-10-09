@@ -827,29 +827,32 @@ class DatabaseSeeder extends Seeder
         $orgName = 'Liga Corporativa B2B';
         $planKey = 'pro';
 
-        $tenant = \App\Models\Tenant::firstOrCreate(
+        DB::table('tenants')->updateOrInsert(
             ['id' => $tenantId],
             [
                 'name' => $orgName,
-                'user_id' => $tenantUser->id,
-                'plan' => $planKey,
-                'data' => [
+                'data' => json_encode([
                     'name' => $orgName,
                     'user_id' => $tenantUser->id,
                     'plan' => $planKey,
                     'owner_email' => $tenantUser->email,
-                ],
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         );
-        $tenant->domains()->create(['domain' => 'b2b.localhost']);
+        DB::table('domains')->updateOrInsert(
+            ['domain' => 'b2b.localhost'],
+            ['tenant_id' => $tenantId, 'created_at' => now(), 'updated_at' => now()]
+        );
 
-        setPermissionsTeamId($tenant->id);
+        setPermissionsTeamId($tenantId);
 
         $roleName = config('saas.default_admin_role', 'Admin Local');
         $role = \Spatie\Permission\Models\Role::firstOrCreate([
             'name' => $roleName,
             'guard_name' => 'web',
-            'team_id' => $tenant->id,
+            'team_id' => $tenantId,
         ]);
 
         $permissions = config('saas.default_permissions', []);
