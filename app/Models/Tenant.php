@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Laravel\Cashier\Billable;
-use Stancl\Tenancy\Contracts\Tenant as TenantContract;
-use Stancl\Tenancy\Database\Concerns\HasDomains;
-use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
+use Illuminate\Database\Eloquent\Model;
 
-class Tenant extends BaseTenant implements TenantContract
+class Tenant extends Model
 {
-    use Billable, HasDomains;
+    use Billable;
 
     public static function getCustomColumns(): array
     {
