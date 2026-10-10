@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => (($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? env('APP_ENV')) === 'testing') ? 'sqlite' : env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'sqlite'),
 
     /*
     |--------------------------------------------------------------------------
