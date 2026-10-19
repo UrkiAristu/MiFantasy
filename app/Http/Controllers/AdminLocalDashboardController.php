@@ -14,21 +14,21 @@ class AdminLocalDashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $torneosIds = $user->torneosGestionados()->pluck('torneos.id');
+        $torneosIds = $user ? $user->torneosGestionados()->pluck('torneos.id') : collect();
 
         $torneosActivos = $torneosIds->count();
 
-        $equiposInscritos = Equipo::whereHas('torneos', function ($q) use ($torneosIds) {
+        $equiposInscritos = $torneosIds->isNotEmpty() ? Equipo::whereHas('torneos', function ($q) use ($torneosIds) {
             $q->whereIn('torneos.id', $torneosIds);
-        })->count();
+        })->count() : 0;
 
-        $jugadoresBase = Jugador::whereHas('participaciones', function ($q) use ($torneosIds) {
+        $jugadoresBase = $torneosIds->isNotEmpty() ? Jugador::whereHas('participaciones', function ($q) use ($torneosIds) {
             $q->whereIn('torneos.id', $torneosIds);
-        })->count();
+        })->count() : 0;
 
-        $partidosPendientes = Partido::whereHas('jornada', function ($q) use ($torneosIds) {
+        $partidosPendientes = $torneosIds->isNotEmpty() ? Partido::whereHas('jornada', function ($q) use ($torneosIds) {
             $q->whereIn('torneo_id', $torneosIds);
-        })->where('estado', 'programado')->count();
+        })->where('estado', 'programado')->count() : 0;
 
         return view('admin-local.dashboard', compact(
             'torneosActivos',
