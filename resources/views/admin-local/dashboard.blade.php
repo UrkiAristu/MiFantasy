@@ -16,7 +16,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500">Torneos Activos</p>
-                <h4 class="text-2xl font-bold text-gray-900">1</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $torneosActivos }}</h4>
             </div>
         </div>
 
@@ -27,7 +27,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500">Equipos Inscritos</p>
-                <h4 class="text-2xl font-bold text-gray-900">20</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $equiposInscritos }}</h4>
             </div>
         </div>
 
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500">Jugadores en Base</p>
-                <h4 class="text-2xl font-bold text-gray-900">140</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $jugadoresBase }}</h4>
             </div>
         </div>
 
@@ -49,7 +49,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500">Partidos Pendientes</p>
-                <h4 class="text-2xl font-bold text-gray-900">10</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $partidosPendientes }}</h4>
             </div>
         </div>
     </div>

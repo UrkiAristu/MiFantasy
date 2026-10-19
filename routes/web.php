@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminLocalDashboardController;
 use App\Http\Controllers\AlineacionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -174,9 +175,7 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/suscripcion/portal', [SubscriptionController::class, 'portal'])->name('subscription.portal');
 
     // Admin Local Dashboard
-    Route::get('/admin-local/dashboard', function () {
-        return view('admin-local.dashboard');
-    })->name('admin.local.dashboard');
+    Route::get('/admin-local/dashboard', [AdminLocalDashboardController::class, 'index'])->name('admin.local.dashboard');
 });
 
 // Webhooks de Stripe / Cashier (Exento de CSRF y fuera del grupo auth)
