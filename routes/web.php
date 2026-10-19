@@ -172,6 +172,11 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/suscripcion/exito', [SubscriptionController::class, 'success'])->name('subscription.success');
     Route::get('/suscripcion/cancelado', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
     Route::get('/suscripcion/portal', [SubscriptionController::class, 'portal'])->name('subscription.portal');
+
+    // Admin Local Dashboard
+    Route::get('/admin-local/dashboard', function () {
+        return view('admin-local.dashboard');
+    })->name('admin.local.dashboard');
 });
 
 // Webhooks de Stripe / Cashier (Exento de CSRF y fuera del grupo auth)
