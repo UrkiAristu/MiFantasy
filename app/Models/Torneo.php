@@ -100,4 +100,12 @@ class Torneo extends Model
     {
         return $this->hasMany(Liguilla::class);
     }
+
+    /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function administradoresLocales(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'torneo_user', 'torneo_id', 'user_id')->withTimestamps();
+    }
 }

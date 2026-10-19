@@ -68,6 +68,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * @return BelongsToMany<Torneo, $this>
+     */
+    public function torneosGestionados(): BelongsToMany
+    {
+        return $this->belongsToMany(Torneo::class, 'torneo_user', 'user_id', 'torneo_id')->withTimestamps();
+    }
+
+    /**
      * @return HasMany<Liguilla, $this>
      */
     public function liguillasCreadas(): HasMany
