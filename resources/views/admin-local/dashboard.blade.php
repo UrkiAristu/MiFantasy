@@ -59,13 +59,38 @@
         <!-- Izquierda (Colspan 2 - Últimos Partidos) -->
         <div class="lg:col-span-2 bg-white border border-gray-200 shadow-sm rounded-xl p-6 flex flex-col justify-between">
             <h3 class="text-lg font-bold text-gray-900 mb-4">Últimos Partidos</h3>
-            <div class="border-dashed border-2 border-gray-300 bg-gray-50 rounded-xl py-16 flex flex-col items-center justify-center text-center">
-                <i class="bi bi-inbox text-4xl text-gray-400 mb-2"></i>
-                <p class="text-gray-500 font-medium">No hay partidos recientes en tu torneo</p>
-                <button type="button" class="bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg mt-4 hover:bg-emerald-700 transition">
-                    Registrar Partido
-                </button>
-            </div>
+            @forelse ($ultimosPartidos as $partido)
+                <div class="border-b border-gray-100 py-3 flex justify-between items-center">
+                    <div>
+                        <p class="font-medium text-gray-900">
+                            {{ $partido->equipoLocal->nombre }} vs {{ $partido->equipoVisitante->nombre }}
+                        </p>
+                        <p class="text-xs text-gray-500">{{ $partido->jornada->nombre }} - {{ $partido->fecha_partido->format('d/m H:i') }}</p>
+                    </div>
+                    <div class="text-right">
+                        @if ($partido->estado === 'jugado')
+                            <span class="font-bold text-gray-900">{{ $partido->goles_local }} - {{ $partido->goles_visitante }}</span>
+                        @else
+                            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-amber-100 text-amber-800">Programado</span>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="border-dashed border-2 border-gray-300 bg-gray-50 rounded-xl py-16 flex flex-col items-center justify-center text-center">
+                    <i class="bi bi-inbox text-4xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-500 font-medium">No hay partidos recientes en tu torneo</p>
+                    <button type="button" class="bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg mt-4 hover:bg-emerald-700 transition">
+                        Registrar Partido
+                    </button>
+                </div>
+            @endforelse
+            @if($ultimosPartidos->isNotEmpty())
+                <div class="mt-4">
+                    <button type="button" class="w-full text-sm text-emerald-600 font-semibold hover:text-emerald-800 transition">
+                        Ver todos los partidos
+                    </button>
+                </div>
+            @endif
         </div>
 
         <!-- Derecha (Acciones Rápidas) -->

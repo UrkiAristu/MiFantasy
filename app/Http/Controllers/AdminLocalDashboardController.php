@@ -30,11 +30,20 @@ class AdminLocalDashboardController extends Controller
             $q->whereIn('torneo_id', $torneosIds);
         })->where('estado', 'programado')->count() : 0;
 
+        $ultimosPartidos = $torneosIds->isNotEmpty() ? Partido::with(['equipoLocal', 'equipoVisitante', 'jornada'])
+            ->whereHas('jornada', function ($q) use ($torneosIds) {
+                $q->whereIn('torneo_id', $torneosIds);
+            })
+            ->latest()
+            ->take(5)
+            ->get() : collect();
+
         return view('admin-local.dashboard', compact(
             'torneosActivos',
             'equiposInscritos',
             'jugadoresBase',
-            'partidosPendientes'
+            'partidosPendientes',
+            'ultimosPartidos'
         ));
     }
 }
