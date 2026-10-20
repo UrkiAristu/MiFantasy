@@ -50,14 +50,20 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const loader = document.getElementById('global-loader');
-            const selector = document.querySelector('select[name="torneo_id"]');
 
+            const activateLoader = () => {
+                loader.classList.remove('opacity-0', 'pointer-events-none');
+                loader.classList.add('opacity-100');
+            };
+
+            const selector = document.querySelector('select[name="torneo_id"]');
             if (selector) {
-                selector.addEventListener('change', () => {
-                    loader.classList.remove('opacity-0', 'pointer-events-none');
-                    loader.classList.add('opacity-100');
-                });
+                selector.addEventListener('change', activateLoader);
             }
+
+            document.querySelectorAll('a[href*="/admin-local/dashboard"]').forEach(link => {
+                link.addEventListener('click', activateLoader);
+            });
         });
     </script>
 </body>

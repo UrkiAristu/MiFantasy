@@ -125,9 +125,9 @@
                 <div class="border-dashed border-2 border-gray-300 bg-gray-50 rounded-xl py-16 flex flex-col items-center justify-center text-center">
                     <i class="bi bi-inbox text-4xl text-gray-400 mb-2"></i>
                     <p class="text-gray-500 font-medium">No hay partidos recientes en tu torneo</p>
-                    <button type="button" class="bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg mt-4 hover:bg-emerald-700 transition">
-                        Registrar Partido
-                    </button>
+                    <a href="{{ route('admin.local.jornadas.create') }}" class="bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg mt-4 hover:bg-emerald-700 transition">
+                        Crear / Registrar Partido
+                    </a>
                 </div>
             @endforelse
             @if($ultimosPartidos->isNotEmpty())
