@@ -11,12 +11,15 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminLocalDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $torneosIds = $user ? $user->torneosGestionados()->pluck('torneos.id') : collect();
+        $torneos = $user ? $user->torneosGestionados : collect();
+        $torneoId = $request->get('torneo_id');
 
-        $torneosActivos = $torneosIds->count();
+        $torneosIds = $torneoId ? collect([$torneoId]) : $torneos->pluck('id');
+
+        $torneosActivos = $torneosIds->isNotEmpty() ? $torneosIds->count() : 0;
 
         $equiposInscritos = $torneosIds->isNotEmpty() ? Equipo::whereHas('torneos', function ($q) use ($torneosIds) {
             $q->whereIn('torneos.id', $torneosIds);
@@ -30,7 +33,7 @@ class AdminLocalDashboardController extends Controller
             $q->whereIn('torneo_id', $torneosIds);
         })->where('estado', 'programado')->count() : 0;
 
-        $ultimosPartidos = $torneosIds->isNotEmpty() ? Partido::with(['equipoLocal', 'equipoVisitante', 'jornada'])
+        $ultimosPartidos = $torneosIds->isNotEmpty() ? Partido::with(['equipoLocal', 'equipoVisitante', 'jornada.torneo'])
             ->whereHas('jornada', function ($q) use ($torneosIds) {
                 $q->whereIn('torneo_id', $torneosIds);
             })
@@ -39,11 +42,23 @@ class AdminLocalDashboardController extends Controller
             ->get() : collect();
 
         return view('admin-local.dashboard', compact(
+            'torneos',
+            'torneoId',
             'torneosActivos',
             'equiposInscritos',
             'jugadoresBase',
             'partidosPendientes',
             'ultimosPartidos'
         ));
+    }
+
+    public function equipos()
+    {
+        return view('admin-local.equipos');
+    }
+
+    public function jornadasCreate()
+    {
+        return view('admin-local.jornadas-create');
     }
 }

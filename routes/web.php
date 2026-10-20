@@ -176,6 +176,8 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
 
     // Admin Local Dashboard
     Route::get('/admin-local/dashboard', [AdminLocalDashboardController::class, 'index'])->name('admin.local.dashboard');
+    Route::get('/admin-local/equipos', [AdminLocalDashboardController::class, 'equipos'])->name('admin.local.equipos');
+    Route::get('/admin-local/jornadas/create', [AdminLocalDashboardController::class, 'jornadasCreate'])->name('admin.local.jornadas.create');
 });
 
 // Webhooks de Stripe / Cashier (Exento de CSRF y fuera del grupo auth)

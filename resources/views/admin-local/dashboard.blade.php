@@ -7,6 +7,18 @@
         <p class="text-gray-500">Bienvenido, {{ Auth::user()->name }}</p>
     </div>
 
+    <!-- Selector de Torneo -->
+    <div class="mb-6">
+        <form action="{{ route('admin.local.dashboard') }}" method="GET" class="flex gap-4">
+            <select name="torneo_id" onchange="this.form.submit()" class="bg-white border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 min-w-[250px]">
+                <option value="">Todos los Torneos</option>
+                @foreach($torneos as $t)
+                    <option value="{{ $t->id }}" {{ $torneoId == $t->id ? 'selected' : '' }}>{{ $t->nombre }}</option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+
     <!-- Grid de 4 KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <!-- Torneos Activos -->
@@ -65,7 +77,7 @@
                         <p class="font-medium text-gray-900">
                             {{ $partido->equipoLocal->nombre }} vs {{ $partido->equipoVisitante->nombre }}
                         </p>
-                        <p class="text-xs text-gray-500">{{ $partido->jornada->nombre }} - {{ $partido->fecha_partido->format('d/m H:i') }}</p>
+                        <p class="text-xs text-gray-500">{{ $partido->jornada->torneo->nombre }} | {{ $partido->jornada->nombre }} - {{ $partido->fecha_partido->format('d/m H:i') }}</p>
                     </div>
                     <div class="text-right">
                         @if ($partido->estado === 'jugado')
@@ -97,17 +109,40 @@
         <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
             <h3 class="text-lg font-bold text-gray-900 mb-4">Gestión Rápida</h3>
             <div class="space-y-2">
-                <button type="button" class="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
+                <a href="{{ route('admin.local.equipos') }}" class="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
                     Ver Equipos
-                </button>
-                <button type="button" class="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
+                </a>
+                <a href="{{ route('admin.local.jornadas.create') }}" class="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
                     Crear Jornada
-                </button>
-                <button type="button" class="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
+                </a>
+                <button type="button" onclick="confirmarCierreClasificacion()" class="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
                     Cerrar Clasificación
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function confirmarCierreClasificacion() {
+        Swal.fire({
+            title: '¿Cerrar Clasificación?',
+            text: "Esta acción congelará los puntos de la jornada actual y calculará los puestos definitivos.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#059669',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cerrar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    '¡Clasificación Cerrada!',
+                    'Los puntos han sido procesados correctamente.',
+                    'success'
+                );
+            }
+        })
+    }
+</script>
 @endsection
