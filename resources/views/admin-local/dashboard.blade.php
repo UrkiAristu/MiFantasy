@@ -39,18 +39,32 @@
         </div>
     @endif
 
-    <!-- Grid de 4 KPIs -->
+    <!-- Grid de 4 KPIs (Dinámico según contexto) -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
-        <!-- Torneos Activos -->
-        <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex items-center gap-4">
-            <div class="bg-emerald-100 text-emerald-700 p-3 rounded-lg text-xl flex items-center justify-center">
-                <i class="bi bi-trophy"></i>
+        @if(!$torneoId)
+            <!-- Torneos Activos (Solo en vista global) -->
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex items-center gap-4">
+                <div class="bg-emerald-100 text-emerald-700 p-3 rounded-lg text-xl flex items-center justify-center">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Torneos Activos</p>
+                    <h4 class="text-2xl font-bold text-gray-900">{{ $torneosActivos }}</h4>
+                </div>
             </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500">Torneos Activos</p>
-                <h4 class="text-2xl font-bold text-gray-900">{{ $torneosActivos }}</h4>
+        @else
+            <!-- Estado del Torneo Actual (Reemplaza al KPI redundante) -->
+            @php $torneoActual = $torneos->firstWhere('id', $torneoId); @endphp
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex items-center gap-4">
+                <div class="bg-blue-100 text-blue-700 p-3 rounded-lg text-xl flex items-center justify-center">
+                    <i class="bi bi-info-circle"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Estado del Torneo</p>
+                    <h4 class="text-xl font-bold text-gray-900 capitalize">{{ $torneoActual->estado ?? 'Activo' }}</h4>
+                </div>
             </div>
-        </div>
+        @endif
 
         <!-- Equipos Inscritos -->
         <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex items-center gap-4">
