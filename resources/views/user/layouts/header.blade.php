@@ -39,14 +39,11 @@
                 </a>
                 @endif
 
-                <!-- Botón Admin B2B -->
-                @php
-                $userTenant = \App\Models\Tenant::where('user_id', Auth::user()->id)->first();
-                @endphp
-                @if($userTenant && $userTenant->domains->isNotEmpty())
-                <a href="{{ tenant_route($userTenant->domains->first()->domain, 'tenant.dashboard') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors whitespace-nowrap">
+                <!-- Botón Admin Local -->
+                @if(Auth::user()->torneosGestionados()->exists())
+                <a href="{{ url('/admin-local/dashboard') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-lime-400/10 text-lime-400 border border-lime-400/20 hover:bg-lime-400/20 transition-colors whitespace-nowrap">
                     <i class="bi bi-building-gear text-xs"></i>
-                    <span>Gestión de Torneo</span>
+                    <span>Gestión Torneo</span>
                 </a>
                 @endif
 
