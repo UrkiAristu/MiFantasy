@@ -7,8 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        #global-loader {
+            transition: opacity 0.2s ease;
+        }
+    </style>
 </head>
 <body class="h-full flex flex-col font-sans antialiased text-gray-900 bg-gray-50">
+    <!-- Loader Global -->
+    <div id="global-loader" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none">
+        <div class="bg-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
+            <span class="text-sm font-semibold text-gray-700">Cambiando contexto de torneo...</span>
+        </div>
+    </div>
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside class="w-64 bg-white text-gray-900 flex flex-col border-r border-gray-200">
@@ -35,5 +47,18 @@
             </main>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('global-loader');
+            const selector = document.querySelector('select[name="torneo_id"]');
+
+            if (selector) {
+                selector.addEventListener('change', () => {
+                    loader.classList.remove('opacity-0', 'pointer-events-none');
+                    loader.classList.add('opacity-100');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

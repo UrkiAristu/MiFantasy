@@ -39,6 +39,17 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $tenantUser = User::firstOrCreate(
+            ['email' => 'b2badmin@mifantasy.com'],
+            [
+                'name' => 'Admin Inquilino B2B',
+                'password' => Hash::make('password'),
+                'admin' => false,
+                'active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
         $usuariosEstandar = [
             ['name' => 'Carlos Fantasy', 'email' => 'carlos@mifantasy.com', 'equipo' => 'Galácticos FC'],
             ['name' => 'Laura Champions', 'email' => 'laura@mifantasy.com', 'equipo' => 'Tiki-Taka Stars'],
@@ -319,6 +330,21 @@ class DatabaseSeeder extends Seeder
 
         // Vincular administradores al torneo
         $admin->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
+        $tenantUser->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
+
+        // 4.1 SEGUNDO TORNEO (Para pruebas multitorneo)
+        $torneo2 = Torneo::create([
+            'nombre' => 'Copa de Verano 2026',
+            'fecha_inicio' => now()->addWeeks(1)->format('Y-m-d'),
+            'fecha_fin' => now()->addMonths(2)->format('Y-m-d'),
+            'descripcion' => 'Torneo relámpago de verano.',
+            'logo' => '/assets/media/images/default-tournament.png',
+            'estado' => 'activo',
+            'modalidad' => 'sala',
+            'usa_posiciones' => true,
+        ]);
+        $admin->torneosGestionados()->syncWithoutDetaching([$torneo2->id]);
+        $tenantUser->torneosGestionados()->syncWithoutDetaching([$torneo2->id]);
 
         // Vincular los 20 equipos al torneo
         $equipoTorneoPivots = [];
@@ -326,6 +352,13 @@ class DatabaseSeeder extends Seeder
             $equipoTorneoPivots[] = [
                 'equipo_id' => $equipo->id,
                 'torneo_id' => $torneo->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            // Inscribir también en el segundo torneo para pruebas
+            $equipoTorneoPivots[] = [
+                'equipo_id' => $equipo->id,
+                'torneo_id' => $torneo2->id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -813,22 +846,11 @@ class DatabaseSeeder extends Seeder
         // -------------------------------------------------------------
         // 10. TENANT B2B Y ADMIN LOCAL (Spatie Teams)
         // -------------------------------------------------------------
-        $this->command->info('Creando Tenant de prueba y asignando Admin Local...');
+        $this->command->info('Configurando Tenant de prueba y asignando Admin Local...');
 
-        $tenantUser = User::firstOrCreate(
-            ['email' => 'b2badmin@mifantasy.com'],
-            [
-                'name' => 'Admin Inquilino B2B',
-                'password' => Hash::make('password'),
-                'admin' => false,
-                'active' => true,
-                'email_verified_at' => now(),
-            ]
-        );
-
-        // Vincular tenantUser y admin al torneo
-        $tenantUser->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
-        $admin->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
+        // Vincular tenantUser y admin a los torneos
+        $tenantUser->torneosGestionados()->syncWithoutDetaching([$torneo->id, $torneo2->id]);
+        $admin->torneosGestionados()->syncWithoutDetaching([$torneo->id, $torneo2->id]);
 
         $tenantId = '1';
         $orgName = 'Liga Corporativa B2B';
