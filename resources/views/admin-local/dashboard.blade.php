@@ -2,22 +2,42 @@
 
 @section('content')
 <div class="space-y-6">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-900">Panel de Competición Local</h1>
-        <p class="text-gray-500">Bienvenido, {{ Auth::user()->name }}</p>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Panel de Competición Local</h1>
+            <p class="text-gray-500">Bienvenido, {{ Auth::user()->name }}</p>
+        </div>
+
+        <!-- Selector de Torneo Moderno -->
+        <div>
+            <form action="{{ route('admin.local.dashboard') }}" method="GET" class="flex items-center gap-2">
+                <select name="torneo_id" onchange="this.form.submit()" class="bg-white border border-gray-300 rounded-lg text-sm px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm min-w-[240px]">
+                    <option value="">🌐 Todos los Torneos</option>
+                    @foreach($torneos as $t)
+                        <option value="{{ $t->id }}" {{ $torneoId == $t->id ? 'selected' : '' }}>🏆 {{ $t->nombre }}</option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
     </div>
 
-    <!-- Selector de Torneo -->
-    <div class="mb-6">
-        <form action="{{ route('admin.local.dashboard') }}" method="GET" class="flex gap-4">
-            <select name="torneo_id" onchange="this.form.submit()" class="bg-white border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 min-w-[250px]">
-                <option value="">Todos los Torneos</option>
-                @foreach($torneos as $t)
-                    <option value="{{ $t->id }}" {{ $torneoId == $t->id ? 'selected' : '' }}>{{ $t->nombre }}</option>
-                @endforeach
-            </select>
-        </form>
-    </div>
+    @if($torneoId)
+        @php $torneoActual = $torneos->firstWhere('id', $torneoId); @endphp
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-600 text-white p-2 rounded-lg">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Filtrando por Torneo Activo</span>
+                    <h2 class="text-base font-bold text-emerald-900">{{ $torneoActual?->nombre ?? 'Torneo Seleccionado' }}</h2>
+                </div>
+            </div>
+            <a href="{{ route('admin.local.dashboard') }}" class="text-sm font-medium text-emerald-700 hover:text-emerald-900 bg-white border border-emerald-300 px-3 py-1.5 rounded-lg shadow-sm transition">
+                Ver todos
+            </a>
+        </div>
+    @endif
 
     <!-- Grid de 4 KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
