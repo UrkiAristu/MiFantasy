@@ -140,17 +140,35 @@
         </div>
 
         <!-- Derecha (Acciones Rápidas) -->
-        <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
+        <div class="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-5">
             <h3 class="text-lg font-bold text-gray-900 mb-4">Gestión Rápida</h3>
-            <div class="space-y-2">
-                <a href="{{ route('admin.local.equipos') }}" class="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
-                    Ver Equipos
+            <div class="grid grid-cols-1 gap-3">
+                <a href="{{ route('admin.local.equipos') }}" class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all group">
+                    <div class="bg-emerald-100 text-emerald-600 p-3 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition">
+                        <i class="bi bi-shield text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-900">Ver Equipos</div>
+                        <div class="text-xs text-gray-500">Inscripciones y plantillas</div>
+                    </div>
                 </a>
-                <a href="{{ route('admin.local.jornadas.create') }}" class="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
-                    Crear Jornada
+                <a href="{{ route('admin.local.jornadas.create') }}" class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all group">
+                    <div class="bg-blue-100 text-blue-600 p-3 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="bi bi-calendar-plus text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-900">Crear Jornada</div>
+                        <div class="text-xs text-gray-500">Programar nueva fecha</div>
+                    </div>
                 </a>
-                <button type="button" onclick="confirmarCierreClasificacion()" class="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-emerald-700 rounded-lg transition-colors font-medium">
-                    Cerrar Clasificación
+                <button type="button" onclick="confirmarCierreClasificacion()" class="flex items-center gap-4 p-4 w-full bg-white border border-gray-200 rounded-xl hover:border-red-500 hover:shadow-md transition-all group text-left">
+                    <div class="bg-red-100 text-red-600 p-3 rounded-lg group-hover:bg-red-600 group-hover:text-white transition">
+                        <i class="bi bi-lock text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-900">Cerrar Clasificación</div>
+                        <div class="text-xs text-gray-500">Congelar puntos actuales</div>
+                    </div>
                 </button>
             </div>
         </div>

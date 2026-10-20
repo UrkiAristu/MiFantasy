@@ -27,11 +27,22 @@
             <div class="p-5 text-xl font-bold border-b border-gray-200 flex items-center justify-between">
                 <span>MiFantasy Admin</span>
             </div>
-            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <a href="/admin-local/dashboard" class="block px-4 py-2 rounded hover:bg-gray-100 text-gray-700 transition font-medium">Dashboard</a>
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                <a href="{{ route('admin.local.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.dashboard') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a href="{{ route('admin.local.equipos') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.equipos') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
+                    <i class="bi bi-shield-shaded"></i> Equipos
+                </a>
+                <a href="{{ route('admin.local.jornadas.create') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.jornadas.create') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
+                    <i class="bi bi-calendar-plus"></i> Crear Jornada
+                </a>
+
                 <form action="/logout" method="POST" class="mt-8">
                     @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition text-white">Cerrar Sesión</button>
+                    <button type="submit" class="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-medium transition">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
                 </form>
             </nav>
         </aside>
