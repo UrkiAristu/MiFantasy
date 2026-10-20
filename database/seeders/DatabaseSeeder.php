@@ -317,6 +317,9 @@ class DatabaseSeeder extends Seeder
             'usa_posiciones' => true,
         ]);
 
+        // Vincular administradores al torneo
+        $admin->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
+
         // Vincular los 20 equipos al torneo
         $equipoTorneoPivots = [];
         foreach ($equipos as $equipo) {
@@ -822,6 +825,10 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        // Vincular tenantUser y admin al torneo
+        $tenantUser->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
+        $admin->torneosGestionados()->syncWithoutDetaching([$torneo->id]);
 
         $tenantId = '1';
         $orgName = 'Liga Corporativa B2B';
