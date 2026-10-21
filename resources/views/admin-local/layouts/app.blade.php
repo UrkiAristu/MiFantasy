@@ -34,8 +34,11 @@
                 <a href="{{ route('admin.local.equipos.index') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.equipos*') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
                     <i class="bi bi-shield-shaded"></i> Equipos
                 </a>
-                <a href="{{ route('admin.local.jornadas.create') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.jornadas.create') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
-                    <i class="bi bi-calendar-plus"></i> Crear Jornada
+                <a href="{{ route('admin.local.jornadas.index') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.jornadas*') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
+                    <i class="bi bi-calendar-plus"></i> Jornadas
+                </a>
+                <a href="{{ route('admin.local.partidos.index') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.partidos*') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
+                    <i class="bi bi-controller"></i> Partidos
                 </a>
 
                 <form action="/logout" method="POST" class="mt-8">

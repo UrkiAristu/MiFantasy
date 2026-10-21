@@ -161,40 +161,17 @@
                         <div class="text-xs text-gray-500">Programar nueva fecha</div>
                     </div>
                 </a>
-                <button type="button" onclick="confirmarCierreClasificacion()" class="flex items-center gap-4 p-4 w-full bg-white border border-gray-200 rounded-xl hover:border-red-500 hover:shadow-md transition-all group text-left">
-                    <div class="bg-red-100 text-red-600 p-3 rounded-lg group-hover:bg-red-600 group-hover:text-white transition">
-                        <i class="bi bi-lock text-xl"></i>
+                <a href="{{ route('admin.local.partidos.create') }}" class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all group">
+                    <div class="bg-amber-100 text-amber-600 p-3 rounded-lg group-hover:bg-amber-600 group-hover:text-white transition">
+                        <i class="bi bi-controller text-xl"></i>
                     </div>
                     <div>
-                        <div class="font-bold text-gray-900">Cerrar Clasificación</div>
-                        <div class="text-xs text-gray-500">Congelar puntos actuales</div>
+                        <div class="font-bold text-gray-900">Registrar Partido</div>
+                        <div class="text-xs text-gray-500">Añadir enfrentamiento</div>
                     </div>
-                </button>
+                </a>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function confirmarCierreClasificacion() {
-        Swal.fire({
-            title: '¿Cerrar Clasificación?',
-            text: "Esta acción congelará los puntos de la jornada actual y calculará los puestos definitivos.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#059669',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, cerrar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire(
-                    '¡Clasificación Cerrada!',
-                    'Los puntos han sido procesados correctamente.',
-                    'success'
-                );
-            }
-        })
-    }
-</script>
 @endsection

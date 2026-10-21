@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdminLocalDashboardController;
 use App\Http\Controllers\AdminLocalEquipoController;
+use App\Http\Controllers\AdminLocalJornadaController;
+use App\Http\Controllers\AdminLocalPartidoController;
 use App\Http\Controllers\AlineacionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -175,15 +177,12 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/suscripcion/cancelado', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
     Route::get('/suscripcion/portal', [SubscriptionController::class, 'portal'])->name('subscription.portal');
 
-    // Admin Local Dashboard & Equipos CRUD
+    // Admin Local Dashboard, Equipos, Jornadas & Partidos
     Route::get('/admin-local/dashboard', [AdminLocalDashboardController::class, 'index'])->name('admin.local.dashboard');
     Route::get('/admin-local/equipos', [AdminLocalEquipoController::class, 'index'])->name('admin.local.equipos.index');
-    Route::get('/admin-local/equipos/create', [AdminLocalEquipoController::class, 'create'])->name('admin.local.equipos.create');
-    Route::post('/admin-local/equipos', [AdminLocalEquipoController::class, 'store'])->name('admin.local.equipos.store');
-    Route::get('/admin-local/equipos/{equipo}/edit', [AdminLocalEquipoController::class, 'edit'])->name('admin.local.equipos.edit');
-    Route::put('/admin-local/equipos/{equipo}', [AdminLocalEquipoController::class, 'update'])->name('admin.local.equipos.update');
-    Route::delete('/admin-local/equipos/{equipo}', [AdminLocalEquipoController::class, 'destroy'])->name('admin.local.equipos.destroy');
-    Route::get('/admin-local/jornadas/create', [AdminLocalDashboardController::class, 'jornadasCreate'])->name('admin.local.jornadas.create');
+
+    Route::resource('admin-local/jornadas', AdminLocalJornadaController::class)->names('admin.local.jornadas');
+    Route::resource('admin-local/partidos', AdminLocalPartidoController::class)->names('admin.local.partidos');
 });
 
 // Webhooks de Stripe / Cashier (Exento de CSRF y fuera del grupo auth)
