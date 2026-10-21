@@ -54,7 +54,7 @@ class AdminLocalDashboardController extends Controller
 
     public function equipos()
     {
-        return view('admin-local.equipos');
+        return redirect()->route('admin.local.equipos.index');
     }
 
     public function jornadasCreate()

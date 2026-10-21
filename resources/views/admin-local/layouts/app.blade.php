@@ -31,7 +31,7 @@
                 <a href="{{ route('admin.local.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.dashboard') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a>
-                <a href="{{ route('admin.local.equipos') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.equipos') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
+                <a href="{{ route('admin.local.equipos.index') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.equipos*') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">
                     <i class="bi bi-shield-shaded"></i> Equipos
                 </a>
                 <a href="{{ route('admin.local.jornadas.create') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg {{ request()->routeIs('admin.local.jornadas.create') ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-100 font-medium' }} transition">

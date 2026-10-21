@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminLocalDashboardController;
+use App\Http\Controllers\AdminLocalEquipoController;
 use App\Http\Controllers\AlineacionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -174,9 +175,14 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/suscripcion/cancelado', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
     Route::get('/suscripcion/portal', [SubscriptionController::class, 'portal'])->name('subscription.portal');
 
-    // Admin Local Dashboard
+    // Admin Local Dashboard & Equipos CRUD
     Route::get('/admin-local/dashboard', [AdminLocalDashboardController::class, 'index'])->name('admin.local.dashboard');
-    Route::get('/admin-local/equipos', [AdminLocalDashboardController::class, 'equipos'])->name('admin.local.equipos');
+    Route::get('/admin-local/equipos', [AdminLocalEquipoController::class, 'index'])->name('admin.local.equipos.index');
+    Route::get('/admin-local/equipos/create', [AdminLocalEquipoController::class, 'create'])->name('admin.local.equipos.create');
+    Route::post('/admin-local/equipos', [AdminLocalEquipoController::class, 'store'])->name('admin.local.equipos.store');
+    Route::get('/admin-local/equipos/{equipo}/edit', [AdminLocalEquipoController::class, 'edit'])->name('admin.local.equipos.edit');
+    Route::put('/admin-local/equipos/{equipo}', [AdminLocalEquipoController::class, 'update'])->name('admin.local.equipos.update');
+    Route::delete('/admin-local/equipos/{equipo}', [AdminLocalEquipoController::class, 'destroy'])->name('admin.local.equipos.destroy');
     Route::get('/admin-local/jornadas/create', [AdminLocalDashboardController::class, 'jornadasCreate'])->name('admin.local.jornadas.create');
 });
 

@@ -143,7 +143,7 @@
         <div class="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-5">
             <h3 class="text-lg font-bold text-gray-900 mb-4">Gestión Rápida</h3>
             <div class="grid grid-cols-1 gap-3">
-                <a href="{{ route('admin.local.equipos') }}" class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all group">
+                <a href="{{ route('admin.local.equipos.index') }}" class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all group">
                     <div class="bg-emerald-100 text-emerald-600 p-3 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition">
                         <i class="bi bi-shield text-xl"></i>
                     </div>
