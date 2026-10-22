@@ -29,16 +29,24 @@ class AdminLocalDashboardController extends Controller
             $q->whereIn('torneos.id', $torneosIds);
         })->count() : 0;
 
+        $jornadasCompletadas = $torneosIds->isNotEmpty() ? Jornada::whereIn('torneo_id', $torneosIds)
+            ->whereHas('partidos', function ($q) {
+                $q->where('estado', '!=', 'jugado');
+            }, '=', 0)
+            ->whereHas('partidos')
+            ->count() : 0;
+
         $partidosPendientes = $torneosIds->isNotEmpty() ? Partido::whereHas('jornada', function ($q) use ($torneosIds) {
             $q->whereIn('torneo_id', $torneosIds);
         })->where('estado', 'programado')->count() : 0;
 
-        $ultimosPartidos = $torneosIds->isNotEmpty() ? Partido::with(['equipoLocal', 'equipoVisitante', 'jornada.torneo'])
+        $proximosPartidos = $torneosIds->isNotEmpty() ? Partido::with(['equipoLocal', 'equipoVisitante', 'jornada.torneo'])
             ->whereHas('jornada', function ($q) use ($torneosIds) {
                 $q->whereIn('torneo_id', $torneosIds);
             })
-            ->latest()
-            ->take(5)
+            ->where('estado', 'programado')
+            ->orderBy('fecha_partido', 'asc')
+            ->take(3)
             ->get() : collect();
 
         return view('admin-local.dashboard', compact(
@@ -46,9 +54,9 @@ class AdminLocalDashboardController extends Controller
             'torneoId',
             'torneosActivos',
             'equiposInscritos',
-            'jugadoresBase',
+            'jornadasCompletadas',
             'partidosPendientes',
-            'ultimosPartidos'
+            'proximosPartidos'
         ));
     }
 

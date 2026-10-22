@@ -34,6 +34,13 @@ class AdminLocalJornadaController extends Controller
         return view('admin-local.jornadas.index', compact('jornadas', 'torneos', 'torneoId'));
     }
 
+    public function show(Jornada $jornada)
+    {
+        $this->authorize('view', $jornada);
+        $jornada->load(['torneo', 'partidos.equipoLocal', 'partidos.equipoVisitante']);
+        return view('admin-local.jornadas.show', compact('jornada'));
+    }
+
     public function create()
     {
         $user = Auth::user();

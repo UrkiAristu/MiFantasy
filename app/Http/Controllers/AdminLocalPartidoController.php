@@ -153,4 +153,32 @@ class AdminLocalPartidoController extends Controller
 
         return redirect()->route('admin.local.partidos.index')->with('success', 'Partido eliminado correctamente.');
     }
+
+    public function bulkUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'partidos' => 'required|array',
+            'partidos.*.id' => 'required|exists:partidos,id',
+            'partidos.*.goles_local' => 'nullable|integer|min:0',
+            'partidos.*.goles_visitante' => 'nullable|integer|min:0',
+            'partidos.*.estado' => 'required|in:programado,jugado,cancelado',
+        ]);
+
+        foreach ($validated['partidos'] as $data) {
+            $partido = Partido::findOrFail($data['id']);
+            $this->authorize('update', $partido);
+
+            $partido->update([
+                'goles_local' => $data['goles_local'],
+                'goles_visitante' => $data['goles_visitante'],
+                'estado' => $data['estado'],
+            ]);
+
+            if ($partido->estado === 'jugado') {
+                $partido->actualizarEstadisticas();
+            }
+        }
+
+        return back()->with('success', 'Resultados actualizados correctamente.');
+    }
 }

@@ -11,6 +11,12 @@ class Tenant extends Model
 {
     use Billable;
 
+    protected $guarded = [];
+
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     public static function getCustomColumns(): array
     {
         return [

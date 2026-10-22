@@ -23,7 +23,7 @@ class DatabaseSeederTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         // 1. Usuarios
-        $this->assertDatabaseCount('users', 5);
+        $this->assertDatabaseCount('users', 6);
         $admin = User::where('email', 'admin@admin.es')->first();
         $this->assertNotNull($admin);
         $this->assertTrue($admin->admin);
@@ -37,12 +37,12 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('equipo_jugador', Jugador::count());
 
         // 4. Torneo y Jornadas
-        $this->assertDatabaseCount('torneos', 1);
+        $this->assertDatabaseCount('torneos', 2);
         $torneo = Torneo::first();
         $this->assertEquals('activo', $torneo->estado);
         $this->assertEquals(5, $torneo->jugadores_por_equipo);
         $this->assertDatabaseCount('jornadas', 4);
-        $this->assertDatabaseCount('equipo_torneo', 20);
+        $this->assertDatabaseCount('equipo_torneo', 40);
         $this->assertDatabaseCount('equipo_jugador_torneo', Jugador::count());
 
         // 5. Partidos y Estadísticas

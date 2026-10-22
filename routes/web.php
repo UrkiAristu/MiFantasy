@@ -182,6 +182,7 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/admin-local/equipos', [AdminLocalEquipoController::class, 'index'])->name('admin.local.equipos.index');
 
     Route::resource('admin-local/jornadas', AdminLocalJornadaController::class)->names('admin.local.jornadas');
+    Route::post('admin-local/partidos/bulk-update', [AdminLocalPartidoController::class, 'bulkUpdate'])->name('admin.local.partidos.bulkUpdate');
     Route::resource('admin-local/partidos', AdminLocalPartidoController::class)->names('admin.local.partidos');
 });
 

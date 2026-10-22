@@ -19,6 +19,6 @@ class AdminLocalDashboardAccessTest extends TestCase
         $response = $this->actingAs($admin)->get('/admin-local/dashboard');
 
         $response->assertStatus(200);
-        $response->assertSee('Panel de Competición Local');
+        $response->assertSee('Panel de Control Local');
     }
 }
