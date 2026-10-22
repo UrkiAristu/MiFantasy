@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
-use App\Models\Jugador;
+use App\Models\Jornada;
 use App\Models\Partido;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
@@ -22,10 +24,6 @@ class AdminLocalDashboardController extends Controller
         $torneosActivos = $torneosIds->isNotEmpty() ? $torneosIds->count() : 0;
 
         $equiposInscritos = $torneosIds->isNotEmpty() ? Equipo::whereHas('torneos', function ($q) use ($torneosIds) {
-            $q->whereIn('torneos.id', $torneosIds);
-        })->count() : 0;
-
-        $jugadoresBase = $torneosIds->isNotEmpty() ? Jugador::whereHas('participaciones', function ($q) use ($torneosIds) {
             $q->whereIn('torneos.id', $torneosIds);
         })->count() : 0;
 
