@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RecalcularPuntosJornadaJob;
 use App\Models\Equipo;
 use App\Models\Jornada;
 use App\Models\Partido;
@@ -90,6 +91,7 @@ class AdminLocalPartidoController extends Controller
 
         if ($partido->estado === 'jugado') {
             $partido->actualizarEstadisticas();
+            RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
         }
 
         return redirect()->route('admin.local.partidos.index')->with('success', 'Partido registrado correctamente.');
@@ -140,6 +142,7 @@ class AdminLocalPartidoController extends Controller
 
         if ($partido->estado === 'jugado') {
             $partido->actualizarEstadisticas();
+            RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
         }
 
         return redirect()->route('admin.local.partidos.index')->with('success', 'Partido actualizado correctamente.');
