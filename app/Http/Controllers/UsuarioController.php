@@ -52,6 +52,8 @@ class UsuarioController extends Controller
         $usuario->active = (bool) $validated['active'];
         $usuario->save();
 
+        $usuario->torneosGestionados()->sync($request->input('torneos', []));
+
         return redirect('/admin/usuarios/'.$id)->with('success', 'Usuario actualizado correctamente.');
     }
 

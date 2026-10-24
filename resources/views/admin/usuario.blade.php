@@ -56,6 +56,18 @@
                 </div>
             </div>
 
+            <div class="mt-6 border-t border-zinc-200 pt-6">
+                <h2 class="text-lg font-bold text-zinc-900 mb-4">Torneos Gestionados (Admin Local)</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach(\App\Models\Torneo::all() as $torneo)
+                    <label class="flex items-center space-x-3 p-3 rounded-xl border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+                        <input type="checkbox" name="torneos[]" value="{{ $torneo->id }}" class="rounded border-zinc-300 text-lime-600 focus:ring-lime-500 w-4 h-4" {{ $usuario->torneosGestionados->contains($torneo->id) ? 'checked' : '' }}>
+                        <span class="text-sm font-medium text-zinc-900">{{ $torneo->nombre }}</span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="mt-6 border-t border-zinc-200 pt-4">
                 <button type="submit" class="bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-md">Guardar Cambios</button>
             </div>
