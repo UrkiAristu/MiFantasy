@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
@@ -44,7 +44,7 @@
                 <form action="/logout" method="POST" class="mt-8">
                     @csrf
                     <button type="submit" class="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-medium transition">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                        <i class="bi bi-box-arrow-right"></i> Cerrar SesiÃ³n
                     </button>
                 </form>
             </nav>
@@ -80,5 +80,35 @@
             });
         });
     </script>
+
+    @if(session('success'))
+    <script>
+        Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        }).fire({
+            icon: 'success',
+            title: "{{ session('success') }}"
+        });
+    </script>
+    @endif
+    @if(session('error'))
+    <script>
+        Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        }).fire({
+            icon: 'error',
+            title: "{{ session('error') }}"
+        });
+    </script>
+    @endif
 </body>
 </html>
+

@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('title', 'Usuarios')
 
@@ -46,7 +46,7 @@
                         <td class="py-3 px-4 text-center text-zinc-600">{{ $usuario->email }}</td>
                         <td class="py-3 px-4 text-center">
                             @if($usuario->admin)
-                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">Sí</span>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">SÃ­</span>
                             @else
                             <span class="inline-block px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-xs font-semibold">No</span>
                             @endif
@@ -54,7 +54,7 @@
                         <td class="py-3 px-4 text-center text-zinc-600 text-xs">{{ $usuario->created_at->format('d/m/Y') }}</td>
                         <td class="py-3 px-4 text-center">
                             @if($usuario->active)
-                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">Sí</span>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">SÃ­</span>
                             @else
                             <span class="inline-block px-2 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">No</span>
                             @endif
@@ -116,16 +116,16 @@
                 const estado = button.dataset.estado;
 
                 Swal.fire({
-                    title: `¿Seguro que deseas ${estado} a ${nombre}?`,
+                    title: `Â¿Seguro que deseas ${estado} a ${nombre}?`,
                     text: estado === 'inhabilitar' ?
-                        'El usuario no podrá acceder al sistema.' : 'El usuario podrá volver a acceder.',
+                        'El usuario no podrÃ¡ acceder al sistema.' : 'El usuario podrÃ¡ volver a acceder.',
                     icon: 'warning',
                     background: '#ffffff',
                     color: '#18181b',
                     showCancelButton: true,
                     confirmButtonColor: '#a3e635',
                     cancelButtonColor: '#ef4444',
-                    confirmButtonText: `Sí, ${estado}`,
+                    confirmButtonText: `SÃ­, ${estado}`,
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -137,3 +137,4 @@
     });
 </script>
 @endpush
+
