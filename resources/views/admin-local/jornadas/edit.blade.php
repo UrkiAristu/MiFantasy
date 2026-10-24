@@ -1,4 +1,4 @@
-@extends('admin-local.layouts.app')
+﻿@extends('admin-local.layouts.app')
 
 @section('content')
 <div class="space-y-6 max-w-2xl">
@@ -35,7 +35,7 @@
                 <input type="text" name="nombre" value="{{ old('nombre', $jornada->nombre) }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Orden / Número</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Orden / NÃºmero</label>
                 <input type="number" name="orden" value="{{ old('orden', $jornada->orden) }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
             </div>
             <div class="grid grid-cols-2 gap-4">
@@ -62,3 +62,5 @@
     </div>
 </div>
 @endsection
+
+

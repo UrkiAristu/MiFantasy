@@ -1,4 +1,4 @@
-@extends('admin-local.layouts.app')
+﻿@extends('admin-local.layouts.app')
 
 @section('content')
 <div class="space-y-6 max-w-2xl">
@@ -92,3 +92,5 @@
     </div>
 </div>
 @endsection
+
+

@@ -1,10 +1,10 @@
-@extends('admin-local.layouts.app')
+﻿@extends('admin-local.layouts.app')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Gestión de Equipos</h1>
+            <h1 class="text-2xl font-bold text-gray-900">GestiÃ³n de Equipos</h1>
             <p class="text-gray-500">Listado de equipos inscritos y control de plantillas.</p>
         </div>
         <button type="button" class="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-emerald-700 transition flex items-center gap-2">
@@ -54,3 +54,5 @@
     </div>
 </div>
 @endsection
+
+

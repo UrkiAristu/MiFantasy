@@ -1,10 +1,10 @@
-@extends('admin-local.layouts.app')
+﻿@extends('admin-local.layouts.app')
 
 @section('content')
 <div class="space-y-6 max-w-2xl">
     <div>
         <h1 class="text-2xl font-bold text-gray-900">Crear Nueva Jornada</h1>
-        <p class="text-gray-500">Define los parámetros de la nueva jornada para tu torneo.</p>
+        <p class="text-gray-500">Define los parÃ¡metros de la nueva jornada para tu torneo.</p>
     </div>
 
     @if($errors->any())
@@ -34,7 +34,7 @@
                 <input type="text" name="nombre" value="{{ old('nombre') }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Ej: Jornada 1">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Orden / Número</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Orden / NÃºmero</label>
                 <input type="number" name="orden" value="{{ old('orden', 1) }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
             </div>
             <div class="grid grid-cols-2 gap-4">
@@ -61,3 +61,5 @@
     </div>
 </div>
 @endsection
+
+
