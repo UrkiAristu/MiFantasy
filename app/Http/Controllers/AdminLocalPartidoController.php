@@ -82,8 +82,8 @@ class AdminLocalPartidoController extends Controller
             'equipo_local_id' => 'required|exists:equipos,id|different:equipo_visitante_id',
             'equipo_visitante_id' => 'required|exists:equipos,id',
             'fecha_partido' => 'required|date',
-            'goles_local' => 'nullable|integer|min:0',
-            'goles_visitante' => 'nullable|integer|min:0',
+            'goles_local' => 'required_if:estado,jugado|nullable|integer|min:0',
+            'goles_visitante' => 'required_if:estado,jugado|nullable|integer|min:0',
             'estado' => 'required|in:programado,jugado,cancelado',
         ]);
 
@@ -133,8 +133,8 @@ class AdminLocalPartidoController extends Controller
             'equipo_local_id' => 'required|exists:equipos,id|different:equipo_visitante_id',
             'equipo_visitante_id' => 'required|exists:equipos,id',
             'fecha_partido' => 'required|date',
-            'goles_local' => 'nullable|integer|min:0',
-            'goles_visitante' => 'nullable|integer|min:0',
+            'goles_local' => 'required_if:estado,jugado|nullable|integer|min:0',
+            'goles_visitante' => 'required_if:estado,jugado|nullable|integer|min:0',
             'estado' => 'required|in:programado,jugado,cancelado',
         ]);
 
