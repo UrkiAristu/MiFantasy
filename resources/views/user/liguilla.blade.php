@@ -234,7 +234,7 @@
                 </div>
 
                 <!-- Formulario Oculto para sincronizar slots -->
-                <form id="formAlineacion" method="POST" action="{{ url('/user/liguillas/'.$liguilla->id.'/alineacion/guardar') }}" class="hidden">
+                <form id="formAlineacion" x-ref="formAlineacion" method="POST" action="{{ url('/user/liguillas/'.$liguilla->id.'/alineacion/guardar') }}" class="hidden">
                     @csrf
                     <input type="hidden" name="formacion" :value="formacionActiva">
                     <template x-for="slot in slots.filter(slot => slot.jugador_id)" :key="`jugador-${slot.slot}`">
@@ -294,7 +294,7 @@
                         <div class="px-6 pb-6 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                             @foreach($jugadoresPos as $jugador)
                                 <div
-                                    @click="abrirFicha(@js($jugador))"
+                                    @click='abrirFicha(@json($jugador))'
                                     class="jugador-card group bg-zinc-950/70 hover:bg-zinc-900 border border-zinc-800/80 hover:border-lime-500/40 rounded-xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg">
                                     <div class="flex items-center gap-3 min-w-0">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center group-hover:border-lime-500/40 transition-colors">
@@ -353,6 +353,7 @@
                         </label>
                         <select
                             id="selectClasificacion"
+                            x-ref="selectClasificacion"
                             x-model="modoClasificacion"
                             @change="cargarClasificacion"
                             data-url-clasificacion="{{ route('liguillas.clasificacionAjax', $liguilla->id) }}"
@@ -539,7 +540,7 @@
                         <!-- Visitante -->
                         <div class="flex items-center justify-end gap-2.5 flex-1 min-w-0">
                             <span class="text-xs font-bold text-zinc-200 truncate text-right">{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}</span>
-                            <img src="{{ asset($partido->equipoVisitante->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}" onerror="this.src='{{ asset('assets/media/images/default-team.png') }}';">
+                            <img src="{{ asset($partido->equipoVisitante->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}">
                         </div>
                     </div>
                     @endforeach
@@ -787,6 +788,9 @@
 <script type="application/json" id="liguilla-cuotas">@json($formacionesDisponibles)</script>
 <script type="application/json" id="liguilla-plantilla">@json($plantillaUsuario)</script>
 <script type="application/json" id="liguilla-alineacion">@json($alineacionActual ?? [])</script>
+<script type="application/json" id="liguilla-formacion">@json($formacionActual ?? '4-3-3')</script>
+<script type="application/json" id="liguilla-clasificacion">@json($clasificacion)</script>
+<script type="application/json" id="liguilla-jornada-resultados">@json($jornadaSeleccionada?->id)</script>
 <div data-default-player-image="{{ asset('assets/media/images/default-player.png') }}" hidden></div>
 
 @push('scripts')
@@ -802,10 +806,10 @@ document.addEventListener('alpine:init', () => {
         livePointsTimer: null, livePointsUrl: null, tabActiva: 'alineacion',
         modalSeleccionAbierto: false, modalInfoAbierto: false, modalRivalAbierto: false,
         modalRivalNombre: '', modalRivalTotal: '...', modalRivalJugadores: [], jugadorFicha: null,
-        slotSeleccionado: null, buscarJugador: '', formacionActiva: @js($formacionActual ?? '4-3-3'), slots: [],
-        clasificacion: @js($clasificacion), modoClasificacion: 'global', subtituloClasificacion: 'Total acumulado de la liguilla',
+        slotSeleccionado: null, buscarJugador: '', formacionActiva: JSON.parse(document.getElementById('liguilla-formacion').textContent), slots: [],
+        clasificacion: JSON.parse(document.getElementById('liguilla-clasificacion').textContent), modoClasificacion: 'global', subtituloClasificacion: 'Total acumulado de la liguilla',
         jornadaSeleccionada: null, jornadaVisible: false, jornadaPuntos: 0, jornadaJugadores: [], jornadaFormacion: '4-3-3',
-        jornadaResultados: @js($jornadaSeleccionada?->id),
+        jornadaResultados: JSON.parse(document.getElementById('liguilla-jornada-resultados').textContent),
         init() { this.livePointsUrl = this.$root.dataset.livePointsUrl; const tab = new URLSearchParams(window.location.search).get('tab'); if (['alineacion','plantilla','clasificacion','jornadas','resultados','participantes'].includes(tab)) this.tabActiva = tab; this.inicializarSlots(); this.startLivePointsPolling(); },
         startLivePointsPolling() { if (this.livePointsUrl) { this.refreshLivePoints(); this.livePointsTimer = setInterval(() => this.refreshLivePoints(), 30000); } },
         async refreshLivePoints() { try { const r = await fetch(this.livePointsUrl, {headers: {'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d = await r.json(); if (r.ok && d.status === 'ok') this.updateClasificacion(d); } catch (e) { console.warn('No se pudo actualizar la clasificación en directo.', e); } },
