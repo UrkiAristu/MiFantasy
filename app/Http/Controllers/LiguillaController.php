@@ -461,7 +461,7 @@ class LiguillaController extends Controller
         ]);
     }
 
-    public function livePoints(Liguilla $liguilla, Request $request)
+    public function livePoints(Liguilla $liguilla)
     {
         if (! $liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
             return response()->json(['error' => 'No autorizado'], 403);
