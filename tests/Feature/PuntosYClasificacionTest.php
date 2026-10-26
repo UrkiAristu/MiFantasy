@@ -159,8 +159,17 @@ class PuntosYClasificacionTest extends TestCase
     {
         Queue::fake();
 
-        $this->jornada1->fecha_cierre_alineaciones = now()->subMinutes(10);
+        // 1. Jornada en el futuro: NO debe congelarse
+        $this->jornada1->fecha_cierre_alineaciones = now()->addMinutes(1);
         $this->jornada1->alineaciones_congeladas = false;
+        $this->jornada1->save();
+
+        Artisan::call('fantasy:congelar-alineaciones');
+
+        Queue::assertNotPushed(CongelarJornadaJob::class);
+
+        // 2. Jornada en el pasado: SÍ debe congelarse
+        $this->jornada1->fecha_cierre_alineaciones = now()->subMinutes(1);
         $this->jornada1->save();
 
         Artisan::call('fantasy:congelar-alineaciones');

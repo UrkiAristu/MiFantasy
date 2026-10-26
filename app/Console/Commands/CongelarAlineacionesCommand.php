@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Jornada;
 use App\Services\CongelarAlineacionesService;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class CongelarAlineacionesCommand extends Command
@@ -35,7 +34,7 @@ class CongelarAlineacionesCommand extends Command
     {
         // Jornadas cuya fecha de cierre ya ha pasado y aún no están marcadas como congeladas
         $jornadas = Jornada::whereNotNull('fecha_cierre_alineaciones')
-            ->where('fecha_cierre_alineaciones', '<=', Carbon::now())
+            ->where('fecha_cierre_alineaciones', '<=', now())
             ->where('alineaciones_congeladas', false)
             ->get();
 
