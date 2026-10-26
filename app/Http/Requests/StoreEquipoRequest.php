@@ -26,11 +26,11 @@ class StoreEquipoRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $user = Auth::user();
-            if ($user && !$user->admin) {
+            if ($user && ! $user->admin) {
                 $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id')->toArray();
                 $solicitados = $this->input('torneos', []);
                 foreach ($solicitados as $torneoId) {
-                    if (!in_array($torneoId, $torneosGestionadosIds)) {
+                    if (! in_array($torneoId, $torneosGestionadosIds)) {
                         $validator->errors()->add('torneos', 'No tienes permisos para inscribir equipos en uno de los torneos seleccionados.');
                         break;
                     }

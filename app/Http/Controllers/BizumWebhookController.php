@@ -39,6 +39,7 @@ class BizumWebhookController extends Controller
 
             if ($processed) {
                 Log::info("Bizum Webhook Idempotente: El evento {$eventId} ya fue procesado.");
+
                 return new Response('Webhook Already Processed', 200);
             }
 
@@ -56,16 +57,18 @@ class BizumWebhookController extends Controller
         $orgName = $payload['org_name'] ?? $payload['metadata']['org_name'] ?? 'Mi Liga Bizum';
         $planKey = $payload['plan'] ?? $payload['metadata']['plan'] ?? 'pro';
 
-        if (!$userId) {
+        if (! $userId) {
             Log::warning('Bizum Webhook: Falta user_id en el payload.', $payload);
+
             return new Response('Missing User ID', 400);
         }
 
         /** @var User|null $user */
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             Log::warning("Bizum Webhook: Usuario ID {$userId} no encontrado.");
+
             return new Response('User Not Found', 404);
         }
 
@@ -75,6 +78,7 @@ class BizumWebhookController extends Controller
 
         if ($existingTenant) {
             Log::info("Bizum Webhook Idempotente: Tenant '{$orgName}' ya existe para usuario ID {$user->id}.");
+
             return new Response('Tenant Already Exists', 200);
         }
 

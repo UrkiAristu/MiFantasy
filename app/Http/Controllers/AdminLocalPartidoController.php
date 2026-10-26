@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -24,7 +24,7 @@ class AdminLocalPartidoController extends Controller
 
         $query = Partido::with(['jornada.torneo', 'equipoLocal', 'equipoVisitante']);
 
-        if (!$user->admin) {
+        if (! $user->admin) {
             $torneosGestionadosIds = $torneos->pluck('id');
             $query->whereHas('jornada', function ($q) use ($torneosGestionadosIds) {
                 $q->whereIn('torneo_id', $torneosGestionadosIds);
@@ -74,7 +74,7 @@ class AdminLocalPartidoController extends Controller
                 'exists:jornadas,id',
                 function ($attribute, $value, $fail) use ($torneosGestionadosIds) {
                     $jornada = Jornada::find($value);
-                    if (!$jornada || !$torneosGestionadosIds->contains($jornada->torneo_id)) {
+                    if (! $jornada || ! $torneosGestionadosIds->contains($jornada->torneo_id)) {
                         $fail('La jornada seleccionada no pertenece a un torneo bajo tu gestiÃ³n.');
                     }
                 },
@@ -125,7 +125,7 @@ class AdminLocalPartidoController extends Controller
                 'exists:jornadas,id',
                 function ($attribute, $value, $fail) use ($torneosGestionadosIds) {
                     $jornada = Jornada::find($value);
-                    if (!$jornada || !$torneosGestionadosIds->contains($jornada->torneo_id)) {
+                    if (! $jornada || ! $torneosGestionadosIds->contains($jornada->torneo_id)) {
                         $fail('La jornada seleccionada no pertenece a un torneo bajo tu gestiÃ³n.');
                     }
                 },
@@ -185,4 +185,3 @@ class AdminLocalPartidoController extends Controller
         return back()->with('success', 'Resultados actualizados correctamente.');
     }
 }
-

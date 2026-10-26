@@ -19,6 +19,7 @@ class EquipoPolicy
         }
 
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
+
         return $equipo->torneos()->whereIn('torneos.id', $torneosGestionadosIds)->exists();
     }
 
@@ -34,6 +35,7 @@ class EquipoPolicy
         }
 
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
+
         return $equipo->torneos()->whereIn('torneos.id', $torneosGestionadosIds)->exists();
     }
 
@@ -44,6 +46,7 @@ class EquipoPolicy
         }
 
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
+
         return $equipo->torneos()->whereIn('torneos.id', $torneosGestionadosIds)->exists();
     }
 }

@@ -28,8 +28,8 @@ class LivePointsTest extends TestCase
                 'status',
                 'timestamp',
                 'clasificacion' => [
-                    '*' => ['id', 'posicion', 'name', 'puntos']
-                ]
+                    '*' => ['id', 'posicion', 'name', 'puntos'],
+                ],
             ])
             ->assertJsonPath('clasificacion.0.name', $otherUser->name)
             ->assertJsonPath('clasificacion.0.puntos', 20)

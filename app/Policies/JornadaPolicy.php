@@ -18,6 +18,7 @@ class JornadaPolicy
             return true;
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
+
         return $torneosGestionadosIds->contains($jornada->torneo_id);
     }
 
@@ -32,6 +33,7 @@ class JornadaPolicy
             return true;
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
+
         return $torneosGestionadosIds->contains($jornada->torneo_id);
     }
 
@@ -41,6 +43,7 @@ class JornadaPolicy
             return true;
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
+
         return $torneosGestionadosIds->contains($jornada->torneo_id);
     }
 }

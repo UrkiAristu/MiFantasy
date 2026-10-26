@@ -15,6 +15,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -878,7 +880,7 @@ class DatabaseSeeder extends Seeder
         setPermissionsTeamId($tenantId);
 
         $roleName = config('saas.default_admin_role', 'Admin Local');
-        $role = \Spatie\Permission\Models\Role::firstOrCreate([
+        $role = Role::firstOrCreate([
             'name' => $roleName,
             'guard_name' => 'web',
             'team_id' => $tenantId,
@@ -886,7 +888,7 @@ class DatabaseSeeder extends Seeder
 
         $permissions = config('saas.default_permissions', []);
         foreach ($permissions as $permissionName) {
-            $permission = \Spatie\Permission\Models\Permission::firstOrCreate([
+            $permission = Permission::firstOrCreate([
                 'name' => $permissionName,
                 'guard_name' => 'web',
             ]);

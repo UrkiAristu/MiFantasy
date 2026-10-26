@@ -8,7 +8,6 @@ use App\Models\Equipo;
 use App\Models\Jornada;
 use App\Models\Jugador;
 use App\Models\Partido;
-use App\Models\Torneo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -89,11 +88,11 @@ class AdminLocalDashboardController extends Controller
 
     public function equipos()
     {
-        return redirect()->route("admin.local.equipos.index");
+        return redirect()->route('admin.local.equipos.index');
     }
 
     public function jornadasCreate()
     {
-        return view("admin-local.jornadas-create");
+        return view('admin-local.jornadas-create');
     }
 }

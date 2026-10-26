@@ -20,7 +20,7 @@ class AdminLocalJornadaController extends Controller
 
         $query = Jornada::with('torneo');
 
-        if (!$user->admin) {
+        if (! $user->admin) {
             $torneosGestionadosIds = $torneos->pluck('id');
             $query->whereIn('torneo_id', $torneosGestionadosIds);
         }
@@ -38,6 +38,7 @@ class AdminLocalJornadaController extends Controller
     {
         $this->authorize('view', $jornada);
         $jornada->load(['torneo', 'partidos.equipoLocal', 'partidos.equipoVisitante']);
+
         return view('admin-local.jornadas.show', compact('jornada'));
     }
 
@@ -56,7 +57,7 @@ class AdminLocalJornadaController extends Controller
 
         $validated = $request->validate([
             'torneo_id' => ['required', 'exists:torneos,id', function ($attribute, $value, $fail) use ($torneosGestionadosIds) {
-                if (!$torneosGestionadosIds->contains($value)) {
+                if (! $torneosGestionadosIds->contains($value)) {
                     $fail('El torneo seleccionado no es válido o no está bajo tu gestión.');
                 }
             }],
@@ -91,7 +92,7 @@ class AdminLocalJornadaController extends Controller
 
         $validated = $request->validate([
             'torneo_id' => ['required', 'exists:torneos,id', function ($attribute, $value, $fail) use ($torneosGestionadosIds) {
-                if (!$torneosGestionadosIds->contains($value)) {
+                if (! $torneosGestionadosIds->contains($value)) {
                     $fail('El torneo seleccionado no es válido o no está bajo tu gestión.');
                 }
             }],
