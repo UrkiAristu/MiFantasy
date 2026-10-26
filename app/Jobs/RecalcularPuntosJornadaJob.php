@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -61,7 +62,23 @@ class RecalcularPuntosJornadaJob implements ShouldQueue
             $this->actualizarPuntosGlobalesLiguillas($torneoId);
         });
 
+        $this->invalidarCacheClasificaciones($torneoId);
+
         Log::info("RecalcularPuntosJornadaJob: Puntos recalculados masivamente para jornada {$this->jornadaId} y torneo {$torneoId}.");
+    }
+
+    /**
+     * Invalida las clasificaciones global y de jornada afectadas por el recálculo.
+     */
+    private function invalidarCacheClasificaciones(int $torneoId): void
+    {
+        DB::table('liguillas')
+            ->where('torneo_id', $torneoId)
+            ->pluck('id')
+            ->each(function (int $liguillaId): void {
+                Cache::forget("liguilla:{$liguillaId}:clasificacion:modo:global");
+                Cache::forget("liguilla:{$liguillaId}:clasificacion:modo:{$this->jornadaId}");
+            });
     }
 
     /**

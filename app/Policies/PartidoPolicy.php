@@ -19,6 +19,7 @@ class PartidoPolicy
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
         $torneoId = $partido->jornada?->torneo_id;
+
         return $torneoId && $torneosGestionadosIds->contains($torneoId);
     }
 
@@ -34,6 +35,7 @@ class PartidoPolicy
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
         $torneoId = $partido->jornada?->torneo_id;
+
         return $torneoId && $torneosGestionadosIds->contains($torneoId);
     }
 
@@ -44,6 +46,7 @@ class PartidoPolicy
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
         $torneoId = $partido->jornada?->torneo_id;
+
         return $torneoId && $torneosGestionadosIds->contains($torneoId);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class DatabaseConfigTest extends TestCase

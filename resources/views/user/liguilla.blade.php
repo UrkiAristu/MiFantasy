@@ -12,7 +12,11 @@
     };
     $esSala = ($modalidad === 'sala');
 @endphp
-<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+<div
+    x-data="liguillaUi"
+    x-init="init()"
+    data-live-points-url="{{ route('liguillas.livePoints', $liguilla->id) }}"
+    class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
     <!-- Header Bento Acordeón Ultra Fino (Above the fold) -->
     <details class="group relative overflow-hidden bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-zinc-950/60 transition-all duration-300">
@@ -34,7 +38,7 @@
             <div class="flex items-center gap-2 shrink-0">
                 <button
                     type="button"
-                    onclick="event.stopPropagation(); compartirEnlace('{{ $liguilla->codigo_unico }}')"
+                    @click.stop="compartirEnlace('{{ $liguilla->codigo_unico }}')"
                     class="py-1 px-2.5 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-200 hover:text-zinc-100 font-mono font-bold text-[11px] rounded-lg border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-1.5 shadow-sm group/btn cursor-pointer"
                     title="Copiar código">
                     <span class="hidden sm:inline text-zinc-400 font-sans font-medium text-[10px] uppercase tracking-wider">Código:</span>
@@ -44,7 +48,7 @@
 
                 <a
                     href="{{ url('/user/liguillas') }}"
-                    onclick="event.stopPropagation();"
+                    @click.stop
                     class="py-1 px-2.5 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 font-semibold text-[11px] rounded-lg border border-zinc-700/80 transition-all hidden sm:flex items-center gap-1"
                     title="Mis Ligas">
                     <i class="bi bi-arrow-left"></i>
@@ -107,61 +111,28 @@
 
     <!-- Navegación por Pestañas (Pill Tabs Minimalistas) -->
     <div class="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl overflow-x-auto scrollbar-none shadow-lg">
-        <button
-            type="button"
-            onclick="switchTab('alineacion')"
-            id="tab-btn-alineacion"
-            class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap bg-zinc-800 text-lime-400 border border-zinc-700/60 shadow-sm cursor-pointer">
-            <i class="bi bi-diagram-3"></i>
-            <span>Alineación</span>
-        </button>
-
-        <button
-            type="button"
-            onclick="switchTab('plantilla')"
-            id="tab-btn-plantilla"
-            class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 cursor-pointer">
-            <i class="bi bi-people"></i>
-            <span>Mi Plantilla</span>
-            <span class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-[10px] text-zinc-300">{{ $plantillaUsuario?->count() ?? 0 }}</span>
-        </button>
-
-        <button
-            type="button"
-            onclick="switchTab('clasificacion')"
-            id="tab-btn-clasificacion"
-            class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 cursor-pointer">
-            <i class="bi bi-trophy"></i>
-            <span>Clasificación</span>
-        </button>
-
-        <button
-            type="button"
-            onclick="switchTab('jornadas')"
-            id="tab-btn-jornadas"
-            class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 cursor-pointer">
-            <i class="bi bi-calendar-check"></i>
-            <span>Mis Jornadas</span>
-        </button>
-
-        <button
-            type="button"
-            onclick="switchTab('resultados')"
-            id="tab-btn-resultados"
-            class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 cursor-pointer">
-            <i class="bi bi-card-checklist"></i>
-            <span>Resultados</span>
-        </button>
-
-        <button
-            type="button"
-            onclick="switchTab('participantes')"
-            id="tab-btn-participantes"
-            class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 cursor-pointer">
-            <i class="bi bi-person-lines-fill"></i>
-            <span>Participantes</span>
-            <span class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-[10px] text-zinc-300">{{ $liguilla->usuarios?->count() ?? 0 }}</span>
-        </button>
+        @foreach([
+            'alineacion' => ['bi-diagram-3', 'Alineación'],
+            'plantilla' => ['bi-people', 'Mi Plantilla'],
+            'clasificacion' => ['bi-trophy', 'Clasificación'],
+            'jornadas' => ['bi-calendar-check', 'Mis Jornadas'],
+            'resultados' => ['bi-card-checklist', 'Resultados'],
+            'participantes' => ['bi-person-lines-fill', 'Participantes'],
+        ] as $tab => [$icon, $label])
+            <button
+                type="button"
+                @click="tabActiva = '{{ $tab }}'"
+                :class="tabActiva === '{{ $tab }}' ? 'bg-zinc-800 text-lime-400 border border-zinc-700/60 shadow-sm' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'"
+                class="px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                <i class="bi {{ $icon }}"></i>
+                <span>{{ $label }}</span>
+                @if($tab === 'plantilla')
+                    <span class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-[10px] text-zinc-300">{{ $plantillaUsuario?->count() ?? 0 }}</span>
+                @elseif($tab === 'participantes')
+                    <span class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-[10px] text-zinc-300">{{ $liguilla->usuarios?->count() ?? 0 }}</span>
+                @endif
+            </button>
+        @endforeach
     </div>
 
     <!-- Contenido de las Pestañas -->
@@ -170,7 +141,7 @@
         <!-- ==========================================
              TAB 1: ALINEACIÓN / CAMPO TÁCTICO
         ========================================== -->
-        <div id="tab-pane-alineacion" class="tab-pane space-y-6">
+        <div id="tab-pane-alineacion" x-show="tabActiva === 'alineacion'" x-cloak class="tab-pane space-y-6">
 
             <!-- Panel de Control Táctico Compacto -->
             <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 mb-4 flex flex-col gap-3 shadow-sm mx-auto w-full">
@@ -178,9 +149,9 @@
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center gap-2">
                         <label for="selectFormacion" class="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider mb-0">Esquema:</label>
-                        <select name="formacion" id="selectFormacion" class="py-1 px-2 text-xs rounded-md bg-zinc-950 border border-zinc-800 text-zinc-200 outline-none focus:border-lime-400 transition-colors cursor-pointer">
+                        <select name="formacion" id="selectFormacion" x-model="formacionActiva" @change="cambiarFormacion" class="py-1 px-2 text-xs rounded-md bg-zinc-950 border border-zinc-800 text-zinc-200 outline-none focus:border-lime-400 transition-colors cursor-pointer">
                             @foreach($formaciones as $clave => $nombre)
-                            <option value="{{ $clave }}" {{ ($formacionActual ?? '4-3-3') == $clave ? 'selected' : '' }}>
+                            <option value="{{ $clave }}">
                                 {{ $nombre }}
                             </option>
                             @endforeach
@@ -201,7 +172,7 @@
                 </div>
 
                 <!-- Botón Guardar -->
-                <button type="button" id="btnGuardarAlineacion" class="w-full py-2 bg-lime-400 hover:bg-lime-500 text-zinc-950 text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2 border-none shadow-sm cursor-pointer">
+                <button type="button" id="btnGuardarAlineacion" @click="guardarAlineacion" class="w-full py-2 bg-lime-400 hover:bg-lime-500 text-zinc-950 text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2 border-none shadow-sm cursor-pointer">
                     <i class="bi bi-check-circle-fill text-base"></i> Guardar alineación
                 </button>
             </div>
@@ -230,33 +201,45 @@
 
                         <!-- 4 Filas Tácticas de Jugadores -->
                         <!-- 1. Delanteros -->
-                        <div id="row-delanteros" class="relative z-10 flex items-center justify-center gap-2 sm:gap-6 py-2">
-                            <!-- Inyectado dinámicamente -->
-                        </div>
-
-                        <!-- 2. Centrocampistas -->
-                        <div id="row-centrocampistas" class="relative z-10 flex items-center justify-center gap-2 sm:gap-6 py-2">
-                            <!-- Inyectado dinámicamente -->
-                        </div>
-
-                        <!-- 3. Defensas -->
-                        <div id="row-defensas" class="relative z-10 flex items-center justify-center gap-2 sm:gap-6 py-2">
-                            <!-- Inyectado dinámicamente -->
-                        </div>
-
-                        <!-- 4. Portero -->
-                        <div id="row-portero" class="relative z-10 flex items-center justify-center gap-2 sm:gap-6 py-2">
-                            <!-- Inyectado dinámicamente -->
-                        </div>
+                        <template x-for="posicion in ['delantero', 'centrocampista', 'defensa', 'portero']" :key="posicion">
+                            <div x-show="slotsPorPosicion(posicion).length" class="relative z-10 flex items-center justify-center gap-2 sm:gap-6 py-2">
+                                <template x-for="slot in slotsPorPosicion(posicion)" :key="slot.slot">
+                                    <div class="slot group transition-all duration-200 cursor-pointer text-center" @click="abrirSeleccion(slot.slot, slot.posicion)">
+                                        <template x-if="jugadorDelSlot(slot)">
+                                            <div class="relative bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-700/80 hover:border-lime-400 rounded-2xl p-2 sm:p-2.5 w-20 sm:w-28 flex flex-col items-center justify-center shadow-xl transition-all">
+                                                <button type="button" @click.stop="quitarJugador(slot.slot)" class="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-rose-500 hover:bg-rose-400 text-white flex items-center justify-center text-[10px] shadow transition-all z-20 cursor-pointer" title="Quitar jugador">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                                <span class="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full bg-lime-400 text-zinc-950 font-mono font-bold text-[9px]" x-text="slot.posicion.substring(0, 3).toUpperCase()"></span>
+                                                <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-950 border border-zinc-700 overflow-hidden mb-1">
+                                                    <img :src="jugadorDelSlot(slot).foto || defaultPlayerImage" class="w-full h-full object-cover" alt="">
+                                                </div>
+                                                <span class="block text-[11px] sm:text-xs font-bold text-zinc-100 truncate w-full text-center px-1" x-text="nombreJugador(jugadorDelSlot(slot))"></span>
+                                                <span class="block text-[9px] sm:text-[10px] text-zinc-400 truncate w-full text-center px-1" x-text="equipoJugador(jugadorDelSlot(slot))"></span>
+                                            </div>
+                                        </template>
+                                        <template x-if="!jugadorDelSlot(slot)">
+                                            <div class="relative border-2 border-dashed border-zinc-700/80 hover:border-lime-400/80 bg-zinc-950/60 hover:bg-zinc-900/60 rounded-2xl p-2 sm:p-2.5 w-20 sm:w-28 flex flex-col items-center justify-center transition-all">
+                                                <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 group-hover:text-lime-400 flex items-center justify-center text-sm mb-1 transition-colors"><i class="bi bi-plus-lg font-bold"></i></div>
+                                                <span class="text-[10px] sm:text-xs font-bold text-zinc-400 group-hover:text-zinc-200 uppercase" x-text="slot.posicion.substring(0, 3)"></span>
+                                                <span class="text-[9px] text-zinc-600">Añadir</span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
 
                     </div>
                 </div>
 
                 <!-- Formulario Oculto para sincronizar slots -->
-                <form id="formAlineacion" method="POST" action="{{ url('/user/liguillas/'.$liguilla->id.'/alineacion/guardar') }}" class="hidden">
+                <form id="formAlineacion" x-ref="formAlineacion" method="POST" action="{{ url('/user/liguillas/'.$liguilla->id.'/alineacion/guardar') }}" class="hidden">
                     @csrf
-                    <input type="hidden" name="formacion" id="hiddenFormacion" value="{{ $formacionActual ?? '4-3-3' }}">
-                    <div id="hiddenInputsContainer"></div>
+                    <input type="hidden" name="formacion" :value="formacionActiva">
+                    <template x-for="slot in slots.filter(slot => slot.jugador_id)" :key="`jugador-${slot.slot}`">
+                        <input type="hidden" name="jugadores[]" :value="slot.jugador_id">
+                    </template>
                 </form>
 
             </div>
@@ -266,7 +249,7 @@
         <!-- ==========================================
              TAB 2: MI PLANTILLA
         ========================================== -->
-        <div id="tab-pane-plantilla" class="tab-pane hidden space-y-6">
+        <div id="tab-pane-plantilla" x-show="tabActiva === 'plantilla'" x-cloak class="tab-pane space-y-6">
 
             <div class="flex items-center justify-between mb-4 px-1">
                 <h2 class="text-lg font-extrabold text-zinc-100">Mi Plantilla</h2>
@@ -311,11 +294,7 @@
                         <div class="px-6 pb-6 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                             @foreach($jugadoresPos as $jugador)
                                 <div
-                                    onclick="event.stopPropagation(); abrirModalJugador(this)"
-                                    data-jugador='@json($jugador)'
-                                    data-jugador-id="{{ $jugador->id }}"
-                                    data-puntos="{{ $jugador->puntos_totales ?? 0 }}"
-                                    data-precio="{{ $jugador->precio ?? 0 }}"
+                                    @click='abrirFicha(@json($jugador))'
                                     class="jugador-card group bg-zinc-950/70 hover:bg-zinc-900 border border-zinc-800/80 hover:border-lime-500/40 rounded-xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg">
                                     <div class="flex items-center gap-3 min-w-0">
                                         <div class="w-11 h-11 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center group-hover:border-lime-500/40 transition-colors">
@@ -358,7 +337,7 @@
         <!-- ==========================================
              TAB 3: CLASIFICACIÓN
         ========================================== -->
-        <div id="tab-pane-clasificacion" class="tab-pane hidden space-y-6">
+        <div id="tab-pane-clasificacion" x-show="tabActiva === 'clasificacion'" x-cloak class="tab-pane space-y-6">
 
             <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 space-y-6">
                 <!-- Selector Clasificación -->
@@ -374,6 +353,9 @@
                         </label>
                         <select
                             id="selectClasificacion"
+                            x-ref="selectClasificacion"
+                            x-model="modoClasificacion"
+                            @change="cargarClasificacion"
                             data-url-clasificacion="{{ route('liguillas.clasificacionAjax', $liguilla->id) }}"
                             class="bg-zinc-950 border border-zinc-800 text-zinc-100 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-lime-400 transition-all cursor-pointer">
                             <option value="global">Clasificación General</option>
@@ -388,50 +370,38 @@
 
                 <!-- Tabla Bento Minimalista -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse" @live-points-updated.window="updateClasificacion($event.detail)">
                         <thead>
                             <tr class="border-b border-zinc-800/80 text-[11px] uppercase tracking-wider text-zinc-400">
                                 <th class="py-3 px-4 w-16 text-center">Pos</th>
                                 <th class="py-3 px-4">Manager</th>
                                 <th class="py-3 px-4 text-right">Puntos</th>
-                                <th id="thAlineacion" class="py-3 px-4 text-right hidden w-36">Alineación</th>
+                                <th id="thAlineacion" class="py-3 px-4 text-right" x-show="modoClasificacion !== 'global'">Alineación</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyClasificacion" class="divide-y divide-zinc-800/60 text-xs text-zinc-300 font-medium">
-                            @forelse($clasificacion as $index => $item)
-                            @php
-                            $isMe = (Auth::id() == ($item->user_id ?? $item->id ?? null));
-                            @endphp
-                            <tr class="hover:bg-zinc-800/30 transition-colors {{ $isMe ? 'bg-lime-400/5' : '' }}">
-                                <td class="py-3.5 px-4 text-center font-mono font-bold text-zinc-200">
-                                    @if($index === 0)
-                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-400/10 text-amber-400 text-xs">🥇</span>
-                                    @elseif($index === 1)
-                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-zinc-400/10 text-zinc-300 text-xs">🥈</span>
-                                    @elseif($index === 2)
-                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-700/10 text-amber-600 text-xs">🥉</span>
-                                    @else
-                                    #{{ $index + 1 }}
-                                    @endif
-                                </td>
-                                <td class="py-3.5 px-4 font-semibold text-zinc-100 flex items-center gap-2">
-                                    <span>{{ $item->name ?? $item->user->name ?? 'Usuario' }}</span>
-                                    @if($isMe)
-                                    <span class="px-2 py-0.5 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[10px] font-bold">Tú</span>
-                                    @endif
-                                </td>
-                                <td class="py-3.5 px-4 text-right font-mono font-bold text-lime-400 text-sm">
-                                    {{ $item->puntos ?? $item->total_puntos ?? 0 }}
-                                </td>
-                                <td class="py-3.5 px-4 text-right hidden"></td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="py-8 text-center text-zinc-500">
-                                    No hay participantes registrados en esta liguilla.
-                                </td>
-                            </tr>
-                            @endforelse
+                            <template x-for="(item, index) in clasificacion" :key="item.id">
+                                <tr :class="{'bg-lime-400/5': item.id == {{ Auth::id() }} }" class="hover:bg-zinc-800/30 transition-colors">
+                                    <td class="py-3.5 px-4 text-center font-mono font-bold text-zinc-200">
+                                        <span x-text="index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '#' + (index + 1)))"></span>
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-zinc-100 flex items-center gap-2">
+                                        <span x-text="item.name"></span>
+                                        <template x-if="item.id == {{ Auth::id() }}">
+                                            <span class="px-2 py-0.5 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[10px] font-bold">Tú</span>
+                                        </template>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-mono font-bold text-lime-400 text-sm" x-text="item.puntos"></td>
+                                    <td class="py-3.5 px-4 text-right" x-show="modoClasificacion !== 'global'">
+                                        <button type="button" class="ver-alineacion-btn px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg transition-all"
+                                            :data-user-id="item.id"
+                                            :data-jornada-id="modoClasificacion"
+                                            @click="abrirAlineacionRival(item.id, modoClasificacion, item.name)">
+                                            Ver XI
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
                         </tbody>
                     </table>
                 </div>
@@ -442,7 +412,7 @@
         <!-- ==========================================
              TAB 4: MIS JORNADAS
         ========================================== -->
-        <div id="tab-pane-jornadas" class="tab-pane hidden space-y-6">
+        <div id="tab-pane-jornadas" x-show="tabActiva === 'jornadas'" x-cloak class="tab-pane space-y-6">
 
             <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 space-y-6">
                 <div>
@@ -455,8 +425,9 @@
                     @forelse($jornadasDisponibles as $jornada)
                     <button
                         type="button"
-                        data-jornada-id="{{ $jornada->id }}"
-                        class="mis-jornada-link px-4 py-2 rounded-xl bg-zinc-950/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 text-xs font-semibold border border-zinc-800 transition-all shrink-0 cursor-pointer">
+                        @click="cargarMiJornada('{{ $jornada->id }}')"
+                        :class="jornadaSeleccionada === '{{ $jornada->id }}' ? 'bg-zinc-800 text-lime-400 border-lime-400/40' : 'bg-zinc-950/80 text-zinc-300 border-zinc-800'"
+                        class="mis-jornada-link px-4 py-2 rounded-xl hover:bg-zinc-800 hover:text-zinc-100 text-xs font-semibold border transition-all shrink-0 cursor-pointer">
                         {{ $jornada->nombre ?? ('Jornada ' . $jornada->orden) }}
                     </button>
                     @empty
@@ -465,13 +436,13 @@
                 </div>
 
                 <!-- Puntuación Resumen -->
-                <div id="misJornadasPuntos" class="hidden p-4 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
+                <div x-show="jornadaVisible" x-cloak id="misJornadasPuntos" class="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
                     <span class="text-xs font-semibold text-zinc-300">Puntuación Total de la Jornada:</span>
-                    <span id="totalPuntosJornada" class="text-xl font-bold font-mono text-lime-400">0</span>
+                    <span id="totalPuntosJornada" class="text-xl font-bold font-mono text-lime-400" x-text="jornadaPuntos">0</span>
                 </div>
 
                 <!-- Campo Read-Only Mis Jornadas -->
-                <div id="campoMisJornadas" class="hidden relative rounded-2xl overflow-hidden min-h-[580px] sm:min-h-[640px] flex flex-col justify-between py-6 px-3 sm:px-6 shadow-inner {{ $esSala ? 'bg-amber-950/40 border border-amber-800/50 ring-1 ring-amber-900/20' : 'border border-emerald-500/20 bg-gradient-to-b from-emerald-950/90 via-emerald-900/40 to-emerald-950/90' }}">
+                <div x-show="jornadaVisible" x-cloak id="campoMisJornadas" class="relative rounded-2xl overflow-hidden min-h-[580px] sm:min-h-[640px] flex flex-col justify-between py-6 px-3 sm:px-6 shadow-inner {{ $esSala ? 'bg-amber-950/40 border border-amber-800/50 ring-1 ring-amber-900/20' : 'border border-emerald-500/20 bg-gradient-to-b from-emerald-950/90 via-emerald-900/40 to-emerald-950/90' }}">
 
                     <!-- SVG de líneas de campo futbolístico / polideportivo -->
                     <div class="absolute inset-0 pointer-events-none opacity-25">
@@ -517,7 +488,7 @@
     <!-- ==========================================
              TAB 5: RESULTADOS DE PARTIDOS
         ========================================== -->
-    <div id="tab-pane-resultados" class="tab-pane hidden space-y-6">
+    <div id="tab-pane-resultados" x-show="tabActiva === 'resultados'" x-cloak class="tab-pane space-y-6">
 
         <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/80">
@@ -533,7 +504,7 @@
                     </label>
                     <select
                         id="selectJornadaResultados"
-                        onchange="cargarJornadaAjax(this.value)"
+                        x-model="jornadaResultados" @change="cargarResultados"
                         class="bg-zinc-950 border border-zinc-800 text-zinc-100 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-lime-400 transition-all cursor-pointer">
                         @foreach($jornadas as $jornada)
                         <option value="{{ $jornada->id }}" {{ (isset($jornadaSeleccionada) && $jornadaSeleccionada && $jornadaSeleccionada->id == $jornada->id) ? 'selected' : '' }}>
@@ -551,7 +522,7 @@
                     <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between gap-4">
                         <!-- Local -->
                         <div class="flex items-center gap-2.5 flex-1 min-w-0">
-                            <img src="{{ asset($partido->equipoLocal->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoLocal->nombre ?? 'Local' }}" onerror="this.src='{{ asset('assets/media/images/default-team.png') }}';">
+                            <img src="{{ asset($partido->equipoLocal->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoLocal->nombre ?? 'Local' }}">
                             <span class="text-xs font-bold text-zinc-200 truncate">{{ $partido->equipoLocal->nombre ?? 'Local' }}</span>
                         </div>
 
@@ -569,7 +540,7 @@
                         <!-- Visitante -->
                         <div class="flex items-center justify-end gap-2.5 flex-1 min-w-0">
                             <span class="text-xs font-bold text-zinc-200 truncate text-right">{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}</span>
-                            <img src="{{ asset($partido->equipoVisitante->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}" onerror="this.src='{{ asset('assets/media/images/default-team.png') }}';">
+                            <img src="{{ asset($partido->equipoVisitante->logo ?? 'assets/media/images/default-team.png') }}" class="w-7 h-7 object-contain shrink-0" alt="{{ $partido->equipoVisitante->nombre ?? 'Visitante' }}">
                         </div>
                     </div>
                     @endforeach
@@ -585,7 +556,7 @@
     <!-- ==========================================
              TAB 6: PARTICIPANTES
         ========================================== -->
-    <div id="tab-pane-participantes" class="tab-pane hidden space-y-6">
+    <div id="tab-pane-participantes" x-show="tabActiva === 'participantes'" x-cloak class="tab-pane space-y-6">
 
         <div class="bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl shadow-zinc-950/40 space-y-6">
             <div>
@@ -628,7 +599,7 @@
 <!-- ==========================================
      MODAL 1: SELECCIÓN DE JUGADOR PARA SLOT
 ========================================== -->
-<div id="modalSeleccionJugador" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
+<div id="modalSeleccionJugador" x-show="modalSeleccionAbierto" x-cloak @keydown.escape.window="modalSeleccionAbierto = false" @click.self="modalSeleccionAbierto = false" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
     <div class="relative w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl shadow-zinc-950 space-y-4 max-h-[90vh] flex flex-col">
 
         <!-- Header Modal -->
@@ -642,7 +613,7 @@
                     <p class="text-[11px] text-zinc-400" id="subtituloModalSeleccion">Elige un futbolista de tu plantilla</p>
                 </div>
             </div>
-            <button type="button" onclick="closeModal('modalSeleccionJugador')" class="text-zinc-400 hover:text-zinc-100 p-1.5 rounded-lg hover:bg-zinc-800">
+            <button type="button" @click="modalSeleccionAbierto = false" class="text-zinc-400 hover:text-zinc-100 p-1.5 rounded-lg hover:bg-zinc-800">
                 <i class="bi bi-x-lg text-sm"></i>
             </button>
         </div>
@@ -679,7 +650,7 @@
             </button>
             <button
                 type="button"
-                onclick="closeModal('modalSeleccionJugador')"
+                @click="modalSeleccionAbierto = false"
                 class="py-2 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl transition-all cursor-pointer ml-auto">
                 Cerrar
             </button>
@@ -691,13 +662,13 @@
 <!-- ==========================================
      MODAL 2: FICHA TÉCNICA DEL JUGADOR
 ========================================== -->
-<div id="modalJugadorInfo" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
+<div id="modalJugadorInfo" x-show="modalInfoAbierto" x-cloak @keydown.escape.window="modalInfoAbierto = false" @click.self="modalInfoAbierto = false" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
     <div class="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl shadow-zinc-950 space-y-5">
 
         <!-- Header -->
         <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
             <h3 class="text-sm font-bold text-zinc-100">Ficha del Jugador</h3>
-            <button type="button" onclick="closeModal('modalJugadorInfo')" class="text-zinc-400 hover:text-zinc-100 p-1.5 rounded-lg hover:bg-zinc-800">
+            <button type="button" @click="modalInfoAbierto = false" class="text-zinc-400 hover:text-zinc-100 p-1.5 rounded-lg hover:bg-zinc-800">
                 <i class="bi bi-x-lg text-sm"></i>
             </button>
         </div>
@@ -737,7 +708,7 @@
         <div class="pt-2 flex justify-end">
             <button
                 type="button"
-                onclick="closeModal('modalJugadorInfo')"
+                @click="modalInfoAbierto = false"
                 class="py-2 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl transition-all cursor-pointer">
                 Entendido
             </button>
@@ -749,7 +720,7 @@
 <!-- ==========================================
      MODAL 3: VER ALINEACIÓN DE RIVAL
 ========================================== -->
-<div id="modalAlineacionClasificacion" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
+<div id="modalAlineacionClasificacion" x-show="modalRivalAbierto" x-cloak @keydown.escape.window="modalRivalAbierto = false" @click.self="modalRivalAbierto = false" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
     <div class="relative w-full max-w-xl bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl shadow-zinc-950 space-y-4">
 
         <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
@@ -757,7 +728,7 @@
                 <h3 class="text-sm font-bold text-zinc-100">Alineación de <span id="alineacionModalUsuario" class="text-lime-400"></span></h3>
                 <p class="text-[11px] text-zinc-400">Puntuación en esta jornada: <strong id="alineacionModalTotal" class="text-zinc-200">...</strong></p>
             </div>
-            <button type="button" onclick="closeModal('modalAlineacionClasificacion')" class="text-zinc-400 hover:text-zinc-100 p-1.5 rounded-lg hover:bg-zinc-800">
+            <button type="button" @click="modalRivalAbierto = false" class="text-zinc-400 hover:text-zinc-100 p-1.5 rounded-lg hover:bg-zinc-800">
                 <i class="bi bi-x-lg text-sm"></i>
             </button>
         </div>
@@ -777,7 +748,7 @@
     <div class="pt-2 flex justify-end">
         <button
             type="button"
-            onclick="closeModal('modalAlineacionClasificacion')"
+            @click="modalRivalAbierto = false"
             class="py-2 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl transition-all cursor-pointer">
             Cerrar
         </button>
@@ -814,904 +785,56 @@
 </style>
 @endpush
 
+<script type="application/json" id="liguilla-cuotas">@json($formacionesDisponibles)</script>
+<script type="application/json" id="liguilla-plantilla">@json($plantillaUsuario)</script>
+<script type="application/json" id="liguilla-alineacion">@json($alineacionActual ?? [])</script>
+<script type="application/json" id="liguilla-formacion">@json($formacionActual ?? '4-3-3')</script>
+<script type="application/json" id="liguilla-clasificacion">@json($clasificacion)</script>
+<script type="application/json" id="liguilla-jornada-resultados">@json($jornadaSeleccionada?->id)</script>
+<div data-default-player-image="{{ asset('assets/media/images/default-player.png') }}" hidden></div>
+
 @push('scripts')
 <script>
-    // Configuración de formaciones
-    const cuotasPorFormacion = {
-        '4-3-3': { portero: 1, defensa: 4, centrocampista: 3, delantero: 3 },
-        '4-4-2': { portero: 1, defensa: 4, centrocampista: 4, delantero: 2 },
-        '3-5-2': { portero: 1, defensa: 3, centrocampista: 5, delantero: 2 },
-        '3-4-3': { portero: 1, defensa: 3, centrocampista: 4, delantero: 3 },
-        '5-3-2': { portero: 1, defensa: 5, centrocampista: 3, delantero: 2 },
-        '5-4-1': { portero: 1, defensa: 5, centrocampista: 4, delantero: 1 },
-        '4-2-3-1': { portero: 1, defensa: 4, centrocampista: 5, delantero: 1 },
-        '4-5-1': { portero: 1, defensa: 4, centrocampista: 5, delantero: 1 },
-        '1-1-2': { portero: 1, defensa: 1, centrocampista: 1, delantero: 2 },
-        '1-2-1': { portero: 1, defensa: 1, centrocampista: 2, delantero: 1 },
-        '2-2': { portero: 1, defensa: 2, centrocampista: 0, delantero: 2 },
-        '2-1-1': { portero: 1, defensa: 2, centrocampista: 1, delantero: 1 },
-        '1-3': { portero: 1, defensa: 1, centrocampista: 0, delantero: 3 },
-        '3-1': { portero: 1, defensa: 3, centrocampista: 0, delantero: 1 },
-        '2-3-1': { portero: 1, defensa: 2, centrocampista: 3, delantero: 1 },
-        '3-2-1': { portero: 1, defensa: 3, centrocampista: 2, delantero: 1 },
-        '3-1-2': { portero: 1, defensa: 3, centrocampista: 1, delantero: 2 },
-        '2-2-2': { portero: 1, defensa: 2, centrocampista: 2, delantero: 2 },
-    };
-
-    function obtenerCuotaFormacion(formacion) {
-        if (cuotasPorFormacion[formacion]) return cuotasPorFormacion[formacion];
-        if (!formacion || typeof formacion !== 'string') return { portero: 1, defensa: 4, centrocampista: 3, delantero: 3 };
-        const parts = formacion.split('-').map(n => parseInt(n, 10) || 0);
-        if (parts.length === 3) return { portero: 1, defensa: parts[0], centrocampista: parts[1], delantero: parts[2] };
-        if (parts.length === 2) return { portero: 1, defensa: parts[0], centrocampista: 0, delantero: parts[1] };
-        if (parts.length === 4) return { portero: 1, defensa: parts[0], centrocampista: parts[1] + parts[2], delantero: parts[3] };
-        return { portero: 1, defensa: 4, centrocampista: 3, delantero: 3 };
-    }
-
-    // Plantilla del usuario en memoria JavaScript
-    const plantillaCompleta = @json($plantillaUsuario);
-    const alineacionGuardada = @json($alineacionActual ?? []);
-
-    let formacionActiva = "{{ $formacionActual ?? '4-3-3' }}";
-    let slotsEstado = {}; // { 1: { jugador_id, posicion_slot, ... } }
-    let slotSeleccionando = null;
-    let cacheModales = {
-        jugadores: {},
-        alineaciones: {}
-    };
-
-    // Funciones Vanilla JS para gestión de Tabs
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('bg-zinc-800', 'text-lime-400', 'border', 'border-zinc-700/60', 'shadow-sm');
-            btn.classList.add('text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/50');
-        });
-
-        const activeBtn = document.getElementById('tab-btn-' + tabId);
-        if (activeBtn) {
-            activeBtn.classList.remove('text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/50');
-            activeBtn.classList.add('bg-zinc-800', 'text-lime-400', 'border', 'border-zinc-700/60', 'shadow-sm');
-        }
-
-        document.querySelectorAll('.tab-pane').forEach(pane => {
-            pane.classList.add('hidden');
-        });
-
-        const activePane = document.getElementById('tab-pane-' + tabId);
-        if (activePane) {
-            activePane.classList.remove('hidden');
-        }
-    }
-
-    // Funciones Vanilla JS para gestión de Modales
-    function openModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-    }
-
-    function abrirModalJugador(elemento) {
-        try {
-            const ptsAttr = elemento.getAttribute('data-puntos');
-            const prcAttr = elemento.getAttribute('data-precio');
-
-            const rawData = elemento.getAttribute('data-jugador');
-            const j = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
-            if (!j) return;
-
-            const pts = ptsAttr !== null ? ptsAttr : (j.puntos_totales ?? 0);
-            const prc = prcAttr !== null ? prcAttr : (j.precio ?? 0);
-
-            const foto = j.foto ? (j.foto.startsWith('http') || j.foto.startsWith('/') ? j.foto : '/' + j.foto) : '/assets/media/images/default-player.png';
-            const nombreCompleta = `${j.nombre || ''} ${j.apellido1 || ''} ${j.apellido2 || ''}`.trim();
-            const equipoNombre = j.equipo && j.equipo.nombre ? j.equipo.nombre : (j.club && j.club.nombre ? j.club.nombre : 'Sin club');
-            const posicion = j.posicion || 'Jugador';
-            const precio = Number(prc).toLocaleString() + ' €';
-            const puntos = pts + ' pts';
-
-            document.getElementById('modalInfoNombre').textContent = nombreCompleta;
-            document.getElementById('modalInfoEquipo').textContent = equipoNombre;
-            document.getElementById('modalInfoPosicion').textContent = posicion;
-            document.getElementById('modalInfoPrecio').textContent = precio;
-            document.getElementById('modalInfoPuntos').textContent = puntos;
-            document.getElementById('modalInfoFoto').src = foto;
-
-            const historialContainer = document.getElementById('modalInfoHistorial');
-            if (historialContainer) {
-                if (j.historial_jornadas && j.historial_jornadas.length > 0) {
-                    let html = '';
-                    j.historial_jornadas.forEach(h => {
-                        const nombreJornada = h.jornada;
-                        const puntosJornada = h.puntos;
-                        let colorClase = 'bg-zinc-700';
-                        if (puntosJornada >= 6) {
-                            colorClase = 'bg-lime-400';
-                        } else if (puntosJornada > 0) {
-                            colorClase = 'bg-amber-400';
-                        }
-                        html += `
-                            <div class="flex flex-col items-center justify-end min-w-[3rem] shrink-0">
-                                <span class="text-[9px] uppercase font-bold text-zinc-500 mb-1 whitespace-nowrap truncate max-w-[4.5rem] px-1 text-center" title="${nombreJornada}">${nombreJornada}</span>
-                                <span class="text-sm font-bold text-zinc-100">${puntosJornada}</span>
-                                <div class="w-full h-1 mt-1.5 rounded-full ${colorClase}"></div>
-                            </div>
-                        `;
-                    });
-                    historialContainer.innerHTML = html;
-                } else {
-                    historialContainer.innerHTML = '<span class="text-xs text-zinc-500 py-2">Sin datos recientes</span>';
-                }
-            }
-
-            openModal('modalJugadorInfo');
-        } catch (e) {
-            console.error('Error al abrir modal de jugador:', e);
-        }
-    }
-
-    // Cerrar modales con Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeModal('modalSeleccionJugador');
-            closeModal('modalJugadorInfo');
-            closeModal('modalAlineacionClasificacion');
-        }
-    });
-
-    // Compartir o copiar código
-    function compartirEnlace(codigo) {
-        const enlace = "{{ url('/user/unirseLiguilla') }}?codigo=" + codigo;
-        if (navigator.share) {
-            navigator.share({
-                title: 'Únete a mi liguilla en MiFantasy',
-                text: 'Usa mi código para unirte a la competición:',
-                url: enlace
-            }).catch(err => console.error(err));
-        } else {
-            navigator.clipboard.writeText(enlace).then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Enlace copiado!',
-                    text: 'El código se ha copiado al portapapeles.',
-                    background: '#18181b',
-                    color: '#f4f4f5',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    customClass: {
-                        popup: 'border border-zinc-800 rounded-2xl'
-                    }
-                });
-            });
-        }
-    }
-
-    // Renderizar slots del campo táctico
-    function renderCampoTactico(formacion) {
-        formacionActiva = formacion;
-        const hiddenForm = document.getElementById('hiddenFormacion');
-        if (hiddenForm) hiddenForm.value = formacion;
-
-        const cuota = obtenerCuotaFormacion(formacion);
-
-        const rowDel = document.getElementById('row-delanteros');
-        const rowMed = document.getElementById('row-centrocampistas');
-        const rowDef = document.getElementById('row-defensas');
-        const rowPor = document.getElementById('row-portero');
-
-        if (rowDel) rowDel.innerHTML = '';
-        if (rowMed) rowMed.innerHTML = '';
-        if (rowDef) rowDef.innerHTML = '';
-        if (rowPor) rowPor.innerHTML = '';
-
-        let slotNumero = 1;
-
-        // Delanteros
-        if (rowDel) {
-            rowDel.style.display = cuota.delantero > 0 ? '' : 'none';
-            for (let i = 0; i < cuota.delantero; i++) {
-                rowDel.appendChild(crearSlotElement(slotNumero, 'delantero'));
-                slotNumero++;
-            }
-        }
-
-        // Centrocampistas
-        if (rowMed) {
-            rowMed.style.display = cuota.centrocampista > 0 ? '' : 'none';
-            for (let i = 0; i < cuota.centrocampista; i++) {
-                rowMed.appendChild(crearSlotElement(slotNumero, 'centrocampista'));
-                slotNumero++;
-            }
-        }
-
-        // Defensas
-        if (rowDef) {
-            rowDef.style.display = cuota.defensa > 0 ? '' : 'none';
-            for (let i = 0; i < cuota.defensa; i++) {
-                rowDef.appendChild(crearSlotElement(slotNumero, 'defensa'));
-                slotNumero++;
-            }
-        }
-
-        // Portero
-        if (rowPor) {
-            rowPor.style.display = cuota.portero > 0 ? '' : 'none';
-            for (let i = 0; i < cuota.portero; i++) {
-                rowPor.appendChild(crearSlotElement(slotNumero, 'portero'));
-                slotNumero++;
-            }
-        }
-
-        vincularSlotsClicks();
-        sincronizarHiddenInputs();
-    }
-
-    function crearSlotElement(slotNum, posicion) {
-        const slotData = slotsEstado[slotNum];
-        const div = document.createElement('div');
-        div.className = 'slot group transition-all duration-200 cursor-pointer text-center';
-        div.dataset.slot = slotNum;
-        div.dataset.posicion = posicion;
-
-        let jugador = null;
-        if (slotData && slotData.jugador) {
-            jugador = slotData.jugador;
-        } else if (slotData && slotData.jugador_id) {
-            jugador = plantillaCompleta.find(j => Number(j.id) === Number(slotData.jugador_id));
-        }
-
-        if (jugador) {
-            const jug = jugador;
-            div.classList.add('ocupado');
-            div.innerHTML = `
-                <div class="relative bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-700/80 hover:border-lime-400 rounded-2xl p-2 sm:p-2.5 w-20 sm:w-28 flex flex-col items-center justify-center shadow-xl transition-all">
-                    <button type="button" class="btn-eliminar-slot absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-rose-500 hover:bg-rose-400 text-white flex items-center justify-center text-[10px] shadow transition-all z-20 cursor-pointer" title="Quitar jugador">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                    <span class="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full bg-lime-400 text-zinc-950 font-mono font-bold text-[9px]">
-                        ${posicion.substring(0, 3).toUpperCase()}
-                    </span>
-                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-950 border border-zinc-700 overflow-hidden mb-1">
-                        <img src="${jugador.foto || '/assets/media/images/default-player.png'}" class="w-full h-full object-cover" onerror="this.src='/assets/media/images/default-player.png'">
-                    </div>
-                    <span class="block text-[11px] sm:text-xs font-bold text-zinc-100 truncate w-full text-center px-1">${jug.nombre} ${jug.apellido1 || ''}</span>
-                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 truncate w-full text-center px-1">${jug.equipo ? jug.equipo.nombre : (jug.club ? jug.club.nombre : 'Sin club')}</span>
-                </div>
-            `;
-        } else {
-            div.classList.add('vacio');
-            div.innerHTML = `
-                <div class="relative border-2 border-dashed border-zinc-700/80 hover:border-lime-400/80 bg-zinc-950/60 hover:bg-zinc-900/60 rounded-2xl p-2 sm:p-2.5 w-20 sm:w-28 flex flex-col items-center justify-center transition-all">
-                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 group-hover:text-lime-400 flex items-center justify-center text-sm mb-1 transition-colors">
-                        <i class="bi bi-plus-lg font-bold"></i>
-                    </div>
-                    <span class="text-[10px] sm:text-xs font-bold text-zinc-400 group-hover:text-zinc-200 uppercase">
-                        ${posicion.substring(0, 3)}
-                    </span>
-                    <span class="text-[9px] text-zinc-600">Añadir</span>
-                </div>
-            `;
-        }
-
-        return div;
-    }
-
-    function vincularSlotsClicks() {
-        document.querySelectorAll('.campo-futbol .slot').forEach(slot => {
-            const btnEliminar = slot.querySelector('.btn-eliminar-slot');
-            if (btnEliminar) {
-                btnEliminar.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const slotNum = slot.dataset.slot;
-                    delete slotsEstado[slotNum];
-                    renderCampoTactico(formacionActiva);
-                });
-            }
-
-            slot.addEventListener('click', function() {
-                const slotNum = this.dataset.slot;
-                const posicion = this.dataset.posicion;
-                abrirModalSeleccion(slotNum, posicion);
-            });
-        });
-    }
-
-    function abrirModalSeleccion(slotNum, posicion) {
-        slotSeleccionando = slotNum;
-        const slotData = slotsEstado[slotNum];
-        const btnDesvincular = document.getElementById('btnDesvincularSlot');
-
-        document.getElementById('tituloModalSeleccion').textContent = `Seleccionar ${posicion.toUpperCase()} (Slot #${slotNum})`;
-
-        if (slotData && slotData.jugador_id) {
-            btnDesvincular.classList.remove('hidden');
-            btnDesvincular.onclick = function() {
-                delete slotsEstado[slotSeleccionando];
-                closeModal('modalSeleccionJugador');
-                renderCampoTactico(formacionActiva);
-            };
-        } else {
-            btnDesvincular.classList.add('hidden');
-        }
-
-        // Filtrar jugadores de esa posición que no estén en OTROS slots
-        const idsEnUso = Object.entries(slotsEstado)
-            .filter(([sNum, data]) => sNum != slotNum && data && data.jugador_id)
-            .map(([sNum, data]) => Number(data.jugador_id));
-
-        const disponibles = plantillaCompleta.filter(j => {
-            const coincidePos = strtolower(j.posicion || '') === strtolower(posicion);
-            const noEnUso = !idsEnUso.includes(Number(j.id));
-            return coincidePos && noEnUso;
-        });
-
-        renderListaJugadoresModal(disponibles, slotData ? slotData.jugador_id : null);
-        openModal('modalSeleccionJugador');
-    }
-
-    function strtolower(str) {
-        return (str || '').toLowerCase();
-    }
-
-    function renderListaJugadoresModal(jugadores, seleccionadoId) {
-        const contenedor = document.getElementById('listaJugadoresDisponibles');
-        const aviso = document.getElementById('avisoSinJugadoresPosicion');
-        contenedor.innerHTML = '';
-
-        if (!jugadores || jugadores.length === 0) {
-            aviso.classList.remove('hidden');
-            return;
-        }
-        aviso.classList.add('hidden');
-
-        jugadores.forEach(j => {
-            const isSelected = seleccionadoId && Number(seleccionadoId) === Number(j.id);
-            const div = document.createElement('div');
-            div.className = `p-3 rounded-xl border transition-all flex items-center justify-between gap-3 cursor-pointer ${
-                isSelected
-                    ? 'bg-lime-400/10 border-lime-400/40 text-lime-300'
-                    : 'bg-zinc-950/70 hover:bg-zinc-900 border-zinc-800/80 hover:border-zinc-700 text-zinc-200'
-            }`;
-
-            div.innerHTML = `
-                <div class="flex items-center gap-3 min-w-0">
-                    <img src="${j.foto || '/assets/media/images/default-player.png'}" class="w-10 h-10 rounded-full object-cover bg-zinc-900 border border-zinc-800 shrink-0">
-                    <div class="min-w-0">
-                        <h4 class="text-xs font-bold text-zinc-100 truncate">${j.nombre} ${j.apellido1 || ''}</h4>
-                        <p class="text-[11px] text-zinc-400 truncate">${j.equipo ? j.equipo.nombre : 'Sin club'}</p>
-                    </div>
-                </div>
-                <div class="text-right shrink-0">
-                    <span class="block text-xs font-bold font-mono text-zinc-200">${Number(j.precio || 0).toLocaleString()} €</span>
-                    <button type="button" class="mt-1 px-3 py-1 bg-lime-400 hover:bg-lime-300 text-zinc-950 font-bold text-[11px] rounded-lg transition-all">
-                        ${isSelected ? 'Seleccionado' : 'Elegir'}
-                    </button>
-                </div>
-            `;
-
-            div.addEventListener('click', function() {
-                slotsEstado[slotSeleccionando] = {
-                    jugador_id: j.id,
-                    slot: slotSeleccionando,
-                    posicion: j.posicion
-                };
-                closeModal('modalSeleccionJugador');
-                renderCampoTactico(formacionActiva);
-            });
-
-            contenedor.appendChild(div);
-        });
-    }
-
-    // Buscador en modal
-    document.getElementById('inputBuscarJugadorModal').addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        document.querySelectorAll('#listaJugadoresDisponibles > div').forEach(card => {
-            const text = card.textContent.toLowerCase();
-            card.style.display = text.includes(query) ? 'flex' : 'none';
-        });
-    });
-
-    function sincronizarHiddenInputs() {
-        const container = document.getElementById('hiddenInputsContainer');
-        if (!container) return;
-        container.innerHTML = '';
-
-        const hiddenForm = document.getElementById('hiddenFormacion');
-        if (hiddenForm) hiddenForm.value = formacionActiva;
-
-        Object.entries(slotsEstado).forEach(([slotNum, data]) => {
-            if (data && data.jugador_id) {
-                const inJugador = document.createElement('input');
-                inJugador.type = 'hidden';
-                inJugador.name = 'jugadores[]';
-                inJugador.value = data.jugador_id;
-                container.appendChild(inJugador);
-            }
-        });
-    }
-
-    // Modal de Ficha Técnica Jugador
-    function mostrarModalJugador(data) {
-        if (!data || !data.jugador) return;
-        const j = data.jugador;
-        document.getElementById('modalInfoFoto').src = j.foto || '/assets/media/images/default-player.png';
-        document.getElementById('modalInfoNombre').textContent = `${j.nombre} ${j.apellido1 || ''} ${j.apellido2 || ''}`;
-        document.getElementById('modalInfoEquipo').textContent = j.equipo ? j.equipo.nombre : 'Sin club';
-        document.getElementById('modalInfoPosicion').textContent = j.posicion || 'Jugador';
-        document.getElementById('modalInfoPrecio').textContent = `${Number(j.precio || 0).toLocaleString()} €`;
-        document.getElementById('modalInfoPuntos').textContent = `${j.puntos_totales ?? 0} pts`;
-
-        const historialContainer = document.getElementById('modalInfoHistorial');
-        if (historialContainer) {
-            if (j.historial_jornadas && j.historial_jornadas.length > 0) {
-                let html = '';
-                j.historial_jornadas.forEach(h => {
-                    const nombreJornada = h.jornada;
-                    const puntosJornada = h.puntos;
-                    let colorClase = 'bg-zinc-700';
-                    if (puntosJornada >= 6) {
-                        colorClase = 'bg-lime-400';
-                    } else if (puntosJornada > 0) {
-                        colorClase = 'bg-amber-400';
-                    }
-                    html += `
-                        <div class="flex flex-col items-center justify-end min-w-[3rem] shrink-0">
-                            <span class="text-[9px] uppercase font-bold text-zinc-500 mb-1 whitespace-nowrap truncate max-w-[4.5rem] px-1 text-center" title="${nombreJornada}">${nombreJornada}</span>
-                            <span class="text-sm font-bold text-zinc-100">${puntosJornada}</span>
-                            <div class="w-full h-1 mt-1.5 rounded-full ${colorClase}"></div>
-                        </div>
-                    `;
-                });
-                historialContainer.innerHTML = html;
-            } else {
-                historialContainer.innerHTML = '<span class="text-xs text-zinc-500 py-2">Sin datos recientes</span>';
-            }
-        }
-
-        openModal('modalJugadorInfo');
-    }
-
-    // Renderizar slots en modal de alineación rival
-    function renderAlineacionSlots(data, slotsWrap, totalEl) {
-        totalEl.textContent = `${data.total_puntos ?? 0} pts`;
-        const slots = slotsWrap.querySelectorAll('.slot');
-        slots.forEach(s => {
-            s.className = 'slot vacio bg-zinc-900/80 border border-zinc-800 rounded-xl p-2 text-center flex flex-col items-center justify-center min-h-[80px]';
-            s.innerHTML = '<div class="flex flex-col items-center justify-center"><small class="text-zinc-500 text-[10px]">Vacío</small></div>';
-        });
-
-        if (data.status === 'ok' && data.jugadores) {
-            data.jugadores.forEach((jug, idx) => {
-                const s = slotsWrap.querySelector(`.slot[data-slot="${idx + 1}"]`);
-                if (s) {
-                    s.className = 'slot ocupado bg-zinc-900/90 border border-zinc-700 rounded-xl p-2 text-center flex flex-col items-center justify-center relative min-h-[80px]';
-                    s.innerHTML = `
-                        <span class="absolute top-1 right-1 px-1.5 py-0.2 rounded-full bg-lime-400 text-zinc-950 font-mono font-bold text-[9px]">
-                            ${jug.puntos ?? 0}
-                        </span>
-                        <img src="${jug.foto || '/assets/media/images/default-player.png'}" class="w-8 h-8 rounded-full object-cover mb-1" onerror="this.src='/assets/media/images/default-player.png'">
-                        <span class="block text-[10px] font-bold text-zinc-100 truncate w-full text-center">${jug.nombre}</span>
-                    `;
-                }
-            });
-        }
-    }
-
-    function normalizarPosicion(pos) {
-        const p = (pos || '').toLowerCase();
-        if (p === 'portero') return 'portero';
-        if (p === 'defensa') return 'defensa';
-        if (p === 'centrocampista' || p === 'medio') return 'centrocampista';
-        if (p === 'delantero') return 'delantero';
-        return p;
-    }
-
-    function inicializarSlotsDesdeAlineacionGuardada() {
-        slotsEstado = {};
-        // alineacionGuardada puede ser objeto Eloquent (con .jugadores) o array plano
-        const jugadores = Array.isArray(alineacionGuardada)
-            ? alineacionGuardada
-            : (alineacionGuardada && Array.isArray(alineacionGuardada.jugadores) ? alineacionGuardada.jugadores : []);
-
-        if (!jugadores || jugadores.length === 0) return;
-
-        // Usar la formación guardada si existe
-        if (alineacionGuardada && alineacionGuardada.formacion) {
-            formacionActiva = alineacionGuardada.formacion;
-            const sel = document.getElementById('selectFormacion');
-            if (sel) sel.value = formacionActiva;
-        }
-
-        const cuota = obtenerCuotaFormacion(formacionActiva);
-        const porPos = {
-            delantero: jugadores.filter(j => normalizarPosicion(j.posicion) === 'delantero'),
-            centrocampista: jugadores.filter(j => normalizarPosicion(j.posicion) === 'centrocampista'),
-            defensa: jugadores.filter(j => normalizarPosicion(j.posicion) === 'defensa'),
-            portero: jugadores.filter(j => normalizarPosicion(j.posicion) === 'portero'),
-        };
-
-        // Asignar slots en el mismo orden que renderCampoTactico: DEL → CEN → DEF → POR
-        let slotNumero = 1;
-        ['delantero', 'centrocampista', 'defensa', 'portero'].forEach(pos => {
-            const max = cuota[pos] || 0;
-            const lista = porPos[pos] || [];
-            for (let i = 0; i < max; i++) {
-                if (lista[i]) {
-                    slotsEstado[slotNumero] = {
-                        jugador_id: lista[i].id,
-                        slot: slotNumero,
-                        posicion: pos,
-                        jugador: lista[i]
-                    };
-                }
-                slotNumero++;
-            }
-        });
-    }
-
-    function reubicarJugadoresEnNuevaFormacion(nuevaFormacion) {
-        const cuota = obtenerCuotaFormacion(nuevaFormacion);
-        // Agrupar jugadores activos por posición normalizada
-        const porPos = { delantero: [], centrocampista: [], defensa: [], portero: [] };
-        Object.values(slotsEstado).forEach(data => {
-            if (!data || !data.jugador_id) return;
-            const pos = normalizarPosicion(data.posicion);
-            if (porPos[pos]) porPos[pos].push(data);
-        });
-
-        // Reconstruir slotsEstado respetando nuevas cuotas; sobrantes se descartan (vuelven al modal)
-        slotsEstado = {};
-        let slotNumero = 1;
-        ['delantero', 'centrocampista', 'defensa', 'portero'].forEach(pos => {
-            const max = cuota[pos] || 0;
-            const lista = porPos[pos] || [];
-            for (let i = 0; i < max; i++) {
-                if (lista[i]) {
-                    slotsEstado[slotNumero] = {
-                        jugador_id: lista[i].jugador_id,
-                        slot: slotNumero,
-                        posicion: pos,
-                        jugador: lista[i].jugador
-                    };
-                }
-                slotNumero++;
-            }
-        });
-    }
-
-    // Inicialización al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const tabParam = urlParams.get('tab');
-        if (tabParam) {
-            switchTab(tabParam);
-        }
-
-        // Cargar alineación previa en el estado
-        inicializarSlotsDesdeAlineacionGuardada();
-
-        renderCampoTactico(formacionActiva);
-
-        // Event listener formación — reubicar jugadores antes de repintar
-        const selectFormacion = document.getElementById('selectFormacion');
-        if (selectFormacion) {
-            selectFormacion.addEventListener('change', function() {
-                reubicarJugadoresEnNuevaFormacion(this.value);
-                renderCampoTactico(this.value);
-            });
-        }
-
-        // Guardar alineación (AJAX silencioso con Fetch API y SweetAlert2)
-        const btnGuardar = document.getElementById('btnGuardarAlineacion');
-        const formAlineacion = document.getElementById('formAlineacion');
-
-        function ejecutarGuardadoAlineacionAjax() {
-            sincronizarHiddenInputs();
-            const formData = new FormData(formAlineacion);
-            const btnOriginalHtml = btnGuardar.innerHTML;
-
-            btnGuardar.disabled = true;
-            btnGuardar.classList.add('opacity-75', 'cursor-not-allowed');
-            btnGuardar.innerHTML = '<i class="bi bi-arrow-repeat animate-spin text-sm"></i><span>Guardando...</span>';
-
-            fetch(formAlineacion.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(async response => {
-                const data = await response.json().catch(() => ({}));
-                if (!response.ok) {
-                    throw new Error(data.message || 'Ocurrió un error al guardar la alineación.');
-                }
-                return data;
-            })
-            .then(data => {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Alineación guardada!',
-                    text: data.message || 'Tu alineación se ha guardado correctamente.',
-                    confirmButtonColor: '#a3e635',
-                    background: '#18181b',
-                    color: '#f4f4f5',
-                    customClass: {
-                        popup: 'border border-zinc-800 rounded-2xl',
-                        confirmButton: '!text-zinc-950 !font-bold'
-                    }
-                });
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al guardar',
-                    text: error.message || 'No se pudo guardar la alineación. Inténtalo de nuevo.',
-                    confirmButtonColor: '#a3e635',
-                    background: '#18181b',
-                    color: '#f4f4f5',
-                    customClass: {
-                        popup: 'border border-zinc-800 rounded-2xl',
-                        confirmButton: '!text-zinc-950 !font-bold'
-                    }
-                });
-            })
-            .finally(() => {
-                btnGuardar.disabled = false;
-                btnGuardar.classList.remove('opacity-75', 'cursor-not-allowed');
-                btnGuardar.innerHTML = btnOriginalHtml;
-            });
-        }
-
-        if (btnGuardar && formAlineacion) {
-            btnGuardar.addEventListener('click', function(e) {
-                e.preventDefault();
-                sincronizarHiddenInputs();
-                const cuotaActual = obtenerCuotaFormacion(formacionActiva);
-                const slotsRequeridos = cuotaActual.portero + cuotaActual.defensa + cuotaActual.centrocampista + cuotaActual.delantero;
-                const totalSlots = Object.values(slotsEstado).filter(s => s && s.jugador_id).length;
-                if (totalSlots < slotsRequeridos) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Alineación incompleta',
-                        text: `Tienes ${totalSlots} de ${slotsRequeridos} jugadores en el campo. ¿Deseas guardar de todos modos?`,
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, guardar',
-                        cancelButtonText: 'Cancelar',
-                        confirmButtonColor: '#a3e635',
-                        cancelButtonColor: '#27272a',
-                        background: '#18181b',
-                        color: '#f4f4f5',
-                        customClass: {
-                            popup: 'border border-zinc-800 rounded-2xl'
-                        }
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            ejecutarGuardadoAlineacionAjax();
-                        }
-                    });
-                } else {
-                    ejecutarGuardadoAlineacionAjax();
-                }
-            });
-
-            formAlineacion.addEventListener('submit', function(e) {
-                e.preventDefault();
-                ejecutarGuardadoAlineacionAjax();
-            });
-        }
-
-
-        // AJAX Clasificación
-        const selectClasif = document.getElementById('selectClasificacion');
-        const tbodyClasif = document.getElementById('tbodyClasificacion');
-        const subtitleClasif = document.getElementById('clasificacion-subtitle');
-        const thAlineacion = document.getElementById('thAlineacion');
-        const currentUserId = "{{ Auth::id() }}";
-
-        if (selectClasif && tbodyClasif) {
-            selectClasif.addEventListener('change', function() {
-                const url = this.dataset.urlClasificacion;
-                const modo = this.value;
-
-                tbodyClasif.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-zinc-400">Cargando clasificación...</td></tr>`;
-
-                fetch(`${url}?modo_clasificacion=${encodeURIComponent(modo)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.modo === 'global') {
-                            subtitleClasif.textContent = 'Total acumulado de la liguilla';
-                            thAlineacion.classList.add('hidden');
-                        } else {
-                            const j = data.jornada || {};
-                            subtitleClasif.textContent = `Jornada ${j.orden ?? ''} ${j.nombre ?? ''}`.trim();
-                            thAlineacion.classList.remove('hidden');
-                        }
-
-                        tbodyClasif.innerHTML = '';
-                        if (!data.clasificacion || data.clasificacion.length === 0) {
-                            tbodyClasif.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-zinc-500">No hay datos disponibles para esta jornada.</td></tr>`;
-                            return;
-                        }
-
-                        data.clasificacion.forEach((u, idx) => {
-                            const isMe = (Number(currentUserId) === Number(u.id));
-                            const tr = document.createElement('tr');
-                            tr.className = `hover:bg-zinc-800/30 transition-colors ${isMe ? 'bg-lime-400/5' : ''}`;
-
-                            let posIcon = `#${idx + 1}`;
-                            if (idx === 0) posIcon = '🥇';
-                            else if (idx === 1) posIcon = '🥈';
-                            else if (idx === 2) posIcon = '🥉';
-
-                            tr.innerHTML = `
-                                <td class="py-3.5 px-4 text-center font-mono font-bold text-zinc-200">${posIcon}</td>
-                                <td class="py-3.5 px-4 font-semibold text-zinc-100 flex items-center gap-2">
-                                    <span>${u.name || u.email || 'Usuario'}</span>
-                                    ${isMe ? '<span class="px-2 py-0.5 rounded-full bg-lime-400/10 border border-lime-400/20 text-lime-400 text-[10px] font-bold">Tú</span>' : ''}
-                                </td>
-                                <td class="py-3.5 px-4 text-right font-mono font-bold text-lime-400 text-sm">${u.puntos ?? 0}</td>
-                                <td class="py-3.5 px-4 text-right ${data.modo === 'global' ? 'hidden' : ''}">
-                                    ${data.modo !== 'global' && data.jornada ? `
-                                        <button type="button" class="ver-alineacion-btn px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg transition-all" data-user-id="${u.id}" data-jornada-id="${data.jornada.id}" data-user-name="${u.name || 'Usuario'}">
-                                            Ver XI
-                                        </button>
-                                    ` : ''}
-                                </td>
-                            `;
-                            tbodyClasif.appendChild(tr);
-                        });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        tbodyClasif.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-rose-400">Error al cargar clasificación.</td></tr>`;
-                    });
-            });
-        }
-
-        // Click en "Ver alineación rival"
-        document.body.addEventListener('click', function(e) {
-            const btn = e.target.closest('.ver-alineacion-btn');
-            if (!btn) return;
-
-            const userId = btn.dataset.userId;
-            const jornadaId = btn.dataset.jornadaId;
-            const userName = btn.dataset.userName;
-
-            document.getElementById('alineacionModalUsuario').textContent = userName;
-            document.getElementById('alineacionModalTotal').textContent = '...';
-            const slotsWrap = document.getElementById('alineacionModalSlots');
-
-            openModal('modalAlineacionClasificacion');
-
-            const cacheKey = `${userId}:${jornadaId}`;
-            if (cacheModales.alineaciones[cacheKey]) {
-                renderAlineacionSlots(cacheModales.alineaciones[cacheKey], slotsWrap, document.getElementById('alineacionModalTotal'));
-                return;
-            }
-
-            fetch(`/user/liguillas/{{ $liguilla->id }}/alineacion-usuario/${userId}/jornada/${jornadaId}`)
-                .then(res => res.json())
-                .then(data => {
-                    cacheModales.alineaciones[cacheKey] = data;
-                    renderAlineacionSlots(data, slotsWrap, document.getElementById('alineacionModalTotal'));
-                })
-                .catch(err => console.error(err));
-        });
-
-        // Click en Mis Jornadas
-        document.querySelectorAll('.mis-jornada-link').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const jornadaId = this.dataset.jornadaId;
-                document.querySelectorAll('.mis-jornada-link').forEach(b => b.classList.remove('bg-zinc-800', 'text-lime-400', 'border-lime-400/40'));
-                this.classList.add('bg-zinc-800', 'text-lime-400', 'border-lime-400/40');
-
-                const campo = document.getElementById('campoMisJornadas');
-                const panelPuntos = document.getElementById('misJornadasPuntos');
-                const totalPuntosEl = document.getElementById('totalPuntosJornada');
-
-                const rowDel = document.getElementById('row-delanteros-jornada');
-                const rowMed = document.getElementById('row-centrocampistas-jornada');
-                const rowDef = document.getElementById('row-defensas-jornada');
-                const rowPor = document.getElementById('row-portero-jornada');
-
-                fetch(`/user/liguillas/{{ $liguilla->id }}/alineacion/${jornadaId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        campo.classList.remove('hidden');
-                        panelPuntos.classList.remove('hidden');
-
-                        const formacion = data.formacion || formacionActiva;
-                        const cuota = obtenerCuotaFormacion(formacion);
-
-                        const todosJugadores = Array.isArray(data.jugadores) ? [...data.jugadores] : [];
-                        const porJugadores = todosJugadores.filter(j => (j.posicion || '').toLowerCase().includes('por'));
-                        const defJugadores = todosJugadores.filter(j => (j.posicion || '').toLowerCase().includes('def'));
-                        const cenJugadores = todosJugadores.filter(j => (j.posicion || '').toLowerCase().includes('cen') || (j.posicion || '').toLowerCase().includes('med'));
-                        const delJugadores = todosJugadores.filter(j => (j.posicion || '').toLowerCase().includes('del'));
-
-                        const renderFila = (rowEl, cantidad, jugadoresPos, posNombre) => {
-                            if (!rowEl) return;
-                            rowEl.innerHTML = '';
-                            rowEl.style.display = cantidad > 0 ? '' : 'none';
-                            for (let i = 0; i < cantidad; i++) {
-                                const jug = jugadoresPos[i] || null;
-                                const div = document.createElement('div');
-                                div.className = 'slot transition-all duration-200 text-center relative z-10 w-20 sm:w-28';
-                                if (jug) {
-                                    div.classList.add('ocupado');
-                                    div.innerHTML = `
-                                        <div class="relative bg-zinc-900/90 border border-zinc-700/80 rounded-2xl p-2 sm:p-2.5 w-full flex flex-col items-center justify-center shadow-xl">
-                                            <span class="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full bg-lime-400 text-zinc-950 font-mono font-bold text-[9px] whitespace-nowrap line-clamp-1">
-                                                ${jug.puntos ?? 0}
-                                            </span>
-                                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-950 border border-zinc-700 overflow-hidden mb-1">
-                                                <img src="${jug.foto || '/assets/media/images/default-player.png'}" class="w-full h-full object-cover" onerror="this.src='/assets/media/images/default-player.png'">
-                                            </div>
-                                            <span class="block text-[11px] sm:text-xs font-bold text-zinc-100 truncate w-full text-center">
-                                                ${jug.nombre}
-                                            </span>
-                                            <span class="block text-[9px] sm:text-[10px] text-zinc-400 truncate w-full text-center">
-                                                ${jug.apellido1 || ''}
-                                            </span>
-                                        </div>
-                                    `;
-                                } else {
-                                    div.classList.add('vacio');
-                                    div.innerHTML = `
-                                        <div class="relative border-2 border-dashed border-zinc-700/80 bg-zinc-950/60 rounded-2xl p-2 sm:p-2.5 w-full flex flex-col items-center justify-center">
-                                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center text-sm mb-1">
-                                                <i class="bi bi-dash-lg"></i>
-                                            </div>
-                                            <span class="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">
-                                                ${posNombre.substring(0, 3)}
-                                            </span>
-                                            <span class="text-[9px] text-zinc-600">Vacío</span>
-                                        </div>
-                                    `;
-                                }
-                                rowEl.appendChild(div);
-                            }
-                        };
-
-                        renderFila(rowDel, cuota.delantero, delJugadores, 'delantero');
-                        renderFila(rowMed, cuota.centrocampista, cenJugadores, 'centrocampista');
-                        renderFila(rowDef, cuota.defensa, defJugadores, 'defensa');
-                        renderFila(rowPor, cuota.portero, porJugadores, 'portero');
-
-                        totalPuntosEl.textContent = data.total_puntos ?? 0;
-                    })
-                    .catch(err => console.error(err));
-            });
-        });
-    });
-
-    async function cargarJornadaAjax(jornadaId) {
-        const contenedor = document.getElementById('contenedor-partidos-ajax');
-        contenedor.style.opacity = '0.4'; // Efecto visual de carga
-        try {
-            const url = '?tab=resultados&jornada_id=' + jornadaId;
-            const response = await fetch(url);
-            const html = await response.text();
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            contenedor.innerHTML = doc.getElementById('contenedor-partidos-ajax').innerHTML;
-            window.history.pushState({}, '', url); // Mantiene la URL correcta arriba
-        } catch (error) {
-            console.error('Error cargando los partidos:', error);
-        } finally {
-            contenedor.style.opacity = '1';
-        }
-    }
+const cuotasPorFormacion = JSON.parse(document.getElementById('liguilla-cuotas').textContent);
+
+const plantillaCompleta = JSON.parse(document.getElementById('liguilla-plantilla').textContent);
+const alineacionGuardada = JSON.parse(document.getElementById('liguilla-alineacion').textContent);
+const defaultPlayerImage = document.querySelector('[data-default-player-image]').dataset.defaultPlayerImage;
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('liguillaUi', () => ({
+        livePointsTimer: null, livePointsUrl: null, tabActiva: 'alineacion',
+        modalSeleccionAbierto: false, modalInfoAbierto: false, modalRivalAbierto: false,
+        modalRivalNombre: '', modalRivalTotal: '...', modalRivalJugadores: [], jugadorFicha: null,
+        slotSeleccionado: null, buscarJugador: '', formacionActiva: JSON.parse(document.getElementById('liguilla-formacion').textContent), slots: [],
+        clasificacion: JSON.parse(document.getElementById('liguilla-clasificacion').textContent), modoClasificacion: 'global', subtituloClasificacion: 'Total acumulado de la liguilla',
+        jornadaSeleccionada: null, jornadaVisible: false, jornadaPuntos: 0, jornadaJugadores: [], jornadaFormacion: '4-3-3',
+        jornadaResultados: JSON.parse(document.getElementById('liguilla-jornada-resultados').textContent),
+        init() { this.livePointsUrl = this.$root.dataset.livePointsUrl; const tab = new URLSearchParams(window.location.search).get('tab'); if (['alineacion','plantilla','clasificacion','jornadas','resultados','participantes'].includes(tab)) this.tabActiva = tab; this.inicializarSlots(); this.startLivePointsPolling(); },
+        startLivePointsPolling() { if (this.livePointsUrl) { this.refreshLivePoints(); this.livePointsTimer = setInterval(() => this.refreshLivePoints(), 30000); } },
+        async refreshLivePoints() { try { const r = await fetch(this.livePointsUrl, {headers: {'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d = await r.json(); if (r.ok && d.status === 'ok') this.updateClasificacion(d); } catch (e) { console.warn('No se pudo actualizar la clasificación en directo.', e); } },
+        updateClasificacion(data) { this.clasificacion = data.clasificacion || []; },
+        cuota(formacion) { return cuotasPorFormacion[formacion] || {portero:1, defensa:4, centrocampista:3, delantero:3}; },
+        slotsPorPosicion(posicion) { return this.slots.filter(s => s.posicion === posicion); },
+        jugadorDelSlot(slot) { return plantillaCompleta.find(j => Number(j.id) === Number(slot.jugador_id)); },
+        nombreJugador(j) { return [j?.nombre, j?.apellido1].filter(Boolean).join(' '); },
+        equipoJugador(j) { return j?.equipo?.nombre || j?.club?.nombre || 'Sin club'; },
+        normalizarPosicion(pos) { const p = (pos || '').toLowerCase(); return p === 'medio' ? 'centrocampista' : p; },
+        inicializarSlots() { const jugadores = Array.isArray(alineacionGuardada) ? alineacionGuardada : (alineacionGuardada?.jugadores || []); if (alineacionGuardada?.formacion) this.formacionActiva = alineacionGuardada.formacion; const grupos = {delantero:[], centrocampista:[], defensa:[], portero:[]}; jugadores.forEach(j => { const p=this.normalizarPosicion(j.posicion); if(grupos[p]) grupos[p].push(j); }); this.reconstruirSlots(grupos, this.cuota(this.formacionActiva)); },
+        reconstruirSlots(grupos, cuota) { let n=1; this.slots=[]; ['delantero','centrocampista','defensa','portero'].forEach(pos => { for(let i=0;i<(cuota[pos]||0);i++) { this.slots.push({slot:n++, posicion:pos, jugador_id:grupos[pos]?.[i]?.id || null}); } }); },
+        cambiarFormacion() { const grupos={}; this.slots.forEach(s => { if(s.jugador_id) (grupos[s.posicion] ||= []).push(s); }); this.reconstruirSlots(grupos, this.cuota(this.formacionActiva)); },
+        abrirSeleccion(slot) { this.slotSeleccionado=slot; this.buscarJugador=''; this.modalSeleccionAbierto=true; },
+        get jugadoresDisponibles() { const usados=this.slots.filter(s=>s.slot!==this.slotSeleccionado && s.jugador_id).map(s=>Number(s.jugador_id)); const pos=this.slots.find(s=>s.slot===this.slotSeleccionado)?.posicion; const q=this.buscarJugador.toLowerCase().trim(); return plantillaCompleta.filter(j=>this.normalizarPosicion(j.posicion)===pos && !usados.includes(Number(j.id)) && this.nombreJugador(j).toLowerCase().includes(q)); },
+        seleccionarJugador(j) { const s=this.slots.find(s=>s.slot===this.slotSeleccionado); if(s) s.jugador_id=j.id; this.modalSeleccionAbierto=false; },
+        quitarJugador(slot) { const s=this.slots.find(s=>s.slot===slot); if(s) s.jugador_id=null; },
+        abrirFicha(j) { this.jugadorFicha=j; this.modalInfoAbierto=true; },
+        abrirAlineacionRival(userId, jornadaId, userName) { this.modalRivalNombre=userName; this.modalRivalTotal='...'; this.modalRivalJugadores=[]; this.modalRivalAbierto=true; fetch(`/user/liguillas/{{ $liguilla->id }}/alineacion-usuario/${userId}/jornada/${jornadaId}`).then(r=>r.json()).then(d=>{this.modalRivalTotal=`${d.total_puntos ?? 0} pts`; this.modalRivalJugadores=d.jugadores||[];}); },
+        async cargarClasificacion() { const url=this.$refs.selectClasificacion?.dataset.urlClasificacion; if(!url)return; const d=await (await fetch(`${url}?modo_clasificacion=${encodeURIComponent(this.modoClasificacion)}`)).json(); this.clasificacion=d.clasificacion||[]; this.subtituloClasificacion=d.modo==='global'?'Total acumulado de la liguilla':`Jornada ${d.jornada?.orden||''} ${d.jornada?.nombre||''}`.trim(); },
+        async cargarMiJornada(id) { this.jornadaSeleccionada=String(id); const d=await (await fetch(`/user/liguillas/{{ $liguilla->id }}/alineacion/${id}`)).json(); this.jornadaFormacion=d.formacion||this.formacionActiva; this.jornadaJugadores=d.jugadores||[]; this.jornadaPuntos=d.total_puntos||0; this.jornadaVisible=true; },
+        guardarAlineacion() { const form=this.$refs.formAlineacion; fetch(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.message);Swal.fire({icon:'success',title:'¡Alineación guardada!',text:d.message||'Alineación guardada.',background:'#18181b',color:'#f4f4f5'});}).catch(e=>Swal.fire({icon:'error',title:'Error al guardar',text:e.message||'No se pudo guardar.',background:'#18181b',color:'#f4f4f5'})); },
+        cargarResultados() { window.location.href=`?tab=resultados&jornada_id=${encodeURIComponent(this.jornadaResultados)}`; },
+        compartirEnlace(codigo) { const enlace=`{{ url('/user/unirseLiguilla') }}?codigo=${codigo}`; if(navigator.share) navigator.share({title:'Únete a mi liguilla en MiFantasy',text:'Usa mi código para unirte a la competición:',url:enlace}); else navigator.clipboard.writeText(enlace).then(()=>Swal.fire({icon:'success',title:'¡Enlace copiado!',timer:2000,showConfirmButton:false,background:'#18181b',color:'#f4f4f5'})); }
+    }));
+});
 </script>
 @endpush

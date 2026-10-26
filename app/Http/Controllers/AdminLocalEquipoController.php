@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class AdminLocalEquipoController extends Controller
 {
     use AuthorizesRequests;
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -19,7 +20,7 @@ class AdminLocalEquipoController extends Controller
 
         $query = Equipo::with(['torneos', 'jugadores']);
 
-        if (!$user->admin) {
+        if (! $user->admin) {
             $torneosGestionadosIds = $torneos->pluck('id');
             $query->whereHas('torneos', function ($q) use ($torneosGestionadosIds) {
                 $q->whereIn('torneos.id', $torneosGestionadosIds);
@@ -41,4 +42,3 @@ class AdminLocalEquipoController extends Controller
         return view('admin-local.equipos.index', compact('equipos', 'torneos', 'torneoId'));
     }
 }
-

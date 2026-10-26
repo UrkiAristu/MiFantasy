@@ -6,8 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipo;
 use App\Models\Jornada;
+use App\Models\Jugador;
 use App\Models\Partido;
-use App\Models\Torneo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,59 +16,83 @@ class AdminLocalDashboardController extends Controller
 {
     public function index(Request $request)
     {
+        /** @var User|null $user */
         $user = Auth::user();
-        if (!$user->admin && !$user->torneosGestionados()->exists()) {
+        if (! $user) {
             abort(403);
         }
-        $torneos = $user ? $user->torneosGestionados : collect();
-        $torneoId = $request->get("torneo_id");
 
-        $torneosIds = $torneoId ? collect([$torneoId]) : $torneos->pluck("id");
+        if (! $user->admin && ! $user->torneosGestionados()->exists()) {
+            abort(403);
+        }
 
-        $torneosActivos = $torneosIds->isNotEmpty() ? $torneosIds->count() : 0;
+        $torneos = $user->torneosGestionados()->get();
+        $torneosIds = $torneos->modelKeys();
+        $torneoId = $request->query('torneo_id');
 
-        $equiposInscritos = $torneosIds->isNotEmpty() ? Equipo::whereHas("torneos", function ($q) use ($torneosIds) {
-            $q->whereIn("torneos.id", $torneosIds);
-        })->count() : 0;
+        if ($torneoId !== null && ! in_array((int) $torneoId, $torneosIds, true)) {
+            abort(403);
+        }
 
-        $jornadasCompletadas = $torneosIds->isNotEmpty() ? Jornada::whereIn("torneo_id", $torneosIds)
-            ->whereHas("partidos", function ($q) {
-                $q->where("estado", "!=", "jugado");
-            }, "=", 0)
-            ->whereHas("partidos")
-            ->count() : 0;
+        $torneosActivos = count($torneosIds);
+        $scopedTorneoIds = $torneoId !== null ? [(int) $torneoId] : $torneosIds;
 
-        $partidosPendientes = $torneosIds->isNotEmpty() ? Partido::whereHas("jornada", function ($q) use ($torneosIds) {
-            $q->whereIn("torneo_id", $torneosIds);
-        })->where("estado", "programado")->count() : 0;
+        $equiposInscritos = $scopedTorneoIds !== []
+            ? Equipo::whereHas('torneos', function ($query) use ($scopedTorneoIds): void {
+                $query->whereIn('torneos.id', $scopedTorneoIds);
+            })->count()
+            : 0;
 
-        $proximosPartidos = $torneosIds->isNotEmpty() ? Partido::with(["equipoLocal", "equipoVisitante", "jornada.torneo"])
-            ->whereHas("jornada", function ($q) use ($torneosIds) {
-                $q->whereIn("torneo_id", $torneosIds);
-            })
-            ->where("estado", "programado")
-            ->orderBy("fecha_partido", "asc")
-            ->take(3)
-            ->get() : collect();
+        $jugadoresBase = $scopedTorneoIds !== []
+            ? Jugador::whereHas('participaciones', function ($query) use ($scopedTorneoIds): void {
+                $query->whereIn('torneos.id', $scopedTorneoIds);
+            })->count()
+            : 0;
 
-        return view("admin-local.dashboard", compact(
-            "torneos",
-            "torneoId",
-            "torneosActivos",
-            "equiposInscritos",
-            "jornadasCompletadas",
-            "partidosPendientes",
-            "proximosPartidos"
-        ));
+        $partidosQuery = Partido::whereHas('jornada', function ($query) use ($scopedTorneoIds): void {
+            $query->whereIn('torneo_id', $scopedTorneoIds);
+        });
+
+        $partidosPendientes = $scopedTorneoIds !== []
+            ? (clone $partidosQuery)->where('estado', 'programado')->count()
+            : 0;
+
+        $ultimosPartidos = $scopedTorneoIds !== []
+            ? (clone $partidosQuery)
+                ->with(['equipoLocal', 'equipoVisitante', 'jornada.torneo'])
+                ->latest('fecha_partido')
+                ->take(5)
+                ->get()
+            : collect();
+
+        $jornadasCompletadas = $scopedTorneoIds !== []
+            ? Jornada::whereIn('torneo_id', $scopedTorneoIds)
+                ->whereHas('partidos')
+                ->whereDoesntHave('partidos', function ($query): void {
+                    $query->where('estado', '!=', 'jugado');
+                })
+                ->count()
+            : 0;
+
+        return view('admin-local.dashboard', compact(
+            'torneos',
+            'torneoId',
+            'torneosActivos',
+            'equiposInscritos',
+            'jugadoresBase',
+            'partidosPendientes',
+            'ultimosPartidos',
+            'jornadasCompletadas'
+        ))->with('proximosPartidos', $ultimosPartidos->where('estado', 'programado')->take(3));
     }
 
     public function equipos()
     {
-        return redirect()->route("admin.local.equipos.index");
+        return redirect()->route('admin.local.equipos.index');
     }
 
     public function jornadasCreate()
     {
-        return view("admin-local.jornadas-create");
+        return view('admin-local.jornadas-create');
     }
 }

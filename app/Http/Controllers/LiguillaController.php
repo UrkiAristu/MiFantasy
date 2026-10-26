@@ -460,4 +460,31 @@ class LiguillaController extends Controller
             'total_puntos' => $totalPuntos,
         ]);
     }
+
+    public function livePoints(Liguilla $liguilla)
+    {
+        if (! $liguilla->usuarios()->where('users.id', Auth::id())->exists()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        $clasificacion = $liguilla->usuarios()
+            ->withPivot('puntos')
+            ->orderByDesc('pivot_puntos')
+            ->get()
+            ->map(function ($usuario, $index) {
+                return [
+                    'id' => $usuario->id,
+                    'posicion' => $index + 1,
+                    'name' => $usuario->name,
+                    'puntos' => $usuario->pivot->puntos ?? 0,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'status' => 'ok',
+            'timestamp' => now()->toIso8601String(),
+            'clasificacion' => $clasificacion,
+        ]);
+    }
 }

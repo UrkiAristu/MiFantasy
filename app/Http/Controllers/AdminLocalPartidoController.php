@@ -1,7 +1,8 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RecalcularPuntosJornadaJob;
 use App\Models\Equipo;
 use App\Models\Jornada;
 use App\Models\Partido;
@@ -23,7 +24,7 @@ class AdminLocalPartidoController extends Controller
 
         $query = Partido::with(['jornada.torneo', 'equipoLocal', 'equipoVisitante']);
 
-        if (!$user->admin) {
+        if (! $user->admin) {
             $torneosGestionadosIds = $torneos->pluck('id');
             $query->whereHas('jornada', function ($q) use ($torneosGestionadosIds) {
                 $q->whereIn('torneo_id', $torneosGestionadosIds);
@@ -73,7 +74,7 @@ class AdminLocalPartidoController extends Controller
                 'exists:jornadas,id',
                 function ($attribute, $value, $fail) use ($torneosGestionadosIds) {
                     $jornada = Jornada::find($value);
-                    if (!$jornada || !$torneosGestionadosIds->contains($jornada->torneo_id)) {
+                    if (! $jornada || ! $torneosGestionadosIds->contains($jornada->torneo_id)) {
                         $fail('La jornada seleccionada no pertenece a un torneo bajo tu gestiÃ³n.');
                     }
                 },
@@ -81,8 +82,8 @@ class AdminLocalPartidoController extends Controller
             'equipo_local_id' => 'required|exists:equipos,id|different:equipo_visitante_id',
             'equipo_visitante_id' => 'required|exists:equipos,id',
             'fecha_partido' => 'required|date',
-            'goles_local' => 'nullable|integer|min:0',
-            'goles_visitante' => 'nullable|integer|min:0',
+            'goles_local' => 'required_if:estado,jugado|nullable|integer|min:0',
+            'goles_visitante' => 'required_if:estado,jugado|nullable|integer|min:0',
             'estado' => 'required|in:programado,jugado,cancelado',
         ]);
 
@@ -90,6 +91,7 @@ class AdminLocalPartidoController extends Controller
 
         if ($partido->estado === 'jugado') {
             $partido->actualizarEstadisticas();
+            RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
         }
 
         return redirect()->route('admin.local.partidos.index')->with('success', 'Partido registrado correctamente.');
@@ -123,7 +125,7 @@ class AdminLocalPartidoController extends Controller
                 'exists:jornadas,id',
                 function ($attribute, $value, $fail) use ($torneosGestionadosIds) {
                     $jornada = Jornada::find($value);
-                    if (!$jornada || !$torneosGestionadosIds->contains($jornada->torneo_id)) {
+                    if (! $jornada || ! $torneosGestionadosIds->contains($jornada->torneo_id)) {
                         $fail('La jornada seleccionada no pertenece a un torneo bajo tu gestiÃ³n.');
                     }
                 },
@@ -131,8 +133,8 @@ class AdminLocalPartidoController extends Controller
             'equipo_local_id' => 'required|exists:equipos,id|different:equipo_visitante_id',
             'equipo_visitante_id' => 'required|exists:equipos,id',
             'fecha_partido' => 'required|date',
-            'goles_local' => 'nullable|integer|min:0',
-            'goles_visitante' => 'nullable|integer|min:0',
+            'goles_local' => 'required_if:estado,jugado|nullable|integer|min:0',
+            'goles_visitante' => 'required_if:estado,jugado|nullable|integer|min:0',
             'estado' => 'required|in:programado,jugado,cancelado',
         ]);
 
@@ -140,6 +142,7 @@ class AdminLocalPartidoController extends Controller
 
         if ($partido->estado === 'jugado') {
             $partido->actualizarEstadisticas();
+            RecalcularPuntosJornadaJob::dispatch($partido->jornada_id);
         }
 
         return redirect()->route('admin.local.partidos.index')->with('success', 'Partido actualizado correctamente.');
@@ -182,4 +185,3 @@ class AdminLocalPartidoController extends Controller
         return back()->with('success', 'Resultados actualizados correctamente.');
     }
 }
-

@@ -169,6 +169,7 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/user/liguillas/{idLiguilla}/usuario/{idUser}/plantilla', [LiguillaController::class, 'plantilla']);
     Route::get('/user/liguillas/{liguilla}/participante/{participante}/plantilla', [LiguillaController::class, 'plantillaParticipante'])->name('liguillas.participante.plantilla');
     Route::get('/user/liguillas/{liguilla}/clasificacion', [LiguillaController::class, 'clasificacionAjax'])->name('liguillas.clasificacionAjax');
+    Route::get('/user/liguillas/{liguilla}/live-points', [LiguillaController::class, 'livePoints'])->name('liguillas.livePoints');
     Route::get('/user/liguillas/{liguilla}/alineacion-usuario/{user}/jornada/{jornada}', [LiguillaController::class, 'alineacionUsuarioJornada'])->name('liguillas.alineacionUsuarioJornada');
 
     // Suscripciones SaaS B2B y Gestión de Tenants

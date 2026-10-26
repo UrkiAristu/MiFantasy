@@ -159,8 +159,17 @@ class PuntosYClasificacionTest extends TestCase
     {
         Queue::fake();
 
-        $this->jornada1->fecha_cierre_alineaciones = now()->subMinutes(10);
+        // 1. Jornada en el futuro: NO debe congelarse
+        $this->jornada1->fecha_cierre_alineaciones = now()->addMinutes(1);
         $this->jornada1->alineaciones_congeladas = false;
+        $this->jornada1->save();
+
+        Artisan::call('fantasy:congelar-alineaciones');
+
+        Queue::assertNotPushed(CongelarJornadaJob::class);
+
+        // 2. Jornada en el pasado: SÍ debe congelarse
+        $this->jornada1->fecha_cierre_alineaciones = now()->subMinutes(1);
         $this->jornada1->save();
 
         Artisan::call('fantasy:congelar-alineaciones');
@@ -478,8 +487,16 @@ class PuntosYClasificacionTest extends TestCase
         Estadistica::create(['partido_id' => $partidoId, 'jugador_id' => $this->jugadores[1]->id, 'puntos' => 4, 'asistencias' => 1, 'resultado' => 'empatado']);
 
         // First run
+        $cacheGlobal = "liguilla:{$this->liguilla->id}:clasificacion:modo:global";
+        $cacheJornada = "liguilla:{$this->liguilla->id}:clasificacion:modo:{$this->jornada1->id}";
+        Cache::put($cacheGlobal, ['obsoleto' => true]);
+        Cache::put($cacheJornada, ['obsoleto' => true]);
+
         $job = new RecalcularPuntosJornadaJob($this->jornada1->id);
         $job->handle();
+
+        $this->assertFalse(Cache::has($cacheGlobal));
+        $this->assertFalse(Cache::has($cacheJornada));
 
         $puntosPivot = DB::table('alineacion_jugador')->where('alineacion_id', $alA->id)->pluck('puntos', 'jugador_id');
         $this->assertEquals(6, $puntosPivot[$this->jugadores[0]->id]);
