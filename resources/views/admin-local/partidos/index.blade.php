@@ -20,7 +20,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.local.partidos.bulkUpdate') }}" method="POST" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+    <form action="{{ route('admin.local.partidos.bulkUpdate') }}" method="POST" x-data="{ saving: false }" @submit="saving = true" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         @csrf
         <table class="w-full text-left border-collapse">
             <thead>
@@ -67,7 +67,7 @@
         </table>
         @if($partidos->isNotEmpty())
         <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end">
-            <button type="submit" class="bg-lime-500 text-gray-900 font-semibold px-4 py-2 rounded-lg hover:bg-lime-400 transition shadow-sm">Guardar Jornada</button>
+            <button type="submit" :disabled="saving" class="bg-lime-500 text-gray-900 font-semibold px-4 py-2 rounded-lg hover:bg-lime-400 transition shadow-sm disabled:opacity-50"><span x-text="saving ? 'Guardando...' : 'Guardar Jornada'"></span></button>
         </div>
         @endif
     </form>
