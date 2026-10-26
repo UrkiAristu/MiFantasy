@@ -487,8 +487,16 @@ class PuntosYClasificacionTest extends TestCase
         Estadistica::create(['partido_id' => $partidoId, 'jugador_id' => $this->jugadores[1]->id, 'puntos' => 4, 'asistencias' => 1, 'resultado' => 'empatado']);
 
         // First run
+        $cacheGlobal = "liguilla:{$this->liguilla->id}:clasificacion:modo:global";
+        $cacheJornada = "liguilla:{$this->liguilla->id}:clasificacion:modo:{$this->jornada1->id}";
+        Cache::put($cacheGlobal, ['obsoleto' => true]);
+        Cache::put($cacheJornada, ['obsoleto' => true]);
+
         $job = new RecalcularPuntosJornadaJob($this->jornada1->id);
         $job->handle();
+
+        $this->assertFalse(Cache::has($cacheGlobal));
+        $this->assertFalse(Cache::has($cacheJornada));
 
         $puntosPivot = DB::table('alineacion_jugador')->where('alineacion_id', $alA->id)->pluck('puntos', 'jugador_id');
         $this->assertEquals(6, $puntosPivot[$this->jugadores[0]->id]);
