@@ -60,5 +60,23 @@ composer.phar
 # ==========================================
 .agents/
 .claude/
+.omc/
+.cursor/
+.aider*
 .pagokit/
+agente-pagokit/
 .playwright-mcp/
+.remember/
+CLAUDE.md
+
+# ==========================================
+# 9. Cachés de análisis y QA
+# ==========================================
+/.phpstan.cache/
+
+# ==========================================
+# 10. Archivos temporales y auxiliares
+# ==========================================
+verify_*.js
+update_*.py
+repomix-output.xml

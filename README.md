@@ -8,9 +8,10 @@ MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy per
 
 El proyecto está construido bajo una arquitectura moderna, garantizando escalabilidad, persistencia de datos y adaptabilidad a dispositivos móviles:
 
-- **Backend:** Laravel (PHP)
-- **Frontend:** Blade, Tailwind CSS, Bootstrap y JavaScript
-- **Base de datos:** MySQL
+- **Backend:** Laravel (PHP 8.2+)
+- **Frontend:** Blade, Alpine.js, Tailwind CSS, Bootstrap y JavaScript
+- **Base de datos:** Single-Database con Eloquent ORM
+- **Autorización:** RBAC multi-equipo con Spatie Laravel Permission
 - **Despliegue y Contenedores:** Docker y Docker Compose
 - **Aplicación Web Progresiva (PWA):** Service Workers y Web App Manifest para instalación nativa en dispositivos.
 
