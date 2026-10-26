@@ -74,6 +74,14 @@ Route::middleware('guest')->group(function () {
         ->name('password.update');
 });
 
+Route::get('/manifest.json', function () {
+    return response()->file(public_path('manifest.json'), ['Content-Type' => 'application/manifest+json']);
+});
+
+Route::get('/sw.js', function () {
+    return response()->file(public_path('sw.js'), ['Content-Type' => 'application/javascript']);
+});
+
 // Ruta pública de bienvenida / Landing Page SaaS
 Route::get('/', function () {
     if (auth()->check()) {

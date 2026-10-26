@@ -24,7 +24,11 @@
     </div>
 
     <!-- Tabla Container -->
-    <div class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-6">
+    <div x-data="{ search: '' }" class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-6">
+        <label class="block mb-4">
+            <span class="sr-only">Buscar usuarios</span>
+            <input x-model="search" type="search" placeholder="Buscar usuarios..." class="w-full max-w-sm bg-white border border-zinc-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-lime-500">
+        </label>
         <div class="overflow-x-auto">
             <table id="tablaUsuarios" class="w-full text-left text-sm text-zinc-700">
                 <thead class="bg-zinc-50 border-b border-zinc-200 text-zinc-600 uppercase text-xs tracking-wider">
@@ -40,7 +44,7 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-100">
                     @forelse($usuarios as $usuario)
-                    <tr class="hover:bg-zinc-50/50 transition-colors">
+                    <tr x-show="!search || $el.textContent.toLowerCase().includes(search.toLowerCase())" class="hover:bg-zinc-50/50 transition-colors">
                         <td class="py-3 px-4 text-center font-mono text-zinc-500">{{ $usuario->id }}</td>
                         <td class="py-3 px-4 text-center font-bold text-zinc-900">{{ $usuario->name }}</td>
                         <td class="py-3 px-4 text-center text-zinc-600">{{ $usuario->email }}</td>
