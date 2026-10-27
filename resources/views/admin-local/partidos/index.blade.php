@@ -35,9 +35,11 @@
             </thead>
             <tbody class="divide-y divide-gray-200 text-sm">
                 @forelse($partidos as $index => $partido)
-                    <input type="hidden" name="partidos[{{ $index }}][id]" value="{{ $partido->id }}">
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-gray-600">{{ $partido->fecha_partido->format('d/m/Y H:i') }}</td>
+                        <td class="px-6 py-4 text-gray-600">
+                            <input type="hidden" name="partidos[{{ $index }}][id]" value="{{ $partido->id }}">
+                            {{ $partido->fecha_partido->format('d/m/Y H:i') }}
+                        </td>
                         <td class="px-6 py-4 font-semibold text-gray-900">{{ $partido->equipoLocal->nombre }}</td>
                         <td class="px-6 py-4 flex items-center gap-2">
                             <input type="number" name="partidos[{{ $index }}][goles_local]" value="{{ $partido->goles_local }}" class="w-16 p-1 border border-gray-300 rounded text-center">

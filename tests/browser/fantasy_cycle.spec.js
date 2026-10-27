@@ -16,10 +16,11 @@ test('Admin Local guarda resultados y el jugador consulta la clasificación', as
 
   await login(adminPage, 'b2badmin@mifantasy.com');
   await adminPage.goto('/admin-local/partidos');
-  await expect(adminPage.locator('button[type="submit"]', { hasText: /Guardar Jornada/ })).toBeVisible();
   await expect(adminPage.locator('form[x-data="{ saving: false }"]')).toBeVisible();
-  await adminPage.locator('button[type="submit"]').first().click();
-  await expect(adminPage.locator('button[type="submit"]').first()).toContainText(/Guardando|Guardar Jornada/);
+  const form = adminPage.locator('form[x-data="{ saving: false }"]');
+  const submitBtn = form.locator('button[type="submit"]');
+  await expect(submitBtn).toContainText(/Guardar Jornada/);
+  await submitBtn.click();
   expect(adminErrors).toHaveLength(0);
   await adminContext.close();
 
