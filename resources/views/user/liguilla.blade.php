@@ -121,6 +121,7 @@
         ] as $tab => [$icon, $label])
             <button
                 type="button"
+                id="tab-btn-{{ $tab }}"
                 @click="tabActiva = '{{ $tab }}'"
                 :class="tabActiva === '{{ $tab }}' ? 'bg-zinc-800 text-lime-400 border border-zinc-700/60 shadow-sm' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'"
                 class="px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer">
@@ -303,7 +304,8 @@
                                                 alt="{{ $jugador->nombre }}"
                                                 class="w-full h-full object-cover"
                                                 loading="lazy"
-                                                onerror="this.src='{{ asset('assets/media/images/default-player.png') }}';">
+                                                data-fallback-src="{{ asset('assets/media/images/default-player.png') }}"
+                                                onerror="this.src=this.dataset.fallbackSrc;">
                                         </div>
                                         <div class="min-w-0">
                                             <h4 class="text-xs font-bold text-zinc-100 group-hover:text-lime-400 transition-colors truncate">
@@ -591,10 +593,6 @@
         </div>
 
     </div>
-
-</div>
-
-</div>
 
 <!-- ==========================================
      MODAL 1: SELECCIÓN DE JUGADOR PARA SLOT

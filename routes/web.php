@@ -187,12 +187,14 @@ Route::middleware(['auth'])->group(function () { // Añadir 'verified' para veri
     Route::get('/suscripcion/portal', [SubscriptionController::class, 'portal'])->name('subscription.portal');
 
     // Admin Local Dashboard, Equipos, Jornadas & Partidos
-    Route::get('/admin-local/dashboard', [AdminLocalDashboardController::class, 'index'])->name('admin.local.dashboard');
-    Route::get('/admin-local/equipos', [AdminLocalEquipoController::class, 'index'])->name('admin.local.equipos.index');
+    Route::middleware('verificar.admin.local')->group(function () {
+        Route::get('/admin-local/dashboard', [AdminLocalDashboardController::class, 'index'])->name('admin.local.dashboard');
+        Route::get('/admin-local/equipos', [AdminLocalEquipoController::class, 'index'])->name('admin.local.equipos.index');
 
-    Route::resource('admin-local/jornadas', AdminLocalJornadaController::class)->names('admin.local.jornadas');
-    Route::post('admin-local/partidos/bulk-update', [AdminLocalPartidoController::class, 'bulkUpdate'])->name('admin.local.partidos.bulkUpdate');
-    Route::resource('admin-local/partidos', AdminLocalPartidoController::class)->names('admin.local.partidos');
+        Route::resource('admin-local/jornadas', AdminLocalJornadaController::class)->names('admin.local.jornadas');
+        Route::post('admin-local/partidos/bulk-update', [AdminLocalPartidoController::class, 'bulkUpdate'])->name('admin.local.partidos.bulkUpdate');
+        Route::resource('admin-local/partidos', AdminLocalPartidoController::class)->names('admin.local.partidos');
+    });
 });
 
 // Webhooks de Stripe / Cashier (Exento de CSRF y fuera del grupo auth)

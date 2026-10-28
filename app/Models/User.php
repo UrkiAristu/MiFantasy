@@ -57,6 +57,16 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    public function isSuperadmin(): bool
+    {
+        return $this->admin;
+    }
+
+    public function canManageAdminLocal(): bool
+    {
+        return $this->isSuperadmin() || $this->torneosGestionados()->exists();
+    }
+
     public function sendEmailVerificationNotification()
     {
         $this->notify(new VerificarEmail);

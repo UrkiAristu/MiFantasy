@@ -9,12 +9,12 @@ class JornadaPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->canManageAdminLocal();
     }
 
     public function view(User $user, Jornada $jornada): bool
     {
-        if ($user->admin) {
+        if ($user->isSuperadmin()) {
             return true;
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
@@ -24,7 +24,7 @@ class JornadaPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->canManageAdminLocal();
     }
 
     public function update(User $user, Jornada $jornada): bool
