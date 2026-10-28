@@ -22,11 +22,7 @@ class AdminLocalDashboardController extends Controller
             abort(403);
         }
 
-        if (! $user->admin && ! $user->torneosGestionados()->exists()) {
-            abort(403);
-        }
-
-        $torneos = $user->torneosGestionados()->get();
+        $torneos = $user->isSuperadmin() ? \App\Models\Torneo::all() : $user->torneosGestionados()->get();
         $torneosIds = $torneos->modelKeys();
         $torneoId = $request->query('torneo_id');
 

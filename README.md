@@ -1,80 +1,295 @@
-![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-pitch.svg)
+<p align="center">
+  <img src="./public/assets/media/logos/logo-fantasy-pitch.svg" alt="Logo de MiFantasy" width="180">
+</p>
 
-# Sobre MiFantasy [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/UrkiAristu/MiFantasy)
+<h1 align="center">MiFantasy</h1>
 
-MiFantasy es una aplicación web que permite crear y gestionar ligas fantasy personalizadas a partir de torneos de fútbol no profesionales, como competiciones locales, amateur o solidarias. El proyecto surge como una alternativa flexible a las plataformas fantasy tradicionales, habitualmente limitadas a ligas oficiales, permitiendo adaptar el sistema fantasy a contextos más cercanos y personalizados.
+<p align="center">
+  <a href="https://deepwiki.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Ask%20DeepWiki-blue.svg?style=flat&labelColor=181717&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg=="></a>
+  <a href="https://gitdiagram.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Review%20GitDiagram-F03C2E?style=flat&logo=git&labelColor=181717"></a>
+</p>
 
-## ⚙️ Tecnologías utilizadas
+<p align="center">Plataforma fantasy para torneos de fútbol no profesional</p>
 
-El proyecto está construido bajo una arquitectura moderna, garantizando escalabilidad, persistencia de datos y adaptabilidad a dispositivos móviles:
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-202b3a.svg" alt="Licencia: todos los derechos reservados"></a>
+  <img src="https://img.shields.io/badge/PHP-8.2%2B-777bb4.svg" alt="PHP 8.2 o superior">
+  <img src="https://img.shields.io/badge/Laravel-12.x-ff2d20.svg" alt="Laravel 12">
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ed.svg" alt="Docker Compose">
+  <img src="https://img.shields.io/badge/Playwright-E2E-2ead33.svg" alt="Playwright E2E">
+</p>
 
-- **Backend:** Laravel (PHP 8.2+)
-- **Frontend:** Blade, Alpine.js, Tailwind CSS, Bootstrap y JavaScript
-- **Base de datos:** Single-Database con Eloquent ORM
-- **Autorización:** RBAC multi-equipo con Spatie Laravel Permission
-- **Despliegue y Contenedores:** Docker y Docker Compose
-- **Aplicación Web Progresiva (PWA):** Service Workers y Web App Manifest para instalación nativa en dispositivos.
+> **Copyright © 2026 Urki Aristu Viela. Todos los derechos reservados.**
+>
+> Este repositorio se publica exclusivamente para demostración técnica, portfolio y evaluación académica. Consulta [`LICENSE`](LICENSE) y [`NOTICE.md`](NOTICE.md) antes de reutilizar cualquier material.
 
-## 🖥️ Interfaz y Experiencia de Usuario (UX/UI)
+## TL;DR · English
 
-El diseño se ha centrado en ofrecer una experiencia fluida y completamente *responsive*, permitiendo a los usuarios gestionar sus equipos tanto desde el ordenador como desde el teléfono móvil.
+MiFantasy is a fantasy football web application designed for non-professional competitions: local, amateur and charity tournaments. Users create or join private leagues, build squads and submit line-ups. Local administrators manage competition data, while super administrators oversee the platform.
 
-### Panel principal de Liguilla
-Centraliza gran parte de la actividad del usuario: alineación, plantilla, clasificación y resultados mediante un sistema de navegación rápido por pestañas.
+The project is a Master's Thesis in Computer Engineering at UPNA by Urki Aristu Viela. The repository is proprietary and published only for technical demonstration, portfolio review and academic evaluation. See [`LICENSE`](LICENSE) for usage restrictions.
 
-| Versión Escritorio | Versión Móvil |
-| :---: | :---: |
-| <img src="./docs/img/UserLiguillaPC.png" width="700"> | <img src="./docs/img/UserLiguillaMobile.png" width="250"> |
+## Índice
 
-### Perfil de Usuario y Autenticación
-Gestión completa de la cuenta, seguridad de contraseñas y opciones de persistencia de sesión.
+- [Qué es MiFantasy](#qué-es-mifantasy)
+- [Roles funcionales](#roles-funcionales)
+- [Galería](#galería)
+- [Cómo funciona el juego](#cómo-funciona-el-juego)
+- [Arquitectura](#arquitectura)
+- [Stack tecnológico](#stack-tecnológico)
+- [Calidad e ingeniería](#calidad-e-ingeniería)
+- [Estado del proyecto](#estado-del-proyecto)
+- [Estructura relevante](#estructura-relevante)
+- [Exploración técnica externa](#exploración-técnica-externa)
+- [Autoría y contexto académico](#autoría-y-contexto-académico)
+- [Licencia y permisos](#licencia-y-permisos)
 
-| Registro y Autenticación | Gestión de Perfil |
-| :---: | :---: |
-| <img src="./docs/img/SignupPC.png" width="500"> | <img src="./docs/img/UserProfilePC.png" width="500"> |
+## Qué es MiFantasy
 
-### Panel de Administración
-Cuadro de mando exclusivo para la gestión de torneos, equipos, jugadores, liguillas y usuarios.
+MiFantasy adapta el formato fantasy a competiciones que normalmente no disponen de una plataforma especializada: torneos locales, fútbol amateur y eventos solidarios. La aplicación transforma los partidos y sus eventos en una competición paralela de gestión de plantilla, alineaciones y puntos.
 
-| Dashboard de Administración |
-| :---: |
-| <img src="./docs/img/AdminHomePC.jpg" width="900"> |
+El alcance funcional actual se organiza alrededor de tres perfiles:
 
-## ⚽ Funcionalidad principal
+- **User:** participa en liguillas y gestiona su equipo fantasy.
+- **Admin-local:** administra la información operativa de los torneos que gestiona.
+- **Superadmin:** administra globalmente los usuarios, torneos y datos principales de la plataforma.
 
-La aplicación distingue dos roles principales de interacción:
+## Roles funcionales
 
-### Usuario (Jugador)
-- **Creación y participación:** Capacidad para unirse a ligas mediante códigos de invitación o crear liguillas privadas propias.
-- **Gestión táctica:** Selección de jugadores, gestión de plantilla y configuración de la alineación titular.
-- **Competición:** Las alineaciones se bloquean al inicio de cada jornada, compitiendo mediante un sistema de puntuación automatizado.
-- **Instalación PWA:** Posibilidad de instalar la aplicación en iOS/Android directamente desde el navegador.
+| Rol | Capacidades documentadas |
+|---|---|
+| **User** | Crear o unirse a liguillas, consultar torneos, gestionar plantilla, elegir formación y alineación, consultar clasificación, jornadas, resultados, participantes y puntos en directo. |
+| **Admin-local** | Gestionar equipos, jornadas, partidos y eventos de los torneos bajo su responsabilidad. |
+| **Superadmin** | Gestionar globalmente usuarios, torneos, equipos, jugadores, liguillas, jornadas, partidos y eventos. |
 
-### Administrador (Gestor)
-- **Mantenimiento de datos:** Creación y gestión de torneos, equipos y jugadores reales de la competición amateur.
-- **Planificación:** Definición del calendario de jornadas y sus fechas límite de cierre.
-- **Control global:** Supervisión del estado general de la competición y el sistema de puntuación.
+Estos son los tres roles funcionales que se presentan en este README. La documentación no presenta ninguna capa comercial o de infraestructura como un cuarto rol.
 
-## 🔮 Líneas de trabajo futuro
+## Galería
 
-El proyecto establece una base sólida para el desarrollo continuo de nuevas funcionalidades:
+Las imágenes son recursos versionados del repositorio y se muestran como material de demostración.
 
-* Despliegue en servidor de producción definitivo.
-* Integración de un mercado de fichajes de jugadores dinámico.
-* Sistema definitivo de cálculo de puntuaciones en tiempo real.
-* Historial histórico de jornadas y estadísticas avanzadas para los participantes.
-* Notificaciones automáticas (Push/Email) a usuarios sobre el estado de sus liguillas.
-* Animaciones de transición y carga entre pantallas para mejorar la UX.
+| Pantalla | Captura actual |
+|:---|:---:|
+| Landing pública | <img src="./docs/img/screenshots/landing-hero.png" alt="Landing pública actual de MiFantasy" width="900"> |
+| Login | <img src="./docs/img/screenshots/auth-login.png" alt="Pantalla de login actual" width="700"> |
+| Home de User | <img src="./docs/img/screenshots/user-home.png" alt="Home actual del usuario" width="900"> |
+| Mis liguillas | <img src="./docs/img/screenshots/user-liguillas.png" alt="Listado actual de liguillas" width="900"> |
+| Mis liguillas en móvil | <img src="./docs/img/screenshots/user-liguilla-mobile.png" alt="Listado de liguillas en móvil" width="390"> |
+| Panel Admin-local | <img src="./docs/img/screenshots/admin-local-dashboard.png" alt="Dashboard actual de Admin-local" width="900"> |
+| Panel Superadmin | <img src="./docs/img/screenshots/admin-global-dashboard.png" alt="Dashboard actual de Superadmin" width="900"> |
 
-## 📚 Contexto académico y Autor
+Las capturas se generaron con Playwright sobre datos del seeder de desarrollo. No contienen credenciales visibles ni datos personales introducidos por usuarios reales.
 
-Este proyecto nace como idea de digitalizar un torneo solidario y aportar mayor participación involucrando al público con un juego tipo fantasy. A partir de esa iniciativa, se decidió llevar la idea a la universidad y convertirla en un Trabajo Fin de Máster, construyendo una plataforma real y completa desde cero.
+## Cómo funciona el juego
 
-**Autor:** Urki Aristu Viela  
-**Contexto:** Trabajo Fin de Máster – Máster en Ingeniería Informática / UPNA
+### Flujo de una jornada
 
-## 📄 Licencia y Derechos de Autor
+1. El administrador registra el resultado y los eventos del partido.
+2. `Partido::actualizarEstadisticas()` crea o reemplaza las estadísticas de los jugadores.
+3. `RecalcularPuntosJornadaJob` actualiza los puntos de las alineaciones congeladas y los acumulados de la liguilla.
+4. Se invalidan las claves de caché de clasificación afectadas.
+5. La interfaz consulta clasificación y puntos en directo mediante las rutas de la liguilla.
 
-Copyright © 2026 Urki Aristu Viela. Todos los derechos reservados.
+### Puntuación actual
 
-Este repositorio contiene código protegido por las leyes de propiedad intelectual. Se permite su visualización pública exclusivamente con fines de demostración técnica y portafolio. Queda estrictamente prohibida la copia, reproducción, modificación, distribución o explotación comercial de todo o parte de este software sin la autorización expresa y por escrito del autor.
+| Evento o resultado | Puntos |
+|---|---:|
+| Victoria del equipo | +3 |
+| Empate del equipo | +1 |
+| Derrota del equipo | 0 |
+| Gol | +5 |
+| Asistencia | +3 |
+| Parada | +2 |
+| Falta | −1 |
+| Tarjeta amarilla | −3 |
+| Tarjeta roja | −5 |
+
+Los valores proceden de `app/Models/Partido.php` y describen la implementación actual.
+
+### Formaciones
+
+| Modalidad | Formaciones disponibles |
+|---|---|
+| Fútbol 11 | 4-4-2, 4-3-3, 3-5-2, 5-3-2, 3-4-3 |
+| Fútbol 7 | 3-2-1, 2-3-1, 2-2-2, 3-1-2 |
+| Fútbol sala | 1-2-1, 2-2, 1-1-2, 2-1-1 |
+
+### Congelado de alineaciones
+
+El comando de congelado selecciona jornadas cerradas y delega el trabajo en `CongelarJornadaJob`. El job procesa las liguillas por lotes, crea una fotografía de cada alineación base para la jornada y evita duplicarla si ya existe. Después marca la jornada como congelada.
+
+## Arquitectura
+
+### Ejecución de la aplicación
+
+```mermaid
+flowchart LR
+    client[Cliente web / PWA] --> web[Nginx]
+    web --> app[Laravel PHP-FPM]
+    app --> db[(MySQL)]
+    app --> redis[(Redis)]
+    app --> worker[Queue worker]
+    worker --> db
+    worker --> redis
+    app --> stripe[Stripe / Cashier]
+    stripe --> webhook[Webhook firmado]
+    webhook --> app
+    node[Node / Vite] -. assets .-> client
+```
+
+La topología corresponde a los servicios declarados en `docker-compose.yml`. No se incluyen credenciales, tokens ni valores operativos.
+
+### Flujo de puntuación
+
+```mermaid
+flowchart TD
+    event[Resultado o evento de partido] --> stats[Partido::actualizarEstadisticas]
+    stats --> table[(estadisticas)]
+    table --> job[RecalcularPuntosJornadaJob]
+    job --> pivot[(alineacion_jugador.puntos)]
+    pivot --> league[(liguilla_usuario.puntos)]
+    job --> cache[Invalidación de caché]
+    cache --> ranking[Clasificación]
+```
+
+### Roles y alcance
+
+```mermaid
+flowchart TD
+    user[User] --> fantasy[Rutas de liguillas y alineación]
+    local[Admin-local] --> localPanel[Gestión operativa de torneos]
+    super[Superadmin] --> globalPanel[Administración global]
+    fantasy --> auth[Autenticación y autorización]
+    localPanel --> auth
+    globalPanel --> auth
+```
+
+### Congelado de jornadas
+
+```mermaid
+sequenceDiagram
+    participant Scheduler as Scheduler / comando
+    participant Job as CongelarJornadaJob
+    participant League as Liguillas
+    participant Lineup as Alineaciones
+    participant Jornada as Jornada
+    Scheduler->>Job: Procesa una jornada cerrada
+    Job->>League: Recorre por lotes
+    League->>Lineup: Busca alineaciones base
+    Job->>Lineup: Crea snapshot por jornada
+    Job->>Lineup: Evita duplicados existentes
+    Job->>Jornada: Marca alineaciones_congeladas
+```
+
+### Calidad y pruebas
+
+```mermaid
+flowchart LR
+    push[Push / Pull Request] --> quality[Build + audit + Pint + PHPStan 5]
+    quality --> phpunit[PHPUnit / php artisan test]
+    browser[Playwright E2E] --> quality
+```
+
+## Stack tecnológico
+
+| Tecnología | Uso | Fuente |
+|---|---|---|
+| PHP 8.2+ | Backend | `composer.json`, CI |
+| Laravel 12 | Framework web, rutas, jobs y ORM | `composer.json` |
+| Blade | Vistas | `resources/views/` |
+| Alpine.js / JavaScript | Interactividad | `resources/`, `package.json` |
+| Vite | Construcción de assets | `package.json`, `vite.config.js` |
+| MySQL 8.0 | Persistencia en Docker | `docker-compose.yml` |
+| Redis | Caché y colas | `docker-compose.yml` |
+| Docker Compose | Orquestación | `docker-compose.yml` |
+| Laravel Cashier | Suscripciones y Stripe | `composer.json` |
+| Spatie Permission | Permisos administrativos | `composer.json` |
+| Playwright 1.63 | Pruebas de navegador | `package.json`, `playwright.config.js` |
+| PHPUnit 11 | Pruebas PHP | `composer.json` |
+| Larastan/PHPStan nivel 5 | Análisis estático | `phpstan.neon`, CI |
+| Laravel Pint | Estilo PHP | CI |
+
+## Calidad e ingeniería
+
+El workflow de GitHub Actions ejecuta actualmente:
+
+- `npm run build`;
+- `composer audit --locked`;
+- `./vendor/bin/pint --test`;
+- `./vendor/bin/phpstan analyse --memory-limit=2G`;
+- `php artisan test` con SQLite en memoria para CI.
+
+La suite Playwright está configurada en `playwright.config.js`, utiliza `tests/browser`, ejecución secuencial y un servidor local de pruebas. El workflow CI/CD ejecuta también esta suite E2E después de levantar la aplicación.
+
+A nivel de diseño, el código utiliza autenticación Laravel, validación de formularios, CSRF en las rutas web, autorización mediante middleware/policies y verificación de firma para el webhook de Stripe. Esta descripción no sustituye una auditoría independiente.
+
+## Estado del proyecto
+
+| Área | Estado | Base verificable |
+|---|---|---|
+| Registro, login y verificación de email | ✅ Implementado | Rutas y controladores de autenticación |
+| Liguillas, plantillas y alineaciones | ✅ Implementado | Controladores, acciones, modelos y vistas |
+| Puntuación por resultados y eventos | ✅ Implementado | `Partido::actualizarEstadisticas()` |
+| Congelado y recálculo de jornadas | ✅ Implementado | Comando, servicio y jobs |
+| Panel Superadmin | ✅ Implementado | Rutas protegidas por `verificar.admin` |
+| Panel Admin-local | ✅ Implementado | Controladores `AdminLocal*` |
+| PWA | ✅ Implementado | `public/manifest.json`, `public/sw.js` |
+| Tests PHP | ✅ Implementado | `tests/`, CI |
+| Tests Playwright | ✅ Implementado | `tests/browser/`, ejecución validada |
+| Playwright en CI/CD | ✅ Implementado | Workflow de GitHub Actions |
+| Suscripciones y checkout | 🟡 Parcial | Rutas, Cashier y controladores presentes |
+| Mercado, notificaciones y despliegue comercial | 🔜 Roadmap | No se documentan como terminados |
+
+## Estructura relevante
+
+```text
+app/
+├── Actions/          Acciones de dominio
+├── Console/          Comandos Artisan
+├── Http/Controllers/ Controladores de usuario y administración
+├── Jobs/             Congelado y recálculo de puntos
+├── Models/           Torneos, equipos, jugadores y liguillas
+├── Policies/         Autorización de recursos
+└── Services/         Servicios de dominio
+
+database/
+├── migrations/       Esquema de persistencia
+└── seeders/          Datos de demostración y pruebas
+
+resources/views/      Vistas Blade
+public/               Manifest, service worker y assets
+tests/                Tests PHP y navegador
+.github/workflows/    Automatización de calidad y tests PHP
+docs/img/             Capturas versionadas
+```
+
+## Exploración técnica externa
+
+La documentación canónica de la arquitectura es este README y sus diagramas Mermaid versionados.
+
+- [DeepWiki](https://deepwiki.com/UrkiAristu/MiFantasy) puede ofrecer una explicación navegable externa.
+- GitDiagram puede utilizarse como vista complementaria si se revisa su resultado.
+- No se recomienda enlazar GitIngest públicamente: transfiere el contexto del repositorio a un servicio externo y no es una fuente canónica versionada.
+
+Estas herramientas solo deberían utilizarse sobre una copia pública y sanitizada. No deben recibir secretos, datos personales, credenciales, URLs privadas o información de producción.
+
+## Autoría y contexto académico
+
+MiFantasy se desarrolla como Trabajo Fin de Máster del **Máster en Ingeniería Informática de la Universidad Pública de Navarra (UPNA)**.
+
+- **Autor:** Urki Aristu Viela
+- **Primera versión del repositorio:** 17 de junio de 2025, según el primer commit disponible en el historial local.
+- **Propósito:** demostración técnica, portfolio y evaluación académica.
+
+## Licencia y permisos
+
+MiFantasy **no se distribuye bajo una licencia open source**. El uso permitido se limita a la consulta con fines de demostración técnica, portfolio y evaluación académica.
+
+- [`LICENSE`](LICENSE): condiciones completas en español e inglés.
+- [`NOTICE.md`](NOTICE.md): aviso breve de titularidad.
+
+Queda prohibido copiar, modificar, redistribuir, sublicenciar, explotar comercialmente o utilizar el código y sus materiales para entrenar o alimentar modelos de inteligencia artificial sin autorización escrita del autor.
+
+Un README y una licencia establecen derechos y condiciones, pero no impiden técnicamente que alguien copie un repositorio público. Para una protección más fuerte: repositorio privado, acceso solo a evaluadores o publicación de una versión demo recortada.
+
+Para cualquier uso distinto de la consulta autorizada, contactar con el autor y solicitar permiso por escrito.
