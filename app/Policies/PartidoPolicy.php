@@ -9,12 +9,12 @@ class PartidoPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->canManageAdminLocal();
     }
 
     public function view(User $user, Partido $partido): bool
     {
-        if ($user->admin) {
+        if ($user->isSuperadmin()) {
             return true;
         }
         $torneosGestionadosIds = $user->torneosGestionados()->pluck('torneos.id');
@@ -25,7 +25,7 @@ class PartidoPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->canManageAdminLocal();
     }
 
     public function update(User $user, Partido $partido): bool

@@ -80,3 +80,4 @@ CLAUDE.md
 verify_*.js
 update_*.py
 repomix-output.xml
+scripts/capture-readme.mjs
