@@ -1,15 +1,9 @@
-<p align="center">
-  <img src="./public/assets/media/logos/logo-fantasy-pitch.svg" alt="Logo de MiFantasy" width="180">
-</p>
+![MiFantasy Logo](./public/assets/media/logos/logo-fantasy-pitch.svg)
 
-<h1 align="center">MiFantasy</h1>
+# MiFantasy
 
-<p align="center">
-  <a href="https://deepwiki.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Ask%20DeepWiki-blue.svg?style=flat&labelColor=181717&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg=="></a>
-  <a href="https://gitdiagram.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Review%20GitDiagram-F03C2E?style=flat&logo=git&labelColor=181717"></a>
-</p>
+Plataforma fantasy para torneos de fútbol no profesional
 
-<p align="center">Plataforma fantasy para torneos de fútbol no profesional</p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-202b3a.svg" alt="Licencia: todos los derechos reservados"></a>
@@ -68,17 +62,17 @@ Estos son los tres roles funcionales que se presentan en este README. La documen
 
 Las imágenes son recursos versionados del repositorio y se muestran como material de demostración.
 
-| Pantalla | Captura actual |
+| Pantalla | Captura |
 |:---|:---:|
-| Landing pública | <img src="./docs/img/screenshots/landing-hero.png" alt="Landing pública actual de MiFantasy" width="900"> |
-| Login | <img src="./docs/img/screenshots/auth-login.png" alt="Pantalla de login actual" width="700"> |
-| Home de User | <img src="./docs/img/screenshots/user-home.png" alt="Home actual del usuario" width="900"> |
-| Mis liguillas | <img src="./docs/img/screenshots/user-liguillas.png" alt="Listado actual de liguillas" width="900"> |
-| Mis liguillas en móvil | <img src="./docs/img/screenshots/user-liguilla-mobile.png" alt="Listado de liguillas en móvil" width="390"> |
-| Panel Admin-local | <img src="./docs/img/screenshots/admin-local-dashboard.png" alt="Dashboard actual de Admin-local" width="900"> |
-| Panel Superadmin | <img src="./docs/img/screenshots/admin-global-dashboard.png" alt="Dashboard actual de Superadmin" width="900"> |
+| Landing pública | <img src="./docs/img/screenshots/landing-hero.png" alt="Landing pública" width="400"> |
+| Autenticación | <img src="./docs/img/screenshots/auth-login.png" alt="Login" width="400"> |
+| Home (Escritorio / Móvil) | <img src="./docs/img/screenshots/user-home.png" alt="Home escritorio" width="400"><br><img src="./docs/img/screenshots/user-liguilla-mobile.png" alt="Home móvil" width="150"> |
+| Liguillas (Escritorio / Móvil) | <img src="./docs/img/screenshots/user-liguillas.png" alt="Liguillas escritorio" width="400"><br><img src="./docs/img/screenshots/user-liguilla-mobile.png" alt="Liguillas móvil" width="150"> |
+| Panel Admin-local | <img src="./docs/img/screenshots/admin-local-dashboard.png" alt="Dashboard Admin-local" width="400"> |
+| Panel Superadmin | <img src="./docs/img/screenshots/admin-global-dashboard.png" alt="Dashboard Superadmin" width="400"> |
 
 Las capturas se generaron con Playwright sobre datos del seeder de desarrollo. No contienen credenciales visibles ni datos personales introducidos por usuarios reales.
+
 
 ## Cómo funciona el juego
 
@@ -231,8 +225,8 @@ A nivel de diseño, el código utiliza autenticación Laravel, validación de fo
 | Liguillas, plantillas y alineaciones | ✅ Implementado | Controladores, acciones, modelos y vistas |
 | Puntuación por resultados y eventos | ✅ Implementado | `Partido::actualizarEstadisticas()` |
 | Congelado y recálculo de jornadas | ✅ Implementado | Comando, servicio y jobs |
-| Panel Superadmin | ✅ Implementado | Rutas protegidas por `verificar.admin` |
-| Panel Admin-local | ✅ Implementado | Controladores `AdminLocal*` |
+| Panel Superadmin | ✅ Implementado | Rutas globales protegidas por `verificar.admin`; controladores `admin` |
+| Panel Admin-local | ✅ Implementado | Grupo `/admin-local` protegido por `verificar.admin.local`; controladores `AdminLocal*` y Policies de recurso |
 | PWA | ✅ Implementado | `public/manifest.json`, `public/sw.js` |
 | Tests PHP | ✅ Implementado | `tests/`, CI |
 | Tests Playwright | ✅ Implementado | `tests/browser/`, ejecución validada |
@@ -267,11 +261,10 @@ docs/img/             Capturas versionadas
 
 La documentación canónica de la arquitectura es este README y sus diagramas Mermaid versionados.
 
-- [DeepWiki](https://deepwiki.com/UrkiAristu/MiFantasy) puede ofrecer una explicación navegable externa.
-- GitDiagram puede utilizarse como vista complementaria si se revisa su resultado.
-- No se recomienda enlazar GitIngest públicamente: transfiere el contexto del repositorio a un servicio externo y no es una fuente canónica versionada.
-
-Estas herramientas solo deberían utilizarse sobre una copia pública y sanitizada. No deben recibir secretos, datos personales, credenciales, URLs privadas o información de producción.
+<p>
+  <a href="https://deepwiki.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Ask%20DeepWiki-blue.svg?style=flat&labelColor=181717&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==" alt="Ask DeepWiki"></a>
+  <a href="https://gitdiagram.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Review%20GitDiagram-F03C2E?style=flat&logo=git&labelColor=181717" alt="Review GitDiagram"></a>
+</p>
 
 ## Autoría y contexto académico
 
