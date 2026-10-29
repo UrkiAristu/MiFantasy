@@ -8,6 +8,7 @@ use App\Models\Equipo;
 use App\Models\Jornada;
 use App\Models\Jugador;
 use App\Models\Partido;
+use App\Models\Torneo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class AdminLocalDashboardController extends Controller
             abort(403);
         }
 
-        $torneos = $user->isSuperadmin() ? \App\Models\Torneo::all() : $user->torneosGestionados()->get();
+        $torneos = $user->isSuperadmin() ? Torneo::all() : $user->torneosGestionados()->get();
         $torneosIds = $torneos->modelKeys();
         $torneoId = $request->query('torneo_id');
 
