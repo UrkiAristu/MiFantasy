@@ -142,6 +142,7 @@ jobs:
         run: |
           mkdir -p database
           touch database/database.sqlite
+          mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache
 
       - name: Run database migrations and seed
         run: php artisan migrate:fresh --seed --force
