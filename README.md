@@ -4,14 +4,11 @@
 
 Plataforma fantasy para torneos de fútbol no profesional
 
-
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-202b3a.svg" alt="Licencia: todos los derechos reservados"></a>
-  <img src="https://img.shields.io/badge/PHP-8.2%2B-777bb4.svg" alt="PHP 8.2 o superior">
-  <img src="https://img.shields.io/badge/Laravel-12.x-ff2d20.svg" alt="Laravel 12">
-  <img src="https://img.shields.io/badge/Docker-Compose-2496ed.svg" alt="Docker Compose">
-  <img src="https://img.shields.io/badge/Playwright-E2E-2ead33.svg" alt="Playwright E2E">
-</p>
+[![Licencia](https://img.shields.io/badge/License-All%20Rights%20Reserved-202b3a.svg)](LICENSE)
+![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4.svg)
+![Laravel](https://img.shields.io/badge/Laravel-12.x-ff2d20.svg)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ed.svg)
+![Playwright](https://img.shields.io/badge/Playwright-E2E-2ead33.svg)
 
 > **Copyright © 2026 Urki Aristu Viela. Todos los derechos reservados.**
 >
@@ -60,16 +57,16 @@ Estos son los tres roles funcionales que se presentan en este README. La documen
 
 ## Galería
 
-Las imágenes son recursos versionados del repositorio y se muestran como material de demostración.
+Las imágenes son recursos versionados del repositorio y se muestran como material de demostración comparativo entre vistas de escritorio y móvil.
 
-| Pantalla | Captura |
-|:---|:---:|
-| Landing pública | <img src="./docs/img/screenshots/landing-hero.png" alt="Landing pública" width="400"> |
-| Autenticación | <img src="./docs/img/screenshots/auth-login.png" alt="Login" width="400"> |
-| Home (Escritorio / Móvil) | <img src="./docs/img/screenshots/user-home.png" alt="Home escritorio" width="400"><br><img src="./docs/img/screenshots/user-liguilla-mobile.png" alt="Home móvil" width="150"> |
-| Liguillas (Escritorio / Móvil) | <img src="./docs/img/screenshots/user-liguillas.png" alt="Liguillas escritorio" width="400"><br><img src="./docs/img/screenshots/user-liguilla-mobile.png" alt="Liguillas móvil" width="150"> |
-| Panel Admin-local | <img src="./docs/img/screenshots/admin-local-dashboard.png" alt="Dashboard Admin-local" width="400"> |
-| Panel Superadmin | <img src="./docs/img/screenshots/admin-global-dashboard.png" alt="Dashboard Superadmin" width="400"> |
+| Pantalla | Escritorio (1440px) | Móvil (390px) |
+|:---|:---:|:---:|
+| **Landing pública** | ![Landing escritorio](./docs/img/screenshots/landing-hero.png) | — |
+| **Autenticación** | ![Login](./docs/img/screenshots/auth-login.png) | — |
+| **Home del usuario** | ![Home escritorio](./docs/img/screenshots/user-home.png) | ![Home móvil](./docs/img/screenshots/user-home-mobile.png) |
+| **Liguillas** | ![Liguillas escritorio](./docs/img/screenshots/user-liguillas.png) | ![Liguillas móvil](./docs/img/screenshots/user-liguilla-mobile.png) |
+| **Panel Admin-local** | ![Admin-local](./docs/img/screenshots/admin-local-dashboard.png) | — |
+| **Panel Superadmin** | ![Superadmin](./docs/img/screenshots/admin-global-dashboard.png) | — |
 
 Las capturas se generaron con Playwright sobre datos del seeder de desarrollo. No contienen credenciales visibles ni datos personales introducidos por usuarios reales.
 
@@ -259,12 +256,12 @@ docs/img/             Capturas versionadas
 
 ## Exploración técnica externa
 
-La documentación canónica de la arquitectura es este README y sus diagramas Mermaid versionados.
+La documentación canónica y fuente de verdad de la arquitectura es este README junto con sus diagramas Mermaid versionados. 
 
-<p>
-  <a href="https://deepwiki.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Ask%20DeepWiki-blue.svg?style=flat&labelColor=181717&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==" alt="Ask DeepWiki"></a>
-  <a href="https://gitdiagram.com/UrkiAristu/MiFantasy"><img src="https://img.shields.io/badge/-Review%20GitDiagram-F03C2E?style=flat&logo=git&labelColor=181717" alt="Review GitDiagram"></a>
-</p>
+Los siguientes servicios externos se enlazan exclusivamente como vistas complementarias de exploración técnica generadas de forma automática a partir del código fuente del repositorio:
+
+[![Ask DeepWiki](https://img.shields.io/badge/-Ask%20DeepWiki-blue.svg?style=flat&labelColor=181717)](https://deepwiki.com/UrkiAristu/MiFantasy)
+[![Review GitDiagram](https://img.shields.io/badge/-Review%20GitDiagram-F03C2E?style=flat&logo=git&labelColor=181717)](https://gitdiagram.com/UrkiAristu/MiFantasy)
 
 ## Autoría y contexto académico
 
